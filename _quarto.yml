@@ -1,0 +1,81 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Statistical Analysis Using R: Online Notes"
+  chapters:
+    - index.qmd
+    - preface.qmd
+    - part: "1. Univariate Techniques"
+      chapters:
+        - likelihood.qmd
+        - hypothesistest.qmd
+        - biasvariance.qmd
+        - confidenceintervals.qmd
+        - identification.qmd
+        - howtounivariate.qmd
+    - part: "2. Useful Approximations"
+      chapters:
+        - newton.qmd
+        - gradientdescent.qmd
+        - clt.qmd
+        - ttests.qmd
+        - rulesofthumb.qmd
+        - howtoapproximate.qmd
+    - part: "3. Linear Regression"
+      chapters:
+        - simpleregression.qmd
+        - multiplemle.qmd
+        - variancedecomposition.qmd
+        - howtoregress.qmd
+    - part: "4. Regression Robustness"
+      chapters:
+        - robustness.qmd
+        - heteroskedasticity.qmd
+        - autocorrelation.qmd
+        - nonnormality.qmd
+        - nonlinearity.qmd
+    - part: "5. Feature Engineering"
+      chapters:
+        - categoricalpredictors.qmd
+        - revisitinganova.qmd
+        - interactions.qmd
+        - featureengineering.qmd
+    - part: "6. Model Selection"
+      chapters:
+        - overfitting.qmd
+        - predictorimportance.qmd
+        - multiplecomparisons.qmd
+        - modelcomparison.qmd
+        - selectionalgorithms.qmd
+  appendices:
+    - part: "Distributions"
+      chapters: 
+        - dist_bernoulli.qmd
+        - dist_binomial.qmd
+        - dist_chisquared.qmd
+        - dist_exponential.qmd
+        - dist_f.qmd
+        - dist_geometric.qmd
+        - dist_negativebinomial.qmd
+        - dist_normal.qmd
+        - dist_poisson.qmd
+        - dist_t.qmd
+        - dist_uniform.qmd
+    - proofs.qmd
+    - listofsymbols.qmd
+ 
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-copy: true
+    code-overflow: wrap
+    page-layout: full
+    smooth-scroll: true
+    code-annotations: hover
+    
+filters:
+  - shinylive

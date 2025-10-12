@@ -1,0 +1,69 @@
+# Uniform distribution {.unnumbered #sec-uniform}
+
+## Assumptions
+
+The uniform distribution describes continuous variabls which can take any value over a range defined by its minimum, $a$, and its maximum, $b$. All values in this range are possible, and all values are *equally likely.*
+ 
+## Definition
+
+$$\begin{array}{ll}
+  \text{Support:} & x \in [a,b] \\
+  \text{Parameter(s):} & a,\text{ the minimum }(a \in \mathbb{R}) \\
+  & b,\text{ the maximum }(b \in \mathbb{R}) \\
+  \text{PDF:} & f_X(x) = \frac{1}{b-a} \\
+  \text{CDF:} & F_X(x) = \frac{x-a}{b-a} \\
+  \text{Mean:} & \mathbb{E}[X]=\frac{a+b}{2} \\
+  \text{Variance:} & \mathbb{V}[X]=\frac{(b-a)^2}{12} \\
+\end{array}$$
+
+## Visualizer
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 650
+
+library(shiny)
+library(bslib)
+
+ui <- page_fluid(
+      tags$head(tags$style(HTML("body {overflow-x: hidden;}"))),
+  title = "Uniform distribution PDF",
+  fluidRow(plotOutput("distPlot")),
+  fluidRow(column(width=6,sliderInput("a", "Minimum (a)", min=-10, max=10, value=0)),
+           column(width=6,sliderInput("b", "Maximum (b)", min=0.01, max=10, value=1))))
+
+server <- function(input, output) {
+  output$distPlot <- renderPlot({
+    x <- seq(input$mu-3*input$sigma,input$mu+3*input$sigma,input$sigma/100)
+    y <- dnorm(x,input$mu,input$sigma)
+    xlims <- c(mean(c(-3,x[1])),mean(c(3,x[601])))
+    ylims <- c(0,mean(c(dnorm(0),y[301])))
+    plot(x=x,y=y,main=NULL,xlab='x',ylab='Density',type='l',lwd=2,
+         xlim=xlims,ylim=ylims)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+## Properties
+
+  * The probability of observing values within a subrange $[x_0,x_1]$ is equal to proportion of the total range covered by the subrange:
+
+  $$\mathrm{if}\,a \le x_0 \le x_1 \le b:P(X \in [x_0,x_1]) = \frac{x_1-x_0}{b-a}$$
+  * Uniform distributions are scale-location invariant, meaning that they can be moved around the number line and stretched (or pinched) using simple transformations without complicating any math. Suppose a uniform random variable $X \sim \mathrm{Uniform}(a,b)$ and two constants $c_1$ and $c_2$. Then,
+  
+  $$\mathrm{if}\; Y = c_1 + c_2X,\; \mathrm{then}\; Y \sim \mathrm{Uniform}(c_1 + c_2a, c_1 + c_2b)$$
+ 
+## Relations to other distributions
+
+*Every* probability distribution is a transformation of the uniform distribution! This is in fact how computers generate samples of other distributions. Suppose we have a standard uniform variable $U \sim \mathrm{Uniform}(0,1)$, and another random variable $X$ from *any* other distribution, with some known CDF $F_X(x) = P(X \le x)$ and its inverse, the quantile function $F^{-1}_X(p)$. Then,
+
+$$F^{-1}_X(U) \sim X$$
+
+Let's try it with an Exponential(3) distribution. First let's remind ourselves of its CDF:
+
+$$F_X(x) = 1 - e^{-3x}$$
+
+Then we'll find the inverse of that function (we can do this by hand since it's a simple function):
+
+$$F^{-1}_X(q) = \log(1-p)/3$$

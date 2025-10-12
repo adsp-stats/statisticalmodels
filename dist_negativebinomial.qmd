@@ -1,0 +1,129 @@
+# Negative binomial distribution {.unnumbered #sec-negativebinomial}
+
+The negative binomial distribution describes a repeated experiment ending in success or failure, like the Geometric or the Binomial distribution.
+
+In particular, the negative binomial is used to count the number of failures (or the number of total trials) needed to achieve $k$ successes. Depending on the source, you may also see it described as the number of successes (or the number of total trials) needed before we observe $k$ failures.
+
+When the negative binomial distribution is used in a count regression model, we often see still different parameterizations which focus on the mean and variance.
+
+Together, there are roughly a dozen ways to write the PMF, CDF, mean, and variance of the negative binomial. Rather than describe them each in turn, I will cover the two used in these course notes.
+
+### Assumptions
+
+Similar to the Geometric distribution, we assume *(i)* $n$, the number of trials, is allowed to vary until it reaches the desired stopping point,^[Unlike, say, the Binomial distribution in which the number of trials are fixed ahead of time.] and *(ii)* $p$, the probability of success, never changes over time and is independent of each result.
+
+## Counting failures until the *r*^th^ success
+
+This parameterization can be seen as a generalization of the Geometric distribution, which counts the number of failures until the 1^st^ success. What if we require more than one success? How many failures will be needed before we achieve two successes, or three, or ten?
+
+For example, we may be filling egg cartons with chicken eggs to sell at the market. Some eggs are too small, or cracked. Perhaps only 80% of chicken eggs are ready to sell. What is the probability that we throw away 5 eggs before we can fill the carton with 12 acceptable eggs?
+
+ * In this scenario we will have 12 "successes" and 5 "failures".
+ 
+ * The successes and failures can arrive in many different orders, but the last trial has to be a success (if all 12 successes happened earlier, then we'd stop at that point and have fewer failures).
+ 
+ * Therefore we have $12 + 5 - 1 = 16$ "free slots" for the $X=5$ failures and the $r-1=11$ remaining successes.
+ 
+ * There are $16 {}_C 5 = 16 {}_C 11 = 462$ ways to arrange those successes and failures.
+ 
+ * Each failure has probability 20% and each success has probability 80%, so each sequence of 5 failures and 12 (total) successes has probability $0.8^{12} \times 0.2^5$.
+ 
+ * Therefore the total probability of tossing 5 bad eggs before filling a carton with 12 good eggs is $\left(\begin{array}{c}16 \\ 5\end{array} \right) 0.8^{12}\;0.2^5 \approx 0.096$.
+ 
+Generalizing this example, we might write:
+
+$$\begin{array}{ll}
+  \text{Support:} & \mathbb{Z}^+=\{0,1,2,\ldots,\infty\} \\
+  \text{Parameter(s):} & r,\text{ the number of required successes }(r \in \mathbb{N}) \\ & p,\text{ the probability of success }(p \in [0,1]) \\
+  \text{PMF:} & P(X=k) = \left(\begin{array}{c}r+k-1 \\ k\end{array} \right) p^{r}\;(1-p)^k \\
+  \text{CDF:} & \text{(complicated, easier simply to sum the PDF)} \\
+  \text{Mean:} & \mathbb{E}[X] = \frac{r(1-p)}{p} \\
+  \text{Variance:} & \mathbb{V}[X] = \frac{r(1-p)}{p^2} \\
+\end{array}$$
+
+This parameterization is supported by R, note for example that the egg example above could be solved by:
+```{r}
+dnbinom(x=5, size=12, prob=0.8)
+```
+And that the probability of tossing *five or fewer* bad eggs to fill a carton of 12 would therefore be:
+```{r}
+pnbinom(q=5, size=12, prob=0.8)
+```
+
+## Re-parameterizing with mean and variance for GLMs
+
+In a generalized linear regression, the negative binomial is often used as a more general form of a Poisson-distributed count regression. The Poisson uses only a single parameter ($\lambda$, the rate), which serves as both mean and variance. Therefore a Poisson regression is a bad fit to data which are *overdispersed*, *i.e.* where the variance is much greater than the mean.
+
+Negative binomial count processes naturally create overdispersed data. The mean of each observation would be written as $\mu_i$, and under the canonical log link it would be set equal to the linear predictor $\eta = \mathbf{X}\boldsymbol{\beta}$:
+
+$$\mu_i = \log \boldsymbol{x}_i \boldsymbol{\beta}$$
+
+Using the first parameterization above, we can re-express the variance of the negative binomial in terms of its mean and $r$, the number of required successes:
+
+$$\sigma^2_i = \mu_i + \frac{\mu_i^2}{r}$$
+
+This parameterization helps to focus our attention on the overdispersion: if $r$ is very large, then the second term disappears and the variance will shrink down to $\mu_i$, meaning that the data are equidispersed Poisson counts. Conversely, if $r$ is small, then $\mu_i + \mu_i^2/r \gg \mu_i$ and the data are highly overdispersed. We call $r$ the *shape parameter* in this case.
+
+The basic negative binomial R functions support this alternate parameterization.  The function `MASS::glm.nb` also supports this parameterization, but it uses the symbol $\theta$ (theta) instead of $r$ for the shape parameter.
+
+Consider an overdispersed count process with a mean of 5 and a variance of 15, implying $r=2.5$.
+
+What is the probability of observing a count of 15 or larger from such a distribution?
+
+```{r}
+1-pnbinom(q=14, mu=5, size=2.5)
+```
+
+If we create a sample of 10,000 variates from a negative binomial distribution with these properties, notice that the `MASS::glm.nb` regression function can recover estimates for $\mu$ and $r$ (which it calls theta):
+
+```{r}
+library(MASS)
+set.seed(1999)
+nbsamp <- rnbinom(n=10000, mu=5, size=2.5)
+nbreg <- glm.nb(nbsamp~1)
+c(mu=exp(nbreg$coefficients[1]),
+  r=nbreg$theta)
+```
+
+## Visualizer
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 650
+
+library(shiny)
+library(bslib)
+
+ui <- page_fluid(
+      tags$head(tags$style(HTML("body {overflow-x: hidden;}"))),
+  title = "Negative binomial distribution PMF",
+  fluidRow(plotOutput("distPlot")),
+  fluidRow(column(width=6,sliderInput("r", "Successes (r)", min=1, max=10, step=1, value=10)),
+           column(width=6,sliderInput("p", "Probability (p)", min=0.05, max=0.95, step=0.05, value=0.5))))
+
+server <- function(input, output) {
+  output$distPlot <- renderPlot({
+    plot(x=0:40,y=dnbinom(x=0:40,size=input$r,prob=input$p),main=NULL,
+         xlab='x (Prior failures)',ylab='Probability',type='h',lwd=3)})
+}
+
+shinyApp(ui = ui, server = server)
+```
+ 
+## Relations to other distributions
+    
+ * The Geometric distribution is a special case of the negative binomial where $r=1$. For example, compare:
+ 
+```{r}
+pnbinom(q=5,size=1,prob=0.30)
+pgeom(q=5,prob=0.30)
+```
+
+ * The Binomial distribution finds probabilities for each of a varying number of successes within a fixed number of total trials. The *negative* binomial distribution finds probabilities for each of a varying number of total trials which include a fixed number of successes. When we require that the last trial be a success, the math for individual outcomes will be equal:
+
+```{r}
+#Binomial: 11 successes in 16 trials + last success 
+#        = 12 successes in 17 trials
+dbinom(x=11, size=16, prob=0.8)*0.8
+#Neg binomial: 5 failures, 12 succesess = 17 trials
+dnbinom(x=5, size=12, prob=0.8)
+```
