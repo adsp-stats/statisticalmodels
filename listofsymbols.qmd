@@ -1,4 +1,4 @@
-# List of Symbols {#sec-listofsymbols}
+# List of Symbols {#sec-listofsymbols .unnumbered}
 
 ## Lowercase Greek letters
 

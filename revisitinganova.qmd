@@ -1,0 +1,115 @@
+# Revisiting ANOVA {#sec-revisitinganova}
+
+Now that we have seen categorical predictors used successfully in linear regression models, let’s explore what added meaning we can give these models. As we shall see, regression with categorical predictors (as opposed to regression with interval- or ratio-level predictors) focuses heavily on parameter tests and model fit statistics, and less so on prediction.
+
+## Factor notation
+
+Our work in this section will benefit from a little custom notation. Nothing I’m writing here changes or contradicts the OLS regression model presented in prior sections, and we could keep using that notation if we wished: what follows is simply a matter of convenience and ease of presentation.
+
+Suppose as before that $Y$ is our response variable, that $X$ is a categorical predictor having $I$ levels, and that we record $n$ total observations of $X$ and $Y$. Let $X$ be called the **factor**, let all observations sharing the same factor level be called a **group**, and define the following:
+
+|   |   |
+|:--|:--|
+|$n_1,n_2,\ldots,n_I$|The sample sizes of each group      |
+|$y_{ij}$|The *j*^th^ observation of group *i*|
+|$y_{i*}=\frac{1}{n_i}\sum_jy_{ij}$|The sample average of the response for the *i*^th^ group|
+|$\mu_i$|The true mean response for the *i*^th^ group|
+|$y_{**}=\frac{1}{n}\sum_{ij}y_{ij}$|The sample average of the entire sample|
+
+With this notation, we are ready to draw a few new conclusions about factor regression.
+
+## Between-group error and within-group error
+
+Recall the ANOVA triangle presented earlier:
+
+$$\mathrm{SST} = \mathrm{SSM} + \mathrm{SSE}$$
+
+$$\sum_i (y_i - \bar{y})^2 = \sum_i (\hat{y}_i - \bar{y})^2 + \sum_i (y_i - \hat{y}_i)^2$$
+
+With a categorical predictor, we have seen that the predicted value for each observation, which in our previous notation was written $\hat{y}_i$, is simply the observation’s group mean, $y_{i*}$$. This will allow us to rewrite the ANOVA triangle using our new factor notation:
+
+$$\mathrm{SST} = \mathrm{SSM} + \mathrm{SSE}$$
+$$\sum_{ij} (y_{ij} - y_{**})^2 = \sum_{ij} (y_{i*} - y_{**})^2 + \sum_{ij} (y_{ij} - y_{i*})^2$$
+
+The interpretation I’d like to lead you toward is this: the total variance of the dataset can be split into “between-group variation” (how far each group average falls from the overall average) and “within-group variation” (how far each observation within a group falls from the group average):
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Between-group and within-group variation"
+healths <- c(56,69,64,71,
+             58,76,73,75,64,74,
+             73,76,77,72,74,78,
+             63,66,64,67)
+xjitter <- c(0.9,0.95,1.05,1.1,
+             1.85,1.9,1.95,2.05,2.1,2.15,
+             2.85,2.9,2.95,3.05,3.1,3.15,
+             3.9,3.95,4.05,4.1)
+plot(healths~xjitter,pch=19,col=1,xaxt='n',xlim=c(0.8,4.2),
+     xlab='Pet type',ylab='Health Score',main='Health Outcomes of Pet Owners')
+axis(side=1,at=1:4,labels=c('bunny','cat','dog','fish'),tick=TRUE)
+segments(x0=(1:4)-0.2,y0=c(65,70,75,65),x1=(1:4)+0.2,y1=c(65,70,75,65),
+         col='grey50',lwd=3)
+abline(h=69.5,col='grey50',lty=2,lwd=2)
+arrows(x0=1:4,y0=rep(69.5,4),y1=c(65,70,75,65),
+       col='grey50',length=0.15,lwd=2,lty=3)
+arrows(x0=xjitter[1:4],y0=65,y1=healths[1:4],col='#0000ff',length=0.1,lty=3)
+arrows(x0=xjitter[5:10],y0=70,y1=healths[5:10],col='#0000ff',length=0.1,lty=3)
+arrows(x0=xjitter[11:16],y0=75,y1=healths[11:16],col='#0000ff',length=0.1,lty=3)
+arrows(x0=xjitter[17:20],y0=65,y1=healths[17:20],col='#0000ff',length=0.1,lty=3)
+legend(x='bottomright',pch=c(19,NA,NA,NA),lwd=c(NA,2,2,1),lty=c(NA,1,2,3),col=c('black','grey50','grey50','#0000ff'),
+       legend=c('Observations','Group averages','Between group variance','Within group variance'))
+
+```
+
+The graph above shows the same data as before, simply jittered slightly so that the within-group residuals don’t exactly overlap each other.
+
+Now consider a world in which pet type has *no effect* on heath score. In such a world, the true mean for each observation is simply one overall population mean. Any apparent between-group differences are simply the result of random chance. In this world, the between-group SSM and the within-group SSE are *both* sums of squares of mean-0 normal variates, implying that their *df*-normalized ratio would follow an F distribution:
+  
+$$\mathrm{MSM} = \frac{1}{I-1} \sum_i n_i (y_{i*} - y_{**})^2 \sim \chi^2_{I-1}$$
+
+$$\mathrm{MSE} = \frac{1}{n-I} \sum_{ij} (y_{ij} - y_{i*})^2 \sim \chi^2_{n-I}$$
+
+$$\frac{\mathrm{MSM}}{\mathrm{MSE}} = \frac{\mathrm{SSM}/(I-1)}{\mathrm{MSE}/(n-I)} \sim F_{I-1,n-I}$$
+
+This is the **model F-test**, sometimes called the **omnibus F-test**, and it essentially acts as a signal-to-noise ratio test. The mean squares of the model (MSM) will be large when the group means are far apart from each other, meaning we can more easily distinguish the groups, and the mean squares of the errors (MSE) will act as background noise. When the signal is large relative to the noise, we may be sure that the groups of $X$ do explain the response variable $Y$. When the signal is small relative to the noise, then we cannot be sure that the response is meaningfully explained by our predictor.
+
+The interpretation of the F test result is as follows:
+
+ * If we *reject the null hypothesis*, then we conclude that at least some of the group means $\mu_1,\mu_2,\ldots,\mu_I$ are truly different from each other. Equivalently, we can say that the group variable explains the mean response.  Note we need not conclude that *every* group mean is different from each other. Some of the groups might share a mean, and so the levels could be simplified or coalesced.
+ 
+ * If we *fail to reject the null*, then we choose to believe that every group shares the same mean, *i.e.*$\mu_1 = \mu_2 = \ldots = \mu_I$. Since the mean response is the same at every level of $X$, then $X$ does not help to explain $Y$ and can be removed from the model.
+ 
+## Multiple regression with factors
+
+We can combine two or more categorical predictors within the same regression model. (In the next section, we shall see that we can even combine categorical predictors with continuous predictors.) The math behind such models is exactly the same as for multiple least squares regression --- we do not need new solution methods, simply an expanded interpretation for the betas.
+
+Consider an elaboration on the pet ownership data seen above.  Suppose that in addition to the four types of pets owned by each patient (bunny, cat, dog, fish), we observe whether the owners live alone or with other humans:
+
+|Obs |Pet   |Alone?|Health score|   |Obs |Pet   |Alone?|Health score|
+|:---|:-----|:-----|:-----------|:-:|:---|:-----|:-----|:-----------|
+| 1  |bunny |yes   |56          |   | 11 |dog   |yes   |73          |
+| 2  |bunny |yes   |69          |   | 12 |dog   |yes   |76          |
+| 3  |bunny |no    |64          |   | 13 |dog   |yes   |77          |
+| 4  |bunny |no    |71          |   | 14 |dog   |yes   |72          |
+| 5  |cat   |yes   |58          |   | 15 |dog   |no    |74          |
+| 6  |cat   |yes   |76          |   | 16 |dog   |no    |78          |
+| 7  |cat   |no    |73          |   | 17 |fish  |yes   |63          |
+| 8  |cat   |no    |75          |   | 18 |fish  |yes   |66          |
+| 9  |cat   |no    |64          |   | 19 |fish  |no    |64          |
+| 10 |cat   |no    |74          |   | 20 |fish  |no    |67          |
+
+This suggests the following model for the data:
+
+$$y_i = \beta_0 + \beta_11\!\!1\{x_{1,i}=c\} + \beta_21\!\!1\{x_{1,i}=d\} + \beta_31\!\!1\{x_{1,i}=f\} + \beta_41\!\!1\{x_{2,i}=\mathrm{yes}\} + \varepsilon_i$$
+
+In addition to an intercept, we are fitting three indicator variables for cats, dogs, and goldfish, and a fourth indicator variable for living alone. The intercept is now coding for a “default observation” of *a bunny owner who lives with other humans*. If our observation unit is different in any way, we will apply the appropriate pet shift and/or an alone shift. We can calculate the following parameter estimates by hand or with software:
+
+|Model term     |Estimate|*p*-value|Interpretation|
+|:-------------:|-------:|--------:|:-------------|
+|$\hat{\beta}_0$|66.5    |<0.0001  |Average health of a bunny-owner with roommates
+|$\hat{\beta}_1$|4.5     |0.1980   |Shift applied to cat owners|
+|$\hat{\beta}_2$|10.5    |0.0067   |Shift applied to dog owners|
+|$\hat{\beta}_3$|0.0     |1.0000   |Shift applied to fish owners|
+|$\hat{\beta}_4$|-3.0    |0.2265   |Shift applied to pet owners living alone|
+
+You may notice that these parameter estimates have changed slightly from the health effects estimated in the previous section, when cat owners were estimated to be 5 units healthier than bunny owners, and dog owners were estimated to be 10 units healthier – now we estimate shifts of 4.5 and 10.5 units, respectively. The underlying health score data have not actually changed at all, but by adding the “alone” variable we see that some of the change we previously attributed to pet ownership can instead be explained by living alone or with others.
