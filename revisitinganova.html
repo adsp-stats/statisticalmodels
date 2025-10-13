@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>revisitinganova – Statistical Analysis Using R: Online Notes</title>
+<title>Revisiting ANOVA – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./revisitinganova.html"><span class="chapter-title">revisitinganova.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./revisitinganova.html"><span class="chapter-title">Revisiting ANOVA</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -283,12 +347,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./categoricalpredictors.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">categoricalpredictors.html</span></a>
+  <a href="./categoricalpredictors.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Categorical predictors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./revisitinganova.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">revisitinganova.html</span></a>
+  <a href="./revisitinganova.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Revisiting ANOVA</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -433,7 +497,8 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./listofsymbols.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">List of Symbols</span></a>
+  <a href="./listofsymbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">List of Symbols</span></a>
   </div>
 </li>
       </ul>
@@ -443,17 +508,315 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#factor-notation" id="toc-factor-notation" class="nav-link active" data-scroll-target="#factor-notation">Factor notation</a></li>
+  <li><a href="#between-group-error-and-within-group-error" id="toc-between-group-error-and-within-group-error" class="nav-link" data-scroll-target="#between-group-error-and-within-group-error">Between-group error and within-group error</a></li>
+  <li><a href="#multiple-regression-with-factors" id="toc-multiple-regression-with-factors" class="nav-link" data-scroll-target="#multiple-regression-with-factors">Multiple regression with factors</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./revisitinganova.html"><span class="chapter-title">revisitinganova.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./revisitinganova.html"><span class="chapter-title">Revisiting ANOVA</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-revisitinganova" class="quarto-section-identifier"><span class="chapter-title">Revisiting ANOVA</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>Now that we have seen categorical predictors used successfully in linear regression models, let’s explore what added meaning we can give these models. As we shall see, regression with categorical predictors (as opposed to regression with interval- or ratio-level predictors) focuses heavily on parameter tests and model fit statistics, and less so on prediction.</p>
+<section id="factor-notation" class="level2">
+<h2 class="anchored" data-anchor-id="factor-notation">Factor notation</h2>
+<p>Our work in this section will benefit from a little custom notation. Nothing I’m writing here changes or contradicts the OLS regression model presented in prior sections, and we could keep using that notation if we wished: what follows is simply a matter of convenience and ease of presentation.</p>
+<p>Suppose as before that <span class="math inline">\(Y\)</span> is our response variable, that <span class="math inline">\(X\)</span> is a categorical predictor having <span class="math inline">\(I\)</span> levels, and that we record <span class="math inline">\(n\)</span> total observations of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. Let <span class="math inline">\(X\)</span> be called the <strong>factor</strong>, let all observations sharing the same factor level be called a <strong>group</strong>, and define the following:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(n_1,n_2,\ldots,n_I\)</span></td>
+<td style="text-align: left;">The sample sizes of each group</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(y_{ij}\)</span></td>
+<td style="text-align: left;">The <em>j</em><sup>th</sup> observation of group <em>i</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(y_{i*}=\frac{1}{n_i}\sum_jy_{ij}\)</span></td>
+<td style="text-align: left;">The sample average of the response for the <em>i</em><sup>th</sup> group</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\mu_i\)</span></td>
+<td style="text-align: left;">The true mean response for the <em>i</em><sup>th</sup> group</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(y_{**}=\frac{1}{n}\sum_{ij}y_{ij}\)</span></td>
+<td style="text-align: left;">The sample average of the entire sample</td>
+</tr>
+</tbody>
+</table>
+<p>With this notation, we are ready to draw a few new conclusions about factor regression.</p>
+</section>
+<section id="between-group-error-and-within-group-error" class="level2">
+<h2 class="anchored" data-anchor-id="between-group-error-and-within-group-error">Between-group error and within-group error</h2>
+<p>Recall the ANOVA triangle presented earlier:</p>
+<p><span class="math display">\[\mathrm{SST} = \mathrm{SSM} + \mathrm{SSE}\]</span></p>
+<p><span class="math display">\[\sum_i (y_i - \bar{y})^2 = \sum_i (\hat{y}_i - \bar{y})^2 + \sum_i (y_i - \hat{y}_i)^2\]</span></p>
+<p>With a categorical predictor, we have seen that the predicted value for each observation, which in our previous notation was written <span class="math inline">\(\hat{y}_i\)</span>, is simply the observation’s group mean, <span class="math inline">\(y_{i*}\)</span>$. This will allow us to rewrite the ANOVA triangle using our new factor notation:</p>
+<p><span class="math display">\[\mathrm{SST} = \mathrm{SSM} + \mathrm{SSE}\]</span> <span class="math display">\[\sum_{ij} (y_{ij} - y_{**})^2 = \sum_{ij} (y_{i*} - y_{**})^2 + \sum_{ij} (y_{ij} - y_{i*})^2\]</span></p>
+<p>The interpretation I’d like to lead you toward is this: the total variance of the dataset can be split into “between-group variation” (how far each group average falls from the overall average) and “within-group variation” (how far each observation within a group falls from the group average):</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>healths <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">56</span>,<span class="dv">69</span>,<span class="dv">64</span>,<span class="dv">71</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>             <span class="dv">58</span>,<span class="dv">76</span>,<span class="dv">73</span>,<span class="dv">75</span>,<span class="dv">64</span>,<span class="dv">74</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>             <span class="dv">73</span>,<span class="dv">76</span>,<span class="dv">77</span>,<span class="dv">72</span>,<span class="dv">74</span>,<span class="dv">78</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>             <span class="dv">63</span>,<span class="dv">66</span>,<span class="dv">64</span>,<span class="dv">67</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>xjitter <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.9</span>,<span class="fl">0.95</span>,<span class="fl">1.05</span>,<span class="fl">1.1</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>             <span class="fl">1.85</span>,<span class="fl">1.9</span>,<span class="fl">1.95</span>,<span class="fl">2.05</span>,<span class="fl">2.1</span>,<span class="fl">2.15</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>             <span class="fl">2.85</span>,<span class="fl">2.9</span>,<span class="fl">2.95</span>,<span class="fl">3.05</span>,<span class="fl">3.1</span>,<span class="fl">3.15</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>             <span class="fl">3.9</span>,<span class="fl">3.95</span>,<span class="fl">4.05</span>,<span class="fl">4.1</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(healths<span class="sc">~</span>xjitter,<span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="dv">1</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">4.2</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Pet type'</span>,<span class="at">ylab=</span><span class="st">'Health Score'</span>,<span class="at">main=</span><span class="st">'Health Outcomes of Pet Owners'</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="st">'bunny'</span>,<span class="st">'cat'</span>,<span class="st">'dog'</span>,<span class="st">'fish'</span>),<span class="at">tick=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)<span class="sc">-</span><span class="fl">0.2</span>,<span class="at">y0=</span><span class="fu">c</span>(<span class="dv">65</span>,<span class="dv">70</span>,<span class="dv">75</span>,<span class="dv">65</span>),<span class="at">x1=</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)<span class="sc">+</span><span class="fl">0.2</span>,<span class="at">y1=</span><span class="fu">c</span>(<span class="dv">65</span>,<span class="dv">70</span>,<span class="dv">75</span>,<span class="dv">65</span>),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lwd=</span><span class="dv">3</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fl">69.5</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="at">y0=</span><span class="fu">rep</span>(<span class="fl">69.5</span>,<span class="dv">4</span>),<span class="at">y1=</span><span class="fu">c</span>(<span class="dv">65</span>,<span class="dv">70</span>,<span class="dv">75</span>,<span class="dv">65</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">length=</span><span class="fl">0.15</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span>xjitter[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],<span class="at">y0=</span><span class="dv">65</span>,<span class="at">y1=</span>healths[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">length=</span><span class="fl">0.1</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span>xjitter[<span class="dv">5</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y0=</span><span class="dv">70</span>,<span class="at">y1=</span>healths[<span class="dv">5</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">length=</span><span class="fl">0.1</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span>xjitter[<span class="dv">11</span><span class="sc">:</span><span class="dv">16</span>],<span class="at">y0=</span><span class="dv">75</span>,<span class="at">y1=</span>healths[<span class="dv">11</span><span class="sc">:</span><span class="dv">16</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">length=</span><span class="fl">0.1</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span>xjitter[<span class="dv">17</span><span class="sc">:</span><span class="dv">20</span>],<span class="at">y0=</span><span class="dv">65</span>,<span class="at">y1=</span>healths[<span class="dv">17</span><span class="sc">:</span><span class="dv">20</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">length=</span><span class="fl">0.1</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>),<span class="at">lwd=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'grey50'</span>,<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Group averages'</span>,<span class="st">'Between group variance'</span>,<span class="st">'Within group variance'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="revisitinganova_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Between-group and within-group variation</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The graph above shows the same data as before, simply jittered slightly so that the within-group residuals don’t exactly overlap each other.</p>
+<p>Now consider a world in which pet type has <em>no effect</em> on heath score. In such a world, the true mean for each observation is simply one overall population mean. Any apparent between-group differences are simply the result of random chance. In this world, the between-group SSM and the within-group SSE are <em>both</em> sums of squares of mean-0 normal variates, implying that their <em>df</em>-normalized ratio would follow an F distribution:</p>
+<p><span class="math display">\[\mathrm{MSM} = \frac{1}{I-1} \sum_i n_i (y_{i*} - y_{**})^2 \sim \chi^2_{I-1}\]</span></p>
+<p><span class="math display">\[\mathrm{MSE} = \frac{1}{n-I} \sum_{ij} (y_{ij} - y_{i*})^2 \sim \chi^2_{n-I}\]</span></p>
+<p><span class="math display">\[\frac{\mathrm{MSM}}{\mathrm{MSE}} = \frac{\mathrm{SSM}/(I-1)}{\mathrm{MSE}/(n-I)} \sim F_{I-1,n-I}\]</span></p>
+<p>This is the <strong>model F-test</strong>, sometimes called the <strong>omnibus F-test</strong>, and it essentially acts as a signal-to-noise ratio test. The mean squares of the model (MSM) will be large when the group means are far apart from each other, meaning we can more easily distinguish the groups, and the mean squares of the errors (MSE) will act as background noise. When the signal is large relative to the noise, we may be sure that the groups of <span class="math inline">\(X\)</span> do explain the response variable <span class="math inline">\(Y\)</span>. When the signal is small relative to the noise, then we cannot be sure that the response is meaningfully explained by our predictor.</p>
+<p>The interpretation of the F test result is as follows:</p>
+<ul>
+<li><p>If we <em>reject the null hypothesis</em>, then we conclude that at least some of the group means <span class="math inline">\(\mu_1,\mu_2,\ldots,\mu_I\)</span> are truly different from each other. Equivalently, we can say that the group variable explains the mean response. Note we need not conclude that <em>every</em> group mean is different from each other. Some of the groups might share a mean, and so the levels could be simplified or coalesced.</p></li>
+<li><p>If we <em>fail to reject the null</em>, then we choose to believe that every group shares the same mean, <em>i.e.</em><span class="math inline">\(\mu_1 = \mu_2 = \ldots = \mu_I\)</span>. Since the mean response is the same at every level of <span class="math inline">\(X\)</span>, then <span class="math inline">\(X\)</span> does not help to explain <span class="math inline">\(Y\)</span> and can be removed from the model.</p></li>
+</ul>
+</section>
+<section id="multiple-regression-with-factors" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-regression-with-factors">Multiple regression with factors</h2>
+<p>We can combine two or more categorical predictors within the same regression model. (In the next section, we shall see that we can even combine categorical predictors with continuous predictors.) The math behind such models is exactly the same as for multiple least squares regression — we do not need new solution methods, simply an expanded interpretation for the betas.</p>
+<p>Consider an elaboration on the pet ownership data seen above. Suppose that in addition to the four types of pets owned by each patient (bunny, cat, dog, fish), we observe whether the owners live alone or with other humans:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Obs</th>
+<th style="text-align: left;">Pet</th>
+<th style="text-align: left;">Alone?</th>
+<th style="text-align: left;">Health score</th>
+<th style="text-align: center;"></th>
+<th style="text-align: left;">Obs</th>
+<th style="text-align: left;">Pet</th>
+<th style="text-align: left;">Alone?</th>
+<th style="text-align: left;">Health score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">56</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">73</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">69</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">76</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">77</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">72</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">58</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">74</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">78</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">63</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">66</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">19</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">67</td>
+</tr>
+</tbody>
+</table>
+<p>This suggests the following model for the data:</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_11\!\!1\{x_{1,i}=c\} + \beta_21\!\!1\{x_{1,i}=d\} + \beta_31\!\!1\{x_{1,i}=f\} + \beta_41\!\!1\{x_{2,i}=\mathrm{yes}\} + \varepsilon_i\]</span></p>
+<p>In addition to an intercept, we are fitting three indicator variables for cats, dogs, and goldfish, and a fourth indicator variable for living alone. The intercept is now coding for a “default observation” of <em>a bunny owner who lives with other humans</em>. If our observation unit is different in any way, we will apply the appropriate pet shift and/or an alone shift. We can calculate the following parameter estimates by hand or with software:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 32%">
+<col style="width: 17%">
+<col style="width: 19%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Model term</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>p</em>-value</th>
+<th style="text-align: left;">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\hat{\beta}_0\)</span></td>
+<td style="text-align: right;">66.5</td>
+<td style="text-align: right;">&lt;0.0001</td>
+<td style="text-align: left;">Average health of a bunny-owner with roommates</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\hat{\beta}_1\)</span></td>
+<td style="text-align: right;">4.5</td>
+<td style="text-align: right;">0.1980</td>
+<td style="text-align: left;">Shift applied to cat owners</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\hat{\beta}_2\)</span></td>
+<td style="text-align: right;">10.5</td>
+<td style="text-align: right;">0.0067</td>
+<td style="text-align: left;">Shift applied to dog owners</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\hat{\beta}_3\)</span></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">1.0000</td>
+<td style="text-align: left;">Shift applied to fish owners</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\hat{\beta}_4\)</span></td>
+<td style="text-align: right;">-3.0</td>
+<td style="text-align: right;">0.2265</td>
+<td style="text-align: left;">Shift applied to pet owners living alone</td>
+</tr>
+</tbody>
+</table>
+<p>You may notice that these parameter estimates have changed slightly from the health effects estimated in the previous section, when cat owners were estimated to be 5 units healthier than bunny owners, and dog owners were estimated to be 10 units healthier – now we estimate shifts of 4.5 and 10.5 units, respectively. The underlying health score data have not actually changed at all, but by adding the “alone” variable we see that some of the change we previously attributed to pet ownership can instead be explained by living alone or with others.</p>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -895,10 +1258,10 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./categoricalpredictors.html" class="pagination-link" aria-label="categoricalpredictors.html">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">categoricalpredictors.html</span></span>
+      <a href="./categoricalpredictors.html" class="pagination-link" aria-label="Categorical predictors">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Categorical predictors</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

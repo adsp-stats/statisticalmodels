@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>categoricalpredictors – Statistical Analysis Using R: Online Notes</title>
+<title>Categorical predictors – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -43,6 +78,11 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -72,6 +112,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +153,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./categoricalpredictors.html"><span class="chapter-title">categoricalpredictors.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./categoricalpredictors.html"><span class="chapter-title">Categorical predictors</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -283,12 +352,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./categoricalpredictors.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">categoricalpredictors.html</span></a>
+  <a href="./categoricalpredictors.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Categorical predictors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./revisitinganova.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">revisitinganova.html</span></a>
+  <a href="./revisitinganova.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Revisiting ANOVA</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -433,7 +502,8 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./listofsymbols.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">List of Symbols</span></a>
+  <a href="./listofsymbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">List of Symbols</span></a>
   </div>
 </li>
       </ul>
@@ -443,17 +513,408 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#categorical-prediction" id="toc-categorical-prediction" class="nav-link active" data-scroll-target="#categorical-prediction">Categorical prediction</a>
+  <ul class="collapse">
+  <li><a href="#different-data-types" id="toc-different-data-types" class="nav-link" data-scroll-target="#different-data-types">Different data types</a></li>
+  </ul></li>
+  <li><a href="#using-a-binary-variable-as-a-predictor" id="toc-using-a-binary-variable-as-a-predictor" class="nav-link" data-scroll-target="#using-a-binary-variable-as-a-predictor">Using a binary variable as a predictor</a></li>
+  <li><a href="#using-a-multi-level-categorical-variable-as-a-predictor" id="toc-using-a-multi-level-categorical-variable-as-a-predictor" class="nav-link" data-scroll-target="#using-a-multi-level-categorical-variable-as-a-predictor">Using a multi-level categorical variable as a predictor</a></li>
+  <li><a href="#visualizer" id="toc-visualizer" class="nav-link" data-scroll-target="#visualizer">Visualizer</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./categoricalpredictors.html"><span class="chapter-title">categoricalpredictors.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./categoricalpredictors.html"><span class="chapter-title">Categorical predictors</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Categorical predictors</span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>So far, all our predictors <span class="math inline">\(X\)</span> have been continuous variables, much like our response variable <span class="math inline">\(Y\)</span>. However, linear regression fully supports qualitative/categorical and logical/binary predictors. Predictors such as these allow us to understand and model a tremendous variety of real-world connections between variables.</p>
+<p>This section discusses models which use categorical predictors and it widens to include a broader set of predictors which we might create from the raw data and/or our hypotheses about the true generating process responsible for our data. When we create or alter predictors in this way, we often call the process <em>feature engineering</em>, since the individual predictors in a model are sometimes called the features.</p>
+<section id="categorical-prediction" class="level2">
+<h2 class="anchored" data-anchor-id="categorical-prediction">Categorical prediction</h2>
+<p>Simply to ensure we understand one another, let’s first cover what I mean by a “categorical variable”. If you feel secure in your understanding of this definition, feel free to skip ahead.</p>
+<section id="different-data-types" class="level3">
+<h3 class="anchored" data-anchor-id="different-data-types">Different data types</h3>
+<p><strong>Binary data</strong> or <strong>logical data</strong> take on exactly two values. Even if the values are expressed numerically (such as <span class="math inline">\(1\)</span> and <span class="math inline">\(0\)</span>, or <span class="math inline">\(-1\)</span> and <span class="math inline">\(+1\)</span>), they are not meant to suggest any broader continuüm of possible values. A lender may default on their mortgage, or stay current. A patient may die of their disease, or survive. A wager can result in a win, or a loss. Sometimes the data describe whether a condition is TRUE or FALSE — in these cases the binary data is sometimes called logical data, though the difference is usually only cosmetic.</p>
+<p><strong>Categorical data</strong> takes on qualitative values called ‘levels’, usually expressed in words, which cannot be meaningfully ordered or placed on a number line. The color of a car is categorical data, even though colors can be mapped to numbers in certain ways. Days of the week are categorical data, as are the menu items of a restaurant, the instructor name for each class in a degree program, or a list of airport codes.</p>
+<p><strong>Ordinal data</strong> contains levels which can be ranked in order, e.g.&nbsp;from worst to best, or least intense to most intense, or relative position between two poles. Although the levels can be ranked, and are sometimes represented by numbers, they are not properly numeric. The distance between them has no consistent or intrinsic meaning. A satisfaction score from 1 to 10 is ordinal data, as is the roast darkness of different coffees, hurricane Saffir-Simpson windspeed categories (1 – 5), academic rank within a high school class, or a survey question which presents the choices “Strongly Disagree”, “Disagree”, “Neutral”, “Agree”, and “Strongly Agree”.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><strong>Interval data</strong> is truly numeric — each level can be assigned a meaningful spot on a number line, and the distance between levels has real-world significance. However, interval data lacks a true zero, which prevents proportional comparisons. When temperature is measured in Celsius or Fahrenheit, we cannot say that <span class="math inline">\(4^\circ\)</span> is somehow “twice as hot” as <span class="math inline">\(2^\circ\)</span>. Longitudes are interval data, as are SAT test scores and FICO credit scores.</p>
+<p><strong>Ratio data</strong> is also truly numeric, and furthermore contains a meaningful zero which permits proportional comparisons. 200 meters is twice as far as 100 meters. A 400 Hz tone is half the frequency of an 800 Hz tone. A -5% stock return is just as large as a +5% stock return. Temperature measured in Kelvin is ratio data, as is the time between meteor impacts, the number of traffic tickets received by drivers, and countries’ median life expectancies.</p>
+<p>Notice that I have not described these data types as continuous or discrete. Interval and ratio data can be discrete, and categorical or interval data can be (in theory) infinitely subdivisible. We may choose a concept such as the difficulty of a baseball pitch and represent it as ratio data (the pitch speed), as ordinal data (“fast”, “medium”, “slow”), or as categorical data (“curveball”, “slider”, “four-seam fastball”, “two-seam fastball”).</p>
+</section>
+</section>
+<section id="using-a-binary-variable-as-a-predictor" class="level2">
+<h2 class="anchored" data-anchor-id="using-a-binary-variable-as-a-predictor">Using a binary variable as a predictor</h2>
+<p>Let’s see what would happen if we use a binary (1/0) variable as a predictor in a regression model, making no other changes to the model we’ve described so far. As an example, suppose that <span class="math inline">\(X\)</span> describes pet ownership, and <span class="math inline">\(x_i=1\)</span> describes an individual with a pet at home, while <span class="math inline">\(x_i=0\)</span> describes an individual with no pets at home. <span class="math inline">\(Y\)</span> will be a continuous measure of health outcomes, with larger values being considered healthier. We will start with a simple regression:</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_1 x_i + ε_i,\quad \varepsilon_i \sim \mathrm{Normal}(0,\sigma^2)\]</span></p>
+<p>Consider a simple dataset: <span class="math inline">\(\boldsymbol{x}=\{1,1,1,1,0,0,0,0\}\)</span> and <span class="math inline">\(\boldsymbol{y}=\{80,88,62,90,67,81,57,75\}\)</span>. Without worrying yet what it means, let’s simply apply the solutions we’ve learned for recovering the least-squares parameter estimates:</p>
+<p><span class="math display">\[\begin{aligned} \hat{\beta}_1 &amp;= \frac{\mathrm{Cov}(\boldsymbol{x},\boldsymbol{y})}{\mathbb{V}[\boldsymbol{x}]} = 10 \\ \hat{\beta}_0 &amp;= \bar{y} - \hat{\beta}_1\bar{x} = 70\end{aligned}\]</span></p>
+<p>Notice that there are only two unique values of <span class="math inline">\(X\)</span>, and therefore only two possible predictions for <span class="math inline">\(Y\)</span>: one when <span class="math inline">\(x_i=0\)</span> and one when <span class="math inline">\(x_i=1\)</span>:</p>
+<p><span class="math display">\[\begin{aligned} \hat{y}_{x=0} = \hat{\beta}_0 + \hat{\beta}_1(0) &amp;= \hat{\beta}_0 &amp;= 70 \\ \hat{y}_{x=1} = \hat{\beta}_0 + \hat{\beta}_1(1) &amp;= \hat{\beta}_0 + \hat{\beta}_1 &amp;= 80 \end{aligned}\]</span></p>
+<p>The predicted health score for non-pet owners is 70, which is <em>also</em> the average of the four observations from the non-pet owners. The predicted health score for the pet owners is 80, which is <em>also</em> the average of the four observations from the pet owners. <em>These are not coincidences</em>; they follow from our prior Least Squares solutions and from what we know about <span class="math inline">\(\boldsymbol{x}\)</span> being a vector of simple 1s and 0s.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pet <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">0</span>,<span class="at">each=</span><span class="dv">4</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>health <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">79</span>,<span class="dv">88</span>,<span class="dv">63</span>,<span class="dv">90</span>,<span class="dv">67</span>,<span class="dv">81</span>,<span class="dv">57</span>,<span class="dv">75</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(health<span class="sc">~</span>pet))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = health ~ pet)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+ -17.0   -5.5    2.0    8.5   11.0 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   70.000      5.694  12.295 1.76e-05 ***
+pet           10.000      8.052   1.242    0.261    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 11.39 on 6 degrees of freedom
+Multiple R-squared:  0.2045,    Adjusted R-squared:  0.07192 
+F-statistic: 1.542 on 1 and 6 DF,  p-value: 0.2606</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pet,health,<span class="at">pch=</span><span class="dv">19</span>,<span class="at">main=</span><span class="st">'Pet Ownership and Health Outcomes'</span>,<span class="at">xlab=</span><span class="st">'Owns pets'</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Health Score'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">tick=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">70</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">70</span>,<span class="at">b=</span><span class="dv">10</span>,<span class="at">lwd=</span><span class="dv">1</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">70</span>,<span class="dv">80</span>),<span class="at">pch=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">1.5</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">70</span>,<span class="dv">80</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">0.12</span>,<span class="at">y=</span><span class="dv">67</span>,<span class="fu">expression</span>(<span class="fu">hat</span>(y)[x<span class="sc">==</span><span class="dv">0</span>]<span class="sc">==</span><span class="fu">hat</span>(beta)[<span class="dv">0</span>]))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">0.95</span>,<span class="at">y=</span><span class="dv">75</span>,<span class="fu">expression</span>(<span class="fu">hat</span>(beta)[<span class="dv">1</span>]))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">0.90</span>,<span class="at">y=</span><span class="dv">83</span>,<span class="fu">expression</span>(<span class="fu">hat</span>(y)[x<span class="sc">==</span><span class="dv">1</span>]<span class="sc">==</span><span class="fu">hat</span>(beta)[<span class="dv">0</span>]<span class="sc">+</span><span class="fu">hat</span>(beta)[<span class="dv">1</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="categoricalpredictors_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of simple binary regression</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above shows an illustration of this simple binary case. The four health scores of non-pet owners are on the left side and the four health scores of the pet owners are on the right side (the black dots). Grey Xs mark the group means and grey lines mark the estimated betas. Let’s notice a few facts about this diagram:</p>
+<ul>
+<li><p>The two parameters are asymmetric. <span class="math inline">\(\hat{\beta}_0\)</span> represents a baseline health score, but <span class="math inline">\(\hat{\beta}_1\)</span> represents the <em>shift</em> from one group (when <span class="math inline">\(x=0\)</span>) to another (when <span class="math inline">\(x=1\)</span>).</p></li>
+<li><p>Consider what this means for a hypothesis test. If <span class="math inline">\(\beta_0\)</span> were zero, then the true mean health score of the non-pet owners would be zero. This is both impossible and uninteresting. However, if <span class="math inline">\(\beta_1\)</span> were zero, that is instead equivalent to asking whether the true mean health of the pet owners would be equal to the true mean health of the non-pet owners, which is possible and highly interesting.</p></li>
+<li><p>Even though we no longer have a “line of best fit” through the data, <span class="math inline">\(\hat{\beta}_1\)</span> <em>can still be thought of as a slope</em>. After all, slope is often summarized as “rise over run”. Because <span class="math inline">\(X\)</span> only has two values, 0 and 1, the only possible change in <span class="math inline">\(X\)</span> is a single unit. A one-unit shift in <span class="math inline">\(X\)</span> still produces a <span class="math inline">\(\hat{\beta}_1\)</span> shift in <span class="math inline">\(Y\)</span>.</p></li>
+</ul>
+<p>Everything else about the model carries its usual interpretation. We can still examine the <em>p</em>-value of the predictor to learn whether <span class="math inline">\(\beta_1\)</span> could truly be zero. We can still create confidence intervals for predictions, mean responses, and the parameter values. R<sup>2</sup> still carries its usual interpretation of the proportion of variance in <span class="math inline">\(Y\)</span> explained by variance in <span class="math inline">\(X\)</span> (here we can say “explained by dog ownership or non-ownership”).</p>
+<p>This very simple regression is actually identical to an earlier analytical method presented above: the two-sample t test with pooled variance. Both methods test for differences in the mean response between two groups of observations, using a t-test. Both methods assume that the two groups share a single variance. In fact, we can show that the two test statistics are algebraically equivalent.</p>
+</section>
+<section id="using-a-multi-level-categorical-variable-as-a-predictor" class="level2">
+<h2 class="anchored" data-anchor-id="using-a-multi-level-categorical-variable-as-a-predictor">Using a multi-level categorical variable as a predictor</h2>
+<p>Binary predictors give us a building block which we can use to replicate multi-level categorical predictors. Instead of a binary 1/0 pet ownership variable, consider a more complex categorical variable in which observed individuals can either own bunnies, cats, dogs, or goldfish:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Pet owned</th>
+<th style="text-align: left;">Health score</th>
+<th style="text-align: left;">Pet owned</th>
+<th style="text-align: left;">Health score</th>
+<th style="text-align: left;">Pet owned</th>
+<th style="text-align: left;">Health score</th>
+<th style="text-align: left;">Pet owned</th>
+<th style="text-align: left;">Health score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">56</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">58</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">63</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">69</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">76</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">66</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">75</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">72</td>
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">64</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">74</td>
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">78</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>It seems impossible to create a regression for this data. We cannot multiply a numeric beta by predictor values such as “bunny” or “fish”. We can’t treat the predictor as a single binary variable, since there are four different values, and no way to place these values along a number line. However, we <em>can</em> treat this data as <em>three</em> binary variables:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Pet owned</th>
+<th style="text-align: left;"><span class="math inline">\(1\!\!1\{x_i=c\}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(1\!\!1\{x_i=d\}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(1\!\!1\{x_i=f\}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bunny</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dog</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fish</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\ldots\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(\ldots\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(\ldots\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(\ldots\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>We have transformed the data from one four-level categorical predictor to three binary indicator variables which contain the same information.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> When the pet owned is a <strong>c</strong>at, then <span class="math inline">\(1\!\!1\{x_i=c\}=1\)</span>, and otherwise <span class="math inline">\(1\!\!1\{x_i=c\}=0\)</span>, and similarly for <span class="math inline">\(1\!\!1\{x_i=d\}\)</span> and <strong>d</strong>ogs, or <span class="math inline">\(1\!\!1\{x_i=f\}\)</span> and <strong>f</strong>ish. If we know that all three indicator variables are 0, then the pet owned <em>must</em> be a bunny, so we do not need a separate indicator for bunnies. Put another way, if we made the bunny indicator, we would find it’s an exact linear combination of the other indicators:</p>
+<p><span class="math display">\[1\!\!1\{x_i=b\} = 1 - 1\!\!1\{x_i=c\} - 1\!\!1\{x_i=d\} - 1\!\!1\{x_i=f\}\]</span></p>
+<p>Let’s use these new indicator variables as predictors in a regression equation. Assume,</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_11\!\!1\{x_i=c\} + \beta_21\!\!1\{x_i=d\} + \beta_31\!\!1\{x_i=f\} + \varepsilon_i,\;\;\varepsilon_i \sim \mathrm{Normal}(0,\sigma^2)\]</span></p>
+<p>As before, we see that since there are only four unique values of the predictor, there will be only four unique fitted values. For example, when the observed individual owns a dog, then <span class="math inline">\(1\!\!1\{x_i=c\}=0\)</span> and <span class="math inline">\(1\!\!1\{x_i=f\}=0\)</span>, and the expected value of <span class="math inline">\(Y\)</span> simplifies to <span class="math inline">\(\beta_0+\beta_2\)</span>:</p>
+<p><span class="math display">\[\hat{y}_i = \left\{\begin{array}{lll}\hat{\beta_0} &amp; \mathrm{if} &amp; x_i=b \\ \hat{\beta_0} + \hat{\beta_1} &amp; \mathrm{if} &amp; x_i=c \\ \hat{\beta_0} + \hat{\beta_2} &amp; \mathrm{if} &amp; x_i=d \\ \hat{\beta_0} + \hat{\beta_3} &amp; \mathrm{if} &amp; x_i=f \end{array}\right\}\]</span></p>
+<p>So, much like with the simple binary predictor, we see that the estimated intercept <span class="math inline">\(\hat{\beta}_0\)</span> is added to every prediction, and that some predictions are “boosted” or “shifted” by an additional factor. It won’t surprise you to learn that these shifts are chosen to bring the fitted value of each group in line with the group mean:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pets <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'bunny'</span>,<span class="st">'cat'</span>,<span class="st">'dog'</span>,<span class="st">'fish'</span>),<span class="at">times=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">4</span>)))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>healths <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">56</span>,<span class="dv">69</span>,<span class="dv">64</span>,<span class="dv">71</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>             <span class="dv">58</span>,<span class="dv">76</span>,<span class="dv">73</span>,<span class="dv">75</span>,<span class="dv">64</span>,<span class="dv">74</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>             <span class="dv">73</span>,<span class="dv">76</span>,<span class="dv">77</span>,<span class="dv">72</span>,<span class="dv">74</span>,<span class="dv">78</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>             <span class="dv">63</span>,<span class="dv">66</span>,<span class="dv">64</span>,<span class="dv">67</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>alone <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(healths<span class="sc">~</span>pets))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = healths ~ pets)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-12.00  -2.00   1.00   3.25   6.00 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  6.500e+01  2.616e+00  24.847 3.29e-14 ***
+petscat      5.000e+00  3.377e+00   1.480   0.1582    
+petsdog      1.000e+01  3.377e+00   2.961   0.0092 ** 
+petsfish    -1.287e-14  3.700e+00   0.000   1.0000    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.232 on 16 degrees of freedom
+Multiple R-squared:  0.4406,    Adjusted R-squared:  0.3357 
+F-statistic: 4.201 on 3 and 16 DF,  p-value: 0.02266</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(healths<span class="sc">~</span><span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="at">times=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">4</span>)),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="dv">1</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">4.2</span>),</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Pet type'</span>,<span class="at">ylab=</span><span class="st">'Health Score'</span>,<span class="at">main=</span><span class="st">'Health Outcomes of Pet Owners'</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="st">'bunny'</span>,<span class="st">'cat'</span>,<span class="st">'dog'</span>,<span class="st">'fish'</span>),<span class="at">tick=</span><span class="cn">TRUE</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)<span class="sc">-</span><span class="fl">0.2</span>,<span class="at">y0=</span><span class="fu">c</span>(<span class="dv">65</span>,<span class="dv">70</span>,<span class="dv">75</span>,<span class="dv">65</span>),<span class="at">x1=</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)<span class="sc">+</span><span class="fl">0.2</span>,<span class="at">y1=</span><span class="fu">c</span>(<span class="dv">65</span>,<span class="dv">70</span>,<span class="dv">75</span>,<span class="dv">65</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lwd=</span><span class="dv">3</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">65</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">2</span>,<span class="at">y0=</span><span class="dv">65</span>,<span class="at">y1=</span><span class="dv">70</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">length=</span><span class="fl">0.15</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">3</span>,<span class="at">y0=</span><span class="dv">65</span>,<span class="at">y1=</span><span class="dv">75</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">length=</span><span class="fl">0.15</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">4</span>,<span class="at">y0=</span><span class="dv">65</span>,<span class="at">y1=</span><span class="fl">65.01</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">length=</span><span class="fl">0.15</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="fl">2.2</span>,<span class="fl">3.2</span>,<span class="fl">3.8</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">66</span>,<span class="dv">68</span>,<span class="dv">71</span>,<span class="dv">66</span>),<span class="at">labels=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">hat</span>(beta)[<span class="dv">0</span>]<span class="sc">==</span><span class="dv">65</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">expression</span>(<span class="fu">hat</span>(beta)[<span class="dv">1</span>]<span class="sc">==</span><span class="dv">5</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">expression</span>(<span class="fu">hat</span>(beta)[<span class="dv">2</span>]<span class="sc">==</span><span class="dv">10</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">expression</span>(<span class="fu">hat</span>(beta)[<span class="dv">3</span>]<span class="sc">==</span><span class="dv">0</span>)))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Group averages'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="cn">NA</span>),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">3</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'grey50'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="categoricalpredictors_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of regression with a categorical predictor</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In the figure above, you can see that the average health score among bunny owners (65) becomes the benchmark against which other pet owners are measured. Sometimes this is called the <strong>reference level</strong> of a categorical predictor. In general, the choice of reference level is completely arbitrary: the model predictions, residuals, R<sup>2</sup>, and goodness-of-fit tests will all be the same. Because we can freely choose which level of the predictor becomes the reference level, we often choose a natural “default” level when one presents itself, such as the control group of a clinical experiment.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>With the reference level set, the estimated intercept <span class="math inline">\(\hat{\beta}_0\)</span> will represent our prediction for <span class="math inline">\(Y\)</span> when the predictor is set to the reference level. Each subsequent beta-hat <span class="math inline">\(\hat{\beta}_1,\hat{\beta}_2,\ldots,\hat{\beta}_k\)</span> codes for the difference in group means between their level and the reference level. Statistical tests of whether each true parameter <span class="math inline">\(\beta_1,\beta_2,\ldots,\beta_k\)</span> might equal 0 are essentially asking whether we have enough evidence to conclude that the groups have different true means, or whether we should believe a simpler view of the world where the two groups share the same mean response value.</p>
+</section>
+<section id="visualizer" class="level2">
+<h2 class="anchored" data-anchor-id="visualizer">Visualizer</h2>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 960
+
+library(shiny)
+library(bslib)
+
+ui &lt;- page_fluid(
+  tags$head(tags$style(HTML("body {overflow-x: hidden;}"))),
+  title = "Customizable categorical regression",
+  fluidRow(column(width=4,sliderInput("n", "Total sample size", min=20, max=200, value=60, step=20)),
+           column(width=4,sliderInput("mu0","Bunny group mean", min=40, max=80, value=60, step=1)),
+           column(width=4,sliderInput("mu1","Cat group mean", min=40, max=80, value=60, step=1))),
+  fluidRow(column(width=4,sliderInput("mu2","Dog group mean", min=40, max=80, value=60, step=1)),
+           column(width=4,sliderInput("mu3","Fish group mean", min=40, max=80, value=60, step=1))),
+  fluidRow(plotOutput("distPlot1")),
+  fluidRow(tableOutput("distTable1"),))
+
+server &lt;- function(input, output) {
+  pets &lt;- reactive(rep(c('bunny','cat','dog','fish'),
+                       times=input$n*c(4,6,6,4)/20))
+  healths &lt;- reactive(rep(c(input$mu0,input$mu1,input$mu2,input$mu3),
+                          times=input$n*c(4,6,6,4)/20) + 5*rnorm(input$n))
+  
+  output$distPlot1 &lt;- renderPlot({
+    plot(NA,NA,xaxt='n',xlim=c(0.8,4.2),
+     xlab='Pet type',ylab='Health Score',main='Health Outcomes of Pet Owners',ylim=c(20,100))
+    axis(side=1,at=1:4,labels=c('bunny','cat','dog','fish'),tick=TRUE)
+    points(healths()~factor(pets()))
+    segments(x0=(1:4)-0.2,y0=tapply(healths(),pets(),mean),x1=(1:4)+0.2,
+         y1=tapply(healths(),pets(),mean),col='grey50',lwd=3)
+    legend(x='bottomright',legend=c('Observations','Group averages'),pch=c(19,NA),lwd=c(NA,3),col=c('black','grey50'))})
+  output$distTable1 &lt;-renderTable(summary(lm(healths()~pets()))$coefficients,rownames=TRUE)
+}
+
+shinyApp(ui = ui, server = server)</code></pre>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Notice that some ordinal variables describe underlying concepts which we can also measure continuously, such as a hurricane’s wind speed or a student’s GPA-based academic rank.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>When indicator variables are used to duplicate the information contained in a categorical variable, they are often called “dummy” variables.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Statistical software will always allow you to change the reference level, but different software environments use different default settings. In R, the lowest alphabetical level usually becomes the reference level, which is the choice used in the pet ownership example seen above.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -895,15 +1356,15 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./nonlinearity.html" class="pagination-link" aria-label="Non-linearity">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Non-linearity</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./revisitinganova.html" class="pagination-link" aria-label="revisitinganova.html">
-        <span class="nav-page-text"><span class="chapter-title">revisitinganova.html</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./revisitinganova.html" class="pagination-link" aria-label="Revisiting ANOVA">
+        <span class="nav-page-text"><span class="chapter-title">Revisiting ANOVA</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
