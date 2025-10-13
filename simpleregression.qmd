@@ -14,7 +14,7 @@ $$Y = \beta_0 + \beta_1 X + \varepsilon$$
 Then we may say that $X$ is the **predictor**, that $\varepsilon$ is the **error term**, and that $\beta_0$ and $\beta_1$ are the **intercept** and **slope**, respectively, of a linear model for $Y$. If samples of $X$ and $Y$ are observed with values $\boldsymbol{x} = x_1,x_2,\ldots,x_n$ and $\boldsymbol{y} = y_1,y_2,\ldots,y_n$, then we may use these samples to estimate the true betas from the data, creating $\hat{\beta}_0$ and $\hat{\beta}_1$, and leading us to a set of fitted values, $\hat{\boldsymbol{y}}$, and residuals, $\boldsymbol{e}$:
 
 $$\hat{\boldsymbol{y}} = \hat{\beta}_0 + \hat{\beta}_1 \boldsymbol{x}$$ 
-$$\begin{aligned} \boldsymbol{e} &= \boldsymbol{y} - \boldsymbol{\hat{y}} \\ &= \boldsymbol{y} - \beta_0 - \beta_1 \boldsymbol{x}\end{aligned}$$ 
+$$\begin{aligned} \boldsymbol{e} &= \boldsymbol{y} - \boldsymbol{\hat{y}} \\ &= \boldsymbol{y} - \hat{\beta}_0 - \hat{\beta}_1 \boldsymbol{x}\end{aligned}$$ 
 The fitted values are estimators of $\boldsymbol{y}$ and the residuals are estimators of $\varepsilon$. The usefulness and exact properties of these estimators are all dependent on the method used to determine $\hat{\beta}_0$ and $\hat{\beta}_1$, which together create the "line of best fit" between the samples $\boldsymbol{x}$ and $\boldsymbol{y}$, or between the variables $X$ and $Y$.
 :::
 
