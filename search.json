@@ -1341,6 +1341,17 @@
     ]
   },
   {
+    "objectID": "nonlinearity.html",
+    "href": "nonlinearity.html",
+    "title": "Non-linearity",
+    "section": "",
+    "text": "Normally, this subsection would be as long as those which preceded it. However, in almost every occasion where the response variable is not linear with respect to the predictors, at least one of the other assumptions will also be violated.\n\nHeteroskedasticity and non-normality often result from nonlinear relationships, and both can be solved (or at least mitigated) at the same time by choosing an appropriate transformation of the response variable.\nSeemingly nonlinear predictor relationships are often due to omitted variable bias, which can lead to moderate serial correlation and non-normality as well. Identifying the omitted variables (or their proxies) will often restore linearity as well as cure non-normality.\n\nBecause of these assumptions and their violations are so interconnected, I advise moving forward in a heuristic or recursive search for the best possible model. At every turn, consider whether solving one problem has opened up new ones, and whether one sensible change could resolve all remaining issues at the same time.\nWe will consider non-linearities in greater detail when we turn our attention to generalized linear models (GLMs). Let’s “stick a pin” in this topic for now!",
+    "crumbs": [
+      "4. Regression Robustness",
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Non-linearity</span>"
+    ]
+  },
+  {
     "objectID": "categoricalpredictors.html",
     "href": "categoricalpredictors.html",
     "title": "Categorical predictors",
