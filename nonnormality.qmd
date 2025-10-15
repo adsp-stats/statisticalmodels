@@ -12,7 +12,7 @@ Readers of this section can use the techniques discussed in #sec-identification 
 #| code-fold: true
 #| fig-cap: "Histogram and ordered plot of simulated Cauchy residuals"
 set.seed(2007)
-par(mfrow=c(2,1))
+par(mfrow=c(1,2))
 tmp <- rcauchy(n=500)
 hist(tmp,breaks=seq(-500,500,0.2),xlim=c(-3,3),
      main='Histogram of Cauchy residuals',xlab='Residual')
@@ -24,7 +24,7 @@ The graphs above show that while the center of the Cauchy distribution resembles
 ```{r}
 #| code-fold: true
 #| fig-cap: "Mean and variance estimates from simulated Cauchy residuals"
-par(mfrow=c(2,1))
+par(mfrow=c(1,2))
 plot(cumsum(tmp)/(1:length(tmp)),main='Cumulative Mean from Cauchy Sample',
      xlab='Sample size',ylab='Sample mean')
 plot(cumsum(tmp^2)/((1:length(tmp))-1),main='Cumulative Variance of Cauchy Sample',
@@ -39,11 +39,11 @@ A small degree of non-normality will normally not concern us. Least squares meth
 
 There are three situations which create more serious problems for any regression analysis:
 
-	* Sometimes, moderate non-normality of the residuals is a consequence of a structural break, a mixed distribution, or slowly drifting parameters. In these cases, the estimators for the betas may be biased.
+ * Sometimes, moderate non-normality of the residuals is a consequence of a structural break, a mixed distribution, or slowly drifting parameters. In these cases, the estimators for the betas may be biased.
 	
-	* At other times, we may be using a regression analysis as a way to describe the *tails* of a prediction, that is, we may want to know the 95th percentile of a predicted point, or the 99th percentile, etc. These tail probabilities are very sensitive to the shape of the error distribution, and even moderate non-normality will result in misleading predictions.^[The 2007--08 financial crisis was worsened when large financial institutions failed to realize that the forecasting errors for their mortgage-backed securities did not have normally-distributed tail probabilities.] 
+ * At other times, we may be using a regression analysis as a way to describe the *tails* of a prediction, that is, we may want to know the 95th percentile of a predicted point, or the 99th percentile, etc. These tail probabilities are very sensitive to the shape of the error distribution, and even moderate non-normality will result in misleading predictions.^[The 2007--08 financial crisis was worsened when large financial institutions failed to realize that the forecasting errors for their mortgage-backed securities did not have normally-distributed tail probabilities.] 
 	
-	* As shown above, in small or moderate samples we may falsely believe that a truly pathological error distribution is instead normal. Although this happens rarely, it can completely invalidate every aspect of our model. Models of new scenarios, trained on small datasets, should always be treated with a skepticism and wariness.
+ * As shown above, in small or moderate samples we may falsely believe that a truly pathological error distribution is instead normal. Although this happens rarely, it can completely invalidate every aspect of our model. Models of new scenarios, trained on small datasets, should always be treated with a skepticism and wariness.
 	
 ## Identifying non-normal errors
 
@@ -57,6 +57,7 @@ In particular, the arbitrary binning of a histogram combined with the peculiarit
 
 ```{shinylive-r}
 #| standalone: true
+#| viewerHeight: 640
 
 library(shiny)
 library(bslib)
@@ -72,7 +73,8 @@ ui <- page_fluid(
 
 server <- function(input, output) {
   output$distPlot1 <- renderPlot({
-    hist(samp[1:input$n],main='Histograms of Normal data samples')})
+    hist(samp[1:input$n],main='Histograms of Normal data samples',
+         xlab='Binned values')})
 }
 
 shinyApp(ui = ui, server = server)
@@ -86,11 +88,11 @@ The **Shapiro-Wilk test** for normality is also commonly used to assess regressi
 
 We may not be able to easily mitigate non-normal errors without making even worse problems for ourselves.
 
-	* If the non-normal errors are connected with the need to transform the data, then we may solve two problems at once (non-normality and non-linearity). However, if the relationship is already linear, then transforming the data to help with *non-normality* will usually result in creating new *non-linearity*.
+ * If the non-normal errors are connected with the need to transform the data, then we may solve two problems at once (non-normality and non-linearity). However, if the relationship is already linear, then transforming the data to help with *non-normality* will usually result in creating new *non-linearity*.
 	
-	* If the non-normal errors are due to large outliers, then with careful study we may determine that some observations should be removed, or that new covariates should be introduced which help explain the outliers and reduce their residuals. However, outliers are often a genuine and legitimate part of the data generating process and should not be removed simply because they worsen our model fit.
+ * If the non-normal errors are due to large outliers, then with careful study we may determine that some observations should be removed, or that new covariates should be introduced which help explain the outliers and reduce their residuals. However, outliers are often a genuine and legitimate part of the data generating process and should not be removed simply because they worsen our model fit.
 	
-	* As before, if the non-normality is due to a mixed distribution or a regime change, we can try to disentangle or separately model the different distributions or regimes.
+ * As before, if the non-normality is due to a mixed distribution or a regime change, we can try to disentangle or separately model the different distributions or regimes.
 	
 More techniques for applying linear models to seemingly non-linear relationships are discussed in later sections.
 
