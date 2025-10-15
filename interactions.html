@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>interactions – Statistical Analysis Using R: Online Notes</title>
+<title>Interaction effects – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./interactions.html"><span class="chapter-title">interactions.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./interactions.html"><span class="chapter-title">Interaction effects</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -293,7 +357,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./interactions.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">interactions.html</span></a>
+  <a href="./interactions.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Interaction effects</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -444,17 +508,356 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#interactions-between-two-factor-variables" id="toc-interactions-between-two-factor-variables" class="nav-link active" data-scroll-target="#interactions-between-two-factor-variables">Interactions between two factor variables</a></li>
+  <li><a href="#interactions-between-two-continuous-variables" id="toc-interactions-between-two-continuous-variables" class="nav-link" data-scroll-target="#interactions-between-two-continuous-variables">Interactions between two continuous variables</a></li>
+  <li><a href="#interactions-between-factors-and-continuous-variables" id="toc-interactions-between-factors-and-continuous-variables" class="nav-link" data-scroll-target="#interactions-between-factors-and-continuous-variables">Interactions between factors and continuous variables</a></li>
+  <li><a href="#visualizer" id="toc-visualizer" class="nav-link" data-scroll-target="#visualizer">Visualizer</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./interactions.html"><span class="chapter-title">interactions.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./categoricalpredictors.html">5. Feature Engineering</a></li><li class="breadcrumb-item"><a href="./interactions.html"><span class="chapter-title">Interaction effects</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-interactions" class="quarto-section-identifier"><span class="chapter-title">Interaction effects</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>The two-factor model in the previous section viewed the various forms of pet ownership and cohabitation as strictly additive effects. Owning a cat instead of a bunny was linked to a 4.5-unit health increase no matter whether someone lived alone or not. Living alone was linked to a 3-unit health decrease no matter what type of pet someone owns.</p>
+<p>However, it’s quite possible for a predictor’s effect on the response variable to depend on the values taken by a second predictor. When we allow the betas of one predictor to change depending on the values of other predictors, we say that the model contains an <strong>interaction term.</strong></p>
+<p>The name “interaction” may conjure images of pharmaceutical drugs, and indeed they provide a very close metaphor: a drug interaction <em>is</em> a statistical interaction. For example, quickly drinking several alcoholic beverages usually causes drunkenness. Taking several acetaminophen pills usually relieves a headache or fever symptoms. From these individual effects, you might suppose that taking both several drinks and several pills would allow you to avoid the unpleasant effects of a hangover. Not so — alcohol and acetaminophen are contraindicated and taking them together instead risks acute liver failure! The effect of each drug changes when in the presence of the other.</p>
+<p>We shall now study how to incorporate such interactions in our regression models.</p>
+<section id="interactions-between-two-factor-variables" class="level2">
+<h2 class="anchored" data-anchor-id="interactions-between-two-factor-variables">Interactions between two factor variables</h2>
+<p>As we learn more about interaction terms, remember the following fact: behind their complex interpretations, <em>every interaction term is simply a new variable equal to the product of two (or more) other variables</em>. This new term enters the model and receives a beta just like any other new predictor.</p>
+<p>Consider a two-factor model for health score which only examines the 1/0 indicator variables on pet ownership and living alone. We can add an interaction term equal to their product — and since the components are always 1 or 0, then their product is as well:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"><span class="math inline">\(X_1:\)</span> Owns pets</th>
+<th style="text-align: left;"><span class="math inline">\(X_2:\)</span> Lives alone</th>
+<th style="text-align: left;"><span class="math inline">\(X_3=X_1*X_2:\)</span> Interaction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+</tr>
+</tbody>
+</table>
+<p>When we place a new beta on this interaction term, we essentially add an extra shift to the model predictions which only occurs when <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are both set to 1 together. The practical effect of this term is to allow for non-additive effects. Let’s illustrate the model first without an interaction (sometimes called the <strong>main effects</strong> model), and then with an interaction:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2014</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>twofact <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">pet=</span><span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">0</span>,<span class="at">each=</span><span class="dv">20</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">alone=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),<span class="at">each=</span><span class="dv">10</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">health=</span><span class="fu">rnorm</span>(<span class="dv">40</span>,<span class="at">mean=</span><span class="dv">60</span>,<span class="at">sd=</span><span class="dv">5</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>twofact<span class="sc">$</span>health <span class="ot">&lt;-</span> twofact<span class="sc">$</span>health<span class="sc">+</span><span class="dv">10</span><span class="sc">*</span>(twofact<span class="sc">$</span>pet<span class="sc">-</span>twofact<span class="sc">$</span>alone<span class="sc">+</span>twofact<span class="sc">$</span>pet<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>twofact<span class="sc">$</span>alone))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>twofact.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(health<span class="sc">~</span>pet<span class="sc">+</span>alone,twofact)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>twofact.lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(health<span class="sc">~</span>pet<span class="sc">*</span>alone,twofact)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(twofact<span class="sc">$</span>pet,twofact<span class="sc">$</span>health,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>)[<span class="dv">1</span><span class="sc">+</span>twofact<span class="sc">$</span>alone],</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Health explained by pet ownership + cohabitation'</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Health score'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">xlab=</span><span class="st">'Pet ownership'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">labels=</span><span class="fu">c</span>(<span class="st">'No'</span>,<span class="st">'Yes'</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.05</span>,<span class="fl">0.95</span>,<span class="fl">0.95</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="fu">c</span>(twofact.lm<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>           twofact.lm<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm<span class="sc">$</span>coefficients[<span class="dv">3</span>],</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>           twofact.lm<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm<span class="sc">$</span>coefficients[<span class="dv">2</span>],</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>           <span class="fu">sum</span>(twofact.lm<span class="sc">$</span>coefficients)),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),<span class="at">pch=</span><span class="dv">4</span>,<span class="at">cex=</span><span class="fl">1.5</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.05</span>),<span class="at">x1=</span><span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.95</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">y0=</span><span class="fu">c</span>(twofact.lm<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>              twofact.lm<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm<span class="sc">$</span>coefficients[<span class="dv">3</span>]),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">y1=</span><span class="fu">c</span>(twofact.lm<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm<span class="sc">$</span>coefficients[<span class="dv">2</span>],</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>              <span class="fu">sum</span>(twofact.lm<span class="sc">$</span>coefficients)),<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">4</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Lives with others'</span>,<span class="st">'Lives alone'</span>,<span class="st">'Model predictions'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="interactions_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Main effects model with two 1/0 factors</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice how the pet ownership effect is constant among both living situation groups, creating parallel lines of best fit. However, the model doesn’t fit particularly well: you can see that the predictions are not centered within each group of observations. The model plotted above has the following functional form:</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_1 1\!\!1\{x_{1,i} = \mathrm{pets}\} + \beta_2 1\!\!1\{x_{2,i} = \mathrm{alone}\} + \varepsilon_i\]</span></p>
+<p>And the parameter estimates would be as follows:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 9%">
+<col style="width: 13%">
+<col style="width: 58%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model term</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">p-value</th>
+<th style="text-align: left;">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(63.5\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\lt0.0001\)</span></td>
+<td style="text-align: left;">Average health of a non-pet owner with roommate</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_1\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(15.0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\lt0.0001\)</span></td>
+<td style="text-align: left;">Shift applied to pet owner</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_2\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(-13.3\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\lt0.0001\)</span></td>
+<td style="text-align: left;">Shift applied to all those living alone</td>
+</tr>
+</tbody>
+</table>
+<p>Now let’s see how the model changes when we add the interaction term:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(twofact<span class="sc">$</span>pet,twofact<span class="sc">$</span>health,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>)[<span class="dv">1</span><span class="sc">+</span>twofact<span class="sc">$</span>alone],</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Health explained by pet ownership X cohabitation'</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Health score'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">xlab=</span><span class="st">'Pet ownership'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">labels=</span><span class="fu">c</span>(<span class="st">'No'</span>,<span class="st">'Yes'</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.05</span>,<span class="fl">0.95</span>,<span class="fl">0.95</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="fu">c</span>(twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>           twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">3</span>],</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>           twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">2</span>],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">sum</span>(twofact.lm2<span class="sc">$</span>coefficients)),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),<span class="at">pch=</span><span class="dv">4</span>,<span class="at">cex=</span><span class="fl">1.5</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.05</span>),<span class="at">x1=</span><span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.95</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">y0=</span><span class="fu">c</span>(twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>              twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">3</span>]),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">y1=</span><span class="fu">c</span>(twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>twofact.lm2<span class="sc">$</span>coefficients[<span class="dv">2</span>],</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>              <span class="fu">sum</span>(twofact.lm2<span class="sc">$</span>coefficients)),<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">4</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Lives with others'</span>,<span class="st">'Lives alone'</span>,<span class="st">'Model predictions'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="interactions_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Interaction model with two 1/0 factors</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>You can see that the new interaction term has allowed the effect of pet ownership to vary depending on living situation. The lines of best fit are no longer parallel to each other but do fit the data noticeably better. The model’s functional form has added the new interaction term:</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_1 1\!\!1\{x_{1,i} = \mathrm{pets}\} + \beta_2 1\!\!1\{x_{2,i} = \mathrm{alone}\} + \beta_3 1\!\!1\{x_{1,i} = \mathrm{pets}\,\&amp;\,x_{2,i} = \mathrm{alone}\} + \varepsilon_i\]</span> And the parameter estimates would be:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model term</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">p-value</th>
+<th style="text-align: left;">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(60.0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\lt0.0001\)</span></td>
+<td style="text-align: left;">Average health of a non-pet owner with roommate</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_1\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(22.0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\lt0.0001\)</span></td>
+<td style="text-align: left;">Shift applied to all pet owners</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_2\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(-6.4\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(0.0036\)</span></td>
+<td style="text-align: left;">Shift applied to all those living alone</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_3\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(-13.9\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\lt0.0001\)</span></td>
+<td style="text-align: left;">Additional shift applied to pet owners living alone</td>
+</tr>
+</tbody>
+</table>
+<p>The small <em>p</em>-values of all these parameters show a high level of statistical significance, which confirms our visual impression that the interaction term has helped us to better understand and explain the data.</p>
+</section>
+<section id="interactions-between-two-continuous-variables" class="level2">
+<h2 class="anchored" data-anchor-id="interactions-between-two-continuous-variables">Interactions between two continuous variables</h2>
+<p>Interaction terms can also be used to capture the non-linear, synergistic effects of two or more continuous variables. Rather than a “shift” from one level to the next, we may instead interpret the interaction term as a way to turn one variable’s beta (slope) from a constant parameter to a “slider” of sorts which creates smoothly varying slopes for different values of the other predictor.</p>
+<p>This may be one instance where an equation can make the text plainer, rather than the other way around — below, I will write out a regression formula with two continuous predictors and their interaction term, and then I will twice re-arrange terms and re-write the equation so that you can see how the interaction can be used to modify either original slope.</p>
+<p><span class="math display">\[\begin{aligned} (1) \quad y_i &amp;= \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} +
+\beta_3 (x_{1,i} \cdot x_{2,i}) +
+\varepsilon_i \\ (2) \quad y_i &amp;= \beta_0 + (\beta_1 + \beta_3 x_{2,i}) x_{1,i} + \beta_2 x_{2,i} + \varepsilon_i \\  (3) \quad y_i &amp;= \beta_0 + \beta_1 x_{1,i} + (\beta_2 + \beta_3 x_{1,i}) x_{2,i} + \varepsilon_i \end{aligned}\]</span></p>
+<p>All three of these equations are arithmetically equal. The interaction term has effectively become “a slope on a slope”, modifying the effect size of one variable as the other variable changes.</p>
+<p>Illustrating the effect of adding these interaction terms can be difficult: when dealing with multiple continuous predictors, we generally have to resort to 3D plots, choropleths, contour plots, etc. Let’s instead focus simply on reading and interpreting a table of coefficients. Consider a hypothetical regression predicting the auction value of diamonds of various sizes (measured in carats) and clarities (measured continuously 0–100, with 100 being flawless). We can guess that large diamonds cost more, and that diamonds of better clarity cost more. We may also guess that a flawless large diamond is exceptionally rare and valuable, since imperfections are more easily hidden in smaller gems.</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_1 \mathrm{size}_i + \beta_2 \mathrm{clarity}_i + \beta_3 (\mathrm{size}_i \cdot \mathrm{clarity}_i) + \varepsilon_i\]</span></p>
+<p>We may suppose some parameter estimates, just for the sake of illustration:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 20%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model term</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: left;">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(75\)</span></td>
+<td style="text-align: left;">Fixed costs of buying any diamond (shipping, certification, etc.)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_1\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(800\)</span></td>
+<td style="text-align: left;">All else equal, every additional carat adds 800 to the cost</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_2\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(5\)</span></td>
+<td style="text-align: left;">A 1-point increase in clarity always adds at least 5 to the cost</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{\beta}_3\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(20\)</span></td>
+<td style="text-align: left;">The same 1-point increase in clarity adds 25 to the cost of a 1-carat diamond and 45 to the cost of a 2-carat diamond</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interactions-between-factors-and-continuous-variables" class="level2">
+<h2 class="anchored" data-anchor-id="interactions-between-factors-and-continuous-variables">Interactions between factors and continuous variables</h2>
+<p>Now that we have seen how interactions between factors and interactions between continuous predictors work, it will not be difficult to understand the interaction between a factor and a continuous variable. In general, these interactions allow us to model separate slopes for a continuous predictor among different category groups.</p>
+<p>Rather than spell out each parameter as I have done above, allow me to present a visual narrative of working with these mixed interaction terms, drawn from a famous (or infamous) dataset on iris flowers. This dataset is so often used by textbook writers and package authors that I have tried to avoid it, but unfortunately it fits our current scenario perfectly.</p>
+<p>In 1936, the famous statistician Ronald Fisher published a case study of iris data gathered in New Brunswick, Canada some years earlier by Edgar Anderson. The data included petal length and petal width measurements on 150 different flowers, split equally among three species: <em>Iris versicolor</em>, <em>Iris virginica</em>, and <em>Iris setosa</em>.</p>
+<p>Let’s seek to model petal length using four models:</p>
+<ul>
+<li>Simply using species</li>
+<li>Simply using petal width</li>
+<li>Using both species and petal width</li>
+<li>Using species, petal width, and an interaction term</li>
+</ul>
+<p>Notice the changing models and model fits associated with these specifications, seen below. Adding the factor for species allows us to fit different intercepts for different flower species. Adding the interaction term allows us to also fit different slopes for different flower species. The final model allows us to fit a separate intercept and slope to each iris species, though the explanatory power of the model only increases slightly. Later we shall learn techniques which we can use to assess which model makes more sense.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>iris.lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Species,iris)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>iris.lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Petal.Width,iris)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>iris.lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Species<span class="sc">+</span>Petal.Width,iris)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>iris.lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Species<span class="sc">*</span>Petal.Width,iris)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iris<span class="sc">$</span>Petal.Width,iris<span class="sc">$</span>Petal.Length,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">each=</span><span class="dv">50</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Petal length predicted by species'</span>,<span class="at">xlab=</span><span class="st">'Petal width'</span>,<span class="at">ylab=</span><span class="st">'Petal length'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">tapply</span>(iris<span class="sc">$</span>Petal.Length,iris<span class="sc">$</span>Species,mean),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'versicolor'</span>,<span class="st">'virginica'</span>,<span class="st">'setosa'</span>,<span class="st">'Predictions'</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>,<span class="st">'black'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="cn">NA</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">2</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span>,<span class="at">y=</span><span class="dv">1</span>,<span class="at">labels=</span><span class="fu">paste0</span>(<span class="st">'R^2='</span>,<span class="fu">round</span>(<span class="fu">summary</span>(iris.lm1)<span class="sc">$</span>r.squared,<span class="dv">2</span>)))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iris<span class="sc">$</span>Petal.Width,iris<span class="sc">$</span>Petal.Length,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">each=</span><span class="dv">50</span>),</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Petal length predicted by petal width'</span>,<span class="at">xlab=</span><span class="st">'Petal width'</span>,<span class="at">ylab=</span><span class="st">'Petal length'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>],<span class="at">b=</span>iris.lm2<span class="sc">$</span>coefficients[<span class="dv">2</span>],<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'versicolor'</span>,<span class="st">'virginica'</span>,<span class="st">'setosa'</span>,<span class="st">'Predictions'</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>,<span class="st">'black'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="cn">NA</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">2</span>))</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span>,<span class="at">y=</span><span class="dv">1</span>,<span class="at">labels=</span><span class="fu">paste0</span>(<span class="st">'R^2='</span>,<span class="fu">round</span>(<span class="fu">summary</span>(iris.lm2)<span class="sc">$</span>r.squared,<span class="dv">2</span>)))</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iris<span class="sc">$</span>Petal.Width,iris<span class="sc">$</span>Petal.Length,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">each=</span><span class="dv">50</span>),</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Petal length predicted by species + petal width'</span>,<span class="at">xlab=</span><span class="st">'Petal width'</span>,<span class="at">ylab=</span><span class="st">'Petal length'</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>],<span class="at">b=</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>],<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>],<span class="at">b=</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>],<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>],<span class="at">b=</span>iris.lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>],<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'black'</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'versicolor'</span>,<span class="st">'virginica'</span>,<span class="st">'setosa'</span>,<span class="st">'Predictions'</span>),</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>,<span class="st">'black'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="cn">NA</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">2</span>))</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span>,<span class="at">y=</span><span class="dv">1</span>,<span class="at">labels=</span><span class="fu">paste0</span>(<span class="st">'R^2='</span>,<span class="fu">round</span>(<span class="fu">summary</span>(iris.lm1)<span class="sc">$</span>r.squared,<span class="dv">2</span>)))</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iris<span class="sc">$</span>Petal.Width,iris<span class="sc">$</span>Petal.Length,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">each=</span><span class="dv">50</span>),</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Petal length predicted by species X petal width'</span>,<span class="at">xlab=</span><span class="st">'Petal width'</span>,<span class="at">ylab=</span><span class="st">'Petal length'</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">b=</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">4</span>],<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>],</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>       <span class="at">b=</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">4</span>]<span class="sc">+</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">5</span>],<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">+</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">3</span>],</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>       <span class="at">b=</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">4</span>]<span class="sc">+</span>iris.lm4<span class="sc">$</span>coefficients[<span class="dv">6</span>],<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'black'</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'versicolor'</span>,<span class="st">'virginica'</span>,<span class="st">'setosa'</span>,<span class="st">'Predictions'</span>),</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>,<span class="st">'black'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="cn">NA</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">2</span>))</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span>,<span class="at">y=</span><span class="dv">1</span>,<span class="at">labels=</span><span class="fu">paste0</span>(<span class="st">'R^2='</span>,<span class="fu">round</span>(<span class="fu">summary</span>(iris.lm4)<span class="sc">$</span>r.squared,<span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="interactions_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Different models for iris petal length</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="visualizer" class="level2">
+<h2 class="anchored" data-anchor-id="visualizer">Visualizer</h2>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -896,7 +1299,7 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./revisitinganova.html" class="pagination-link" aria-label="Revisiting ANOVA">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Revisiting ANOVA</span></span>

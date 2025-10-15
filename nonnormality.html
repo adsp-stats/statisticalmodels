@@ -362,7 +362,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./interactions.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">interactions.html</span></a>
+  <a href="./interactions.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Interaction effects</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -559,7 +559,7 @@ window.Quarto = {
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2007</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">rcauchy</span>(<span class="at">n=</span><span class="dv">500</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(tmp,<span class="at">breaks=</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">500</span>,<span class="dv">500</span>,<span class="fl">0.2</span>),<span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>),</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Histogram of Cauchy residuals'</span>,<span class="at">xlab=</span><span class="st">'Residual'</span>)</span>
@@ -578,7 +578,7 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">cumsum</span>(tmp)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(tmp)),<span class="at">main=</span><span class="st">'Cumulative Mean from Cauchy Sample'</span>,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Sample size'</span>,<span class="at">ylab=</span><span class="st">'Sample mean'</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">cumsum</span>(tmp<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>((<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(tmp))<span class="sc">-</span><span class="dv">1</span>),<span class="at">main=</span><span class="st">'Cumulative Variance of Cauchy Sample'</span>,</span>
@@ -599,11 +599,11 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="consequences-of-non-normal-errors">Consequences of non-normal errors</h2>
 <p>A small degree of non-normality will normally not concern us. Least squares methods will work to estimate the betas even if we cannot use maximum likelihood methods, and the least squares estimators for the betas will be unbiased so long as the errors are symmetric and with finite variance. The standard errors of the regression and the confidence intervals for the parameters will remain reasonably robust.</p>
 <p>There are three situations which create more serious problems for any regression analysis:</p>
-<pre><code>* Sometimes, moderate non-normality of the residuals is a consequence of a structural break, a mixed distribution, or slowly drifting parameters. In these cases, the estimators for the betas may be biased.
-
-* At other times, we may be using a regression analysis as a way to describe the *tails* of a prediction, that is, we may want to know the 95th percentile of a predicted point, or the 99th percentile, etc. These tail probabilities are very sensitive to the shape of the error distribution, and even moderate non-normality will result in misleading predictions.^[The 2007--08 financial crisis was worsened when large financial institutions failed to realize that the forecasting errors for their mortgage-backed securities did not have normally-distributed tail probabilities.] 
-
-* As shown above, in small or moderate samples we may falsely believe that a truly pathological error distribution is instead normal. Although this happens rarely, it can completely invalidate every aspect of our model. Models of new scenarios, trained on small datasets, should always be treated with a skepticism and wariness.</code></pre>
+<ul>
+<li><p>Sometimes, moderate non-normality of the residuals is a consequence of a structural break, a mixed distribution, or slowly drifting parameters. In these cases, the estimators for the betas may be biased.</p></li>
+<li><p>At other times, we may be using a regression analysis as a way to describe the <em>tails</em> of a prediction, that is, we may want to know the 95th percentile of a predicted point, or the 99th percentile, etc. These tail probabilities are very sensitive to the shape of the error distribution, and even moderate non-normality will result in misleading predictions.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p></li>
+<li><p>As shown above, in small or moderate samples we may falsely believe that a truly pathological error distribution is instead normal. Although this happens rarely, it can completely invalidate every aspect of our model. Models of new scenarios, trained on small datasets, should always be treated with a skepticism and wariness.</p></li>
+</ul>
 </section>
 <section id="identifying-non-normal-errors" class="level2">
 <h2 class="anchored" data-anchor-id="identifying-non-normal-errors">Identifying non-normal errors</h2>
@@ -616,6 +616,7 @@ window.Quarto = {
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
 #| standalone: true
+#| viewerHeight: 640
 
 library(shiny)
 library(bslib)
@@ -631,7 +632,8 @@ ui &lt;- page_fluid(
 
 server &lt;- function(input, output) {
   output$distPlot1 &lt;- renderPlot({
-    hist(samp[1:input$n],main='Histograms of Normal data samples')})
+    hist(samp[1:input$n],main='Histograms of Normal data samples',
+         xlab='Binned values')})
 }
 
 shinyApp(ui = ui, server = server)</code></pre>
@@ -642,14 +644,20 @@ shinyApp(ui = ui, server = server)</code></pre>
 <section id="correcting-or-mitigating-non-normal-errors" class="level2">
 <h2 class="anchored" data-anchor-id="correcting-or-mitigating-non-normal-errors">Correcting or mitigating non-normal errors</h2>
 <p>We may not be able to easily mitigate non-normal errors without making even worse problems for ourselves.</p>
-<pre><code>* If the non-normal errors are connected with the need to transform the data, then we may solve two problems at once (non-normality and non-linearity). However, if the relationship is already linear, then transforming the data to help with *non-normality* will usually result in creating new *non-linearity*.
-
-* If the non-normal errors are due to large outliers, then with careful study we may determine that some observations should be removed, or that new covariates should be introduced which help explain the outliers and reduce their residuals. However, outliers are often a genuine and legitimate part of the data generating process and should not be removed simply because they worsen our model fit.
-
-* As before, if the non-normality is due to a mixed distribution or a regime change, we can try to disentangle or separately model the different distributions or regimes.</code></pre>
+<ul>
+<li><p>If the non-normal errors are connected with the need to transform the data, then we may solve two problems at once (non-normality and non-linearity). However, if the relationship is already linear, then transforming the data to help with <em>non-normality</em> will usually result in creating new <em>non-linearity</em>.</p></li>
+<li><p>If the non-normal errors are due to large outliers, then with careful study we may determine that some observations should be removed, or that new covariates should be introduced which help explain the outliers and reduce their residuals. However, outliers are often a genuine and legitimate part of the data generating process and should not be removed simply because they worsen our model fit.</p></li>
+<li><p>As before, if the non-normality is due to a mixed distribution or a regime change, we can try to disentangle or separately model the different distributions or regimes.</p></li>
+</ul>
 <p>More techniques for applying linear models to seemingly non-linear relationships are discussed in later sections.</p>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The 2007–08 financial crisis was worsened when large financial institutions failed to realize that the forecasting errors for their mortgage-backed securities did not have normally-distributed tail probabilities.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
