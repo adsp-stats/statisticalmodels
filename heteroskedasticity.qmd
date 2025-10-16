@@ -24,7 +24,7 @@ abline(v=70.5,lwd=2,lty=2,col='#0000ff')
 text(88,50,labels='Solar battery',col='#0000ff')
 ```
   
-	* *Mixed distributions.*  In a regime change, the break point clearly separates the data and the distributions into a "before" and "after" period. But in other datasets, we see two (or more) error distributions which are mixed together such that each new observation can come from either (or any) error source. For example, a company’s stock might have one error variance on slow news days and a larger error variance on days where the market learns important information about the company.
+ * *Mixed distributions.*  In a regime change, the break point clearly separates the data and the distributions into a "before" and "after" period. But in other datasets, we see two (or more) error distributions which are mixed together such that each new observation can come from either (or any) error source. For example, a company’s stock might have one error variance on slow news days and a larger error variance on days where the market learns important information about the company.
 
 ```{r}
 
@@ -39,7 +39,7 @@ lines(seq(-7,7,0.1),dnorm(seq(-7,7,0.1),0,0.5)*0.2*500,lwd=2,col='#0000ff',lty=2
 legend(x='topright',col='#0000ff',lty=c(1,2),legend=c('News Day','Quiet Day'),bty='n')
 ```
 
-	* *Unconditional heteroskedasticity.*  Error variances can grow and shrink in proportion to an unobserved variable, particularly in time series data.  For example, speculative assets such as cryptocurrencies might enter periods of high and low volatility over the span of weeks (if examining daily data) or even seconds/minutes (if examining intraday data), and these differences in the error distribution would present as a smooth continuüm rather than a clean structural break.
+ * *Unconditional heteroskedasticity.*  Error variances can grow and shrink in proportion to an unobserved variable, particularly in time series data.  For example, speculative assets such as cryptocurrencies might enter periods of high and low volatility over the span of weeks (if examining daily data) or even seconds/minutes (if examining intraday data), and these differences in the error distribution would present as a smooth continuüm rather than a clean structural break.
 
 ```{r}
 #| code-fold: true
@@ -50,7 +50,7 @@ plot(hetE,main='Volatility of a Fictitious Cryptocurrency Over Time',
      xlab='Days since ICO',ylab='% Change in Value')
 ```
 
-	Conditional heteroskedasticity.  Sometimes, the predictors themselves not only predict Y but also predict the size of the error variance σ^2.  One common case would be datasets in which the errors are proportional, that is multiplicative and not additive.  For example, the value of a diamond is usually based not just on the size of the stone, but on metrics such as the color, the brilliancy of the cut, and the lack of visible flaws.  A small 0.5 carat diamond might be worth $400 ± $100 depending on the other factors, while a larger 2.0 carat diamond might be worth $2000 ± $500.  The qualitative factors adjust the base value on a proportional basis, creating larger errors for larger stones.  
+ * *Conditional heteroskedasticity.*  Sometimes, the predictors themselves not only predict Y but also predict the size of the error variance σ^2.  One common case would be datasets in which the errors are proportional, that is multiplicative and not additive.  For example, the value of a diamond is usually based not just on the size of the stone, but on metrics such as the color, the brilliancy of the cut, and the lack of visible flaws.  A small 0.5 carat diamond might be worth $400 ± $100 depending on the other factors, while a larger 2.0 carat diamond might be worth $2000 ± $500.  The qualitative factors adjust the base value on a proportional basis, creating larger errors for larger stones.  
   
 ```{r}
 #| code-fold: true
@@ -71,30 +71,30 @@ abline(h=0,lty=2,lwd=2,col='grey50')
 
 The chief danger of using OLS regression in the presence of heteroskedasticity is simply that we will mislead ourselves about the error variance.
 	
-	* We may be more confident or less confident than we should be that our betas are statistically significant and belong in the model
+ * We may be more confident or less confident than we should be that our betas are statistically significant and belong in the model
 	
-	* All our confidence intervals (for predictions, mean responses, and the true values of the betas) will be narrower or wider than they should be
+ * All our confidence intervals (for predictions, mean responses, and the true values of the betas) will be narrower or wider than they should be
 	
-	* We may view the errors as arithmetic/additive when they are really geometric/multiplicative
+ * We may view the errors as arithmetic/additive when they are really geometric/multiplicative
 	
 These are important hazards, but they need not be fatal. Heteroskedastic data will not bias our betas (just their standard errors), so we may remain reasonably confident in our point estimates, so long as we see no regime changes.
 
 ## Identifying heteroskedasticity
 There are usually two ways to identify violations of your modeling assumptions: *(1)* finding the right plots to highlight any potential problems, and *(2)* hypothesis tests specifically built to test the assumption in question. These two groups of methods pair well with each other, complementing the strengths and weaknesses of the other:
 
-	* Hypothesis tests are best at noticing subtle, aggregate trends. The human eye cannot easily tell when the errors are slightly heteroskedastic, but with even a moderate sample size a test can confirm such findings without a doubt. 
+ * Hypothesis tests are best at noticing subtle, aggregate trends. The human eye cannot easily tell when the errors are slightly heteroskedastic, but with even a moderate sample size a test can confirm such findings without a doubt. 
 	
-	* The human eye is best at noticing the presence of outliers and meaningful patterns. Tests aggregate the entire dataset into a single number without telling you why the data scored well or poorly. The human eye will notice individual data points that tell a story, or speak to unmodeled features in the data.
+ * The human eye is best at noticing the presence of outliers and meaningful patterns. Tests aggregate the entire dataset into a single number without telling you why the data scored well or poorly. The human eye will notice individual data points that tell a story, or speak to unmodeled features in the data.
 
 ### Diagnostic plots
 
 There are several plots which help to reveal heteroskedasticity, and two of them were shown in the figures above:
 
-* Simply *plotting the residuals in order* might reveal structural breaks or periods of unconditional volatility
+ * Simply *plotting the residuals in order* might reveal structural breaks or periods of unconditional volatility
 
-* A *histogram or density* of the residuals might suggest the presence of a mixed distribution
+ * A *histogram or density* of the residuals might suggest the presence of a mixed distribution
 
-* *Plotting the residuals as a function of the fitted values* (or as a function of the predictor in simple regression) is the classic way to reveal conditional heteroskedasticity. Look for a "trumpet" shape to the residuals: a flared or triangular pattern.
+ * *Plotting the residuals as a function of the fitted values* (or as a function of the predictor in simple regression) is the classic way to reveal conditional heteroskedasticity. Look for a "trumpet" shape to the residuals: a flared or triangular pattern.
 
 ### Hypothesis tests
 
@@ -120,13 +120,13 @@ A related, slightly more comprehensive test is White’s test (1980). White’s 
 
 The right approach to mitigating heteroskedasticity depends heavily on what type of heteroskedasticity has been observed.
 
-* In the presence of a structural break, the easiest solution is to model the "before" and "after" periods separately (or drop one of them entirely), as these will now presumably show homoskedastic errors. In cases where a single model is necessary (either because of a phenomenon bridging both periods, or simply to preserve as large a sample as possible), more advanced modeling such as WLS or fGLS methods will be needed, both of which are beyond the scope of this document. 
+ * In the presence of a structural break, the easiest solution is to model the "before" and "after" periods separately (or drop one of them entirely), as these will now presumably show homoskedastic errors. In cases where a single model is necessary (either because of a phenomenon bridging both periods, or simply to preserve as large a sample as possible), more advanced modeling such as WLS or fGLS methods will be needed, both of which are beyond the scope of this document. 
 
-* In the presence of a mixed distribution, the solutions are more difficult. If the two distributions can be easily disentangled, perhaps through a feature already in the data, then the subsamples can be modeled separately. But if not, we may have to accept some degree of misspecification. Standard errors and confidence intervals will be less reliable.
+ * In the presence of a mixed distribution, the solutions are more difficult. If the two distributions can be easily disentangled, perhaps through a feature already in the data, then the subsamples can be modeled separately. But if not, we may have to accept some degree of misspecification. Standard errors and confidence intervals will be less reliable.
 
-* In the presence of heteroskedasticity not associated with the predictors, if we believe the heteroskedasticity to have time-series properties, then ARCH (auto-regressive conditionally heteroskedastic) and GARCH (generalized ARCH) models are a popular remedy. When the volatility is not time-based, we may need to consider WLS and fGLS models, including the use of **Huber-White errors**, sometimes called **heteroskedasticity-consistent errors**.  All of these remedies are beyond the scope of this document.
+ * In the presence of heteroskedasticity not associated with the predictors, if we believe the heteroskedasticity to have time-series properties, then ARCH (auto-regressive conditionally heteroskedastic) and GARCH (generalized ARCH) models are a popular remedy. When the volatility is not time-based, we may need to consider WLS and fGLS models, including the use of **Huber-White errors**, sometimes called **heteroskedasticity-consistent errors**.  All of these remedies are beyond the scope of this document.
 
-* In the presence of heteroskedasticity associated with the predictors, we may choose between both simple and complex solutions. In addition to the advanced WLS and fGLS methods mentioned above, we can often use a simple transformation to significantly align our residuals with the OLS assumptions. For example, if our errors are proportional rather than additive, then a log-transformation of the response will lead to a suitable OLS target.
+ * In the presence of heteroskedasticity associated with the predictors, we may choose between both simple and complex solutions. In addition to the advanced WLS and fGLS methods mentioned above, we can often use a simple transformation to significantly align our residuals with the OLS assumptions. For example, if our errors are proportional rather than additive, then a log-transformation of the response will lead to a suitable OLS target.
 
 In practice, we may wish to try a few different ways of controlling the variance.  Log-transformations and square root-transformations are the most common, but we may also look at reciprocals (modeling $1⁄\boldsymbol{y}$ instead of $\boldsymbol{y}$), rates, or other transformations and features.
 
