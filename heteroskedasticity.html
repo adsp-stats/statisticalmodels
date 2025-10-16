@@ -594,12 +594,14 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<pre><code>* *Mixed distributions.*  In a regime change, the break point clearly separates the data and the distributions into a "before" and "after" period. But in other datasets, we see two (or more) error distributions which are mixed together such that each new observation can come from either (or any) error source. For example, a company’s stock might have one error variance on slow news days and a larger error variance on days where the market learns important information about the company.</code></pre>
+<ul>
+<li><em>Mixed distributions.</em> In a regime change, the break point clearly separates the data and the distributions into a “before” and “after” period. But in other datasets, we see two (or more) error distributions which are mixed together such that each new observation can come from either (or any) error source. For example, a company’s stock might have one error variance on slow news days and a larger error variance on days where the market learns important information about the company.</li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1776</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>hetE <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">5</span>),<span class="dv">500</span>,<span class="cn">TRUE</span>)<span class="sc">*</span><span class="fu">rnorm</span>(<span class="dv">500</span>,<span class="dv">0</span>,<span class="fl">0.5</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetE,<span class="at">main=</span><span class="st">'Daily unexplained market movement'</span>,<span class="at">xlab=</span><span class="st">'Trading Day'</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Residual S&amp;P 500 Return'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1776</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hetE <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">5</span>),<span class="dv">500</span>,<span class="cn">TRUE</span>)<span class="sc">*</span><span class="fu">rnorm</span>(<span class="dv">500</span>,<span class="dv">0</span>,<span class="fl">0.5</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetE,<span class="at">main=</span><span class="st">'Daily unexplained market movement'</span>,<span class="at">xlab=</span><span class="st">'Trading Day'</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Residual S&amp;P 500 Return'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -607,11 +609,11 @@ window.Quarto = {
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(hetE,<span class="at">breaks=</span><span class="fu">seq</span>(<span class="sc">-</span><span class="fl">7.25</span>,<span class="fl">7.25</span>,<span class="fl">0.25</span>),<span class="at">main=</span><span class="st">'Histogram of Residual Returns'</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Daily Residual Return (%)'</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="fu">dnorm</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="dv">0</span>,<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">0.1</span><span class="sc">*</span><span class="dv">500</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="fu">dnorm</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="dv">0</span>,<span class="fl">0.5</span>)<span class="sc">*</span><span class="fl">0.2</span><span class="sc">*</span><span class="dv">500</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'News Day'</span>,<span class="st">'Quiet Day'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(hetE,<span class="at">breaks=</span><span class="fu">seq</span>(<span class="sc">-</span><span class="fl">7.25</span>,<span class="fl">7.25</span>,<span class="fl">0.25</span>),<span class="at">main=</span><span class="st">'Histogram of Residual Returns'</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Daily Residual Return (%)'</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="fu">dnorm</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="dv">0</span>,<span class="fl">2.5</span>)<span class="sc">*</span><span class="fl">0.1</span><span class="sc">*</span><span class="dv">500</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="fu">dnorm</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">7</span>,<span class="dv">7</span>,<span class="fl">0.1</span>),<span class="dv">0</span>,<span class="fl">0.5</span>)<span class="sc">*</span><span class="fl">0.2</span><span class="sc">*</span><span class="dv">500</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'News Day'</span>,<span class="st">'Quiet Day'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -620,14 +622,16 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<pre><code>* *Unconditional heteroskedasticity.*  Error variances can grow and shrink in proportion to an unobserved variable, particularly in time series data.  For example, speculative assets such as cryptocurrencies might enter periods of high and low volatility over the span of weeks (if examining daily data) or even seconds/minutes (if examining intraday data), and these differences in the error distribution would present as a smooth continuüm rather than a clean structural break.</code></pre>
+<ul>
+<li><em>Unconditional heteroskedasticity.</em> Error variances can grow and shrink in proportion to an unobserved variable, particularly in time series data. For example, speculative assets such as cryptocurrencies might enter periods of high and low volatility over the span of weeks (if examining daily data) or even seconds/minutes (if examining intraday data), and these differences in the error distribution would present as a smooth continuüm rather than a clean structural break.</li>
+</ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1814</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>hetE <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>)<span class="sc">*</span><span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.993</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetE,<span class="at">main=</span><span class="st">'Volatility of a Fictitious Cryptocurrency Over Time'</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Days since ICO'</span>,<span class="at">ylab=</span><span class="st">'% Change in Value'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1814</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>hetE <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>)<span class="sc">*</span><span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.993</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetE,<span class="at">main=</span><span class="st">'Volatility of a Fictitious Cryptocurrency Over Time'</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Days since ICO'</span>,<span class="at">ylab=</span><span class="st">'% Change in Value'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -638,17 +642,19 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<pre><code>Conditional heteroskedasticity.  Sometimes, the predictors themselves not only predict Y but also predict the size of the error variance σ^2.  One common case would be datasets in which the errors are proportional, that is multiplicative and not additive.  For example, the value of a diamond is usually based not just on the size of the stone, but on metrics such as the color, the brilliancy of the cut, and the lack of visible flaws.  A small 0.5 carat diamond might be worth $400 ± $100 depending on the other factors, while a larger 2.0 carat diamond might be worth $2000 ± $500.  The qualitative factors adjust the base value on a proportional basis, creating larger errors for larger stones.  </code></pre>
+<ul>
+<li><em>Conditional heteroskedasticity.</em> Sometimes, the predictors themselves not only predict Y but also predict the size of the error variance σ^2. One common case would be datasets in which the errors are proportional, that is multiplicative and not additive. For example, the value of a diamond is usually based not just on the size of the stone, but on metrics such as the color, the brilliancy of the cut, and the lack of visible flaws. A small 0.5 carat diamond might be worth $400 ± $100 depending on the other factors, while a larger 2.0 carat diamond might be worth $2000 ± $500. The qualitative factors adjust the base value on a proportional basis, creating larger errors for larger stones.</li>
+</ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1803</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>hetX <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>,<span class="fl">0.3</span>,<span class="dv">3</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>hetE <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>,<span class="fl">0.75</span>,<span class="fl">1.25</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>hetY <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">200</span><span class="sc">+</span><span class="dv">1100</span><span class="sc">*</span>hetX<span class="sc">*</span>hetE</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetX,hetY,<span class="at">main=</span><span class="st">'Diamond Value by Carat Size'</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Carats'</span>,<span class="at">ylab=</span><span class="st">'Retail Value ($)'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg=</span><span class="fu">lm</span>(hetY<span class="sc">~</span>hetX),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1803</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>hetX <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>,<span class="fl">0.3</span>,<span class="dv">3</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>hetE <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>,<span class="fl">0.75</span>,<span class="fl">1.25</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>hetY <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">200</span><span class="sc">+</span><span class="dv">1100</span><span class="sc">*</span>hetX<span class="sc">*</span>hetE</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetX,hetY,<span class="at">main=</span><span class="st">'Diamond Value by Carat Size'</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Carats'</span>,<span class="at">ylab=</span><span class="st">'Retail Value ($)'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg=</span><span class="fu">lm</span>(hetY<span class="sc">~</span>hetX),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -660,9 +666,9 @@ window.Quarto = {
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetX,<span class="fu">lm</span>(hetY<span class="sc">~</span>hetX)<span class="sc">$</span>residuals,<span class="at">main=</span><span class="st">'Residuals of Diamond Value by Carat Size'</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Carats'</span>,<span class="at">ylab=</span><span class="st">'Residual of Retail Value ($)'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hetX,<span class="fu">lm</span>(hetY<span class="sc">~</span>hetX)<span class="sc">$</span>residuals,<span class="at">main=</span><span class="st">'Residuals of Diamond Value by Carat Size'</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Carats'</span>,<span class="at">ylab=</span><span class="st">'Residual of Retail Value ($)'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -677,19 +683,20 @@ window.Quarto = {
 <section id="consequences-of-heteroskedasticity" class="level2">
 <h2 class="anchored" data-anchor-id="consequences-of-heteroskedasticity">Consequences of heteroskedasticity</h2>
 <p>The chief danger of using OLS regression in the presence of heteroskedasticity is simply that we will mislead ourselves about the error variance.</p>
-<pre><code>* We may be more confident or less confident than we should be that our betas are statistically significant and belong in the model
-
-* All our confidence intervals (for predictions, mean responses, and the true values of the betas) will be narrower or wider than they should be
-
-* We may view the errors as arithmetic/additive when they are really geometric/multiplicative</code></pre>
+<ul>
+<li><p>We may be more confident or less confident than we should be that our betas are statistically significant and belong in the model</p></li>
+<li><p>All our confidence intervals (for predictions, mean responses, and the true values of the betas) will be narrower or wider than they should be</p></li>
+<li><p>We may view the errors as arithmetic/additive when they are really geometric/multiplicative</p></li>
+</ul>
 <p>These are important hazards, but they need not be fatal. Heteroskedastic data will not bias our betas (just their standard errors), so we may remain reasonably confident in our point estimates, so long as we see no regime changes.</p>
 </section>
 <section id="identifying-heteroskedasticity" class="level2">
 <h2 class="anchored" data-anchor-id="identifying-heteroskedasticity">Identifying heteroskedasticity</h2>
 <p>There are usually two ways to identify violations of your modeling assumptions: <em>(1)</em> finding the right plots to highlight any potential problems, and <em>(2)</em> hypothesis tests specifically built to test the assumption in question. These two groups of methods pair well with each other, complementing the strengths and weaknesses of the other:</p>
-<pre><code>* Hypothesis tests are best at noticing subtle, aggregate trends. The human eye cannot easily tell when the errors are slightly heteroskedastic, but with even a moderate sample size a test can confirm such findings without a doubt. 
-
-* The human eye is best at noticing the presence of outliers and meaningful patterns. Tests aggregate the entire dataset into a single number without telling you why the data scored well or poorly. The human eye will notice individual data points that tell a story, or speak to unmodeled features in the data.</code></pre>
+<ul>
+<li><p>Hypothesis tests are best at noticing subtle, aggregate trends. The human eye cannot easily tell when the errors are slightly heteroskedastic, but with even a moderate sample size a test can confirm such findings without a doubt.</p></li>
+<li><p>The human eye is best at noticing the presence of outliers and meaningful patterns. Tests aggregate the entire dataset into a single number without telling you why the data scored well or poorly. The human eye will notice individual data points that tell a story, or speak to unmodeled features in the data.</p></li>
+</ul>
 <section id="diagnostic-plots" class="level3">
 <h3 class="anchored" data-anchor-id="diagnostic-plots">Diagnostic plots</h3>
 <p>There are several plots which help to reveal heteroskedasticity, and two of them were shown in the figures above:</p>
