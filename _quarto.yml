@@ -35,6 +35,7 @@ book:
         - autocorrelation.qmd
         - nonnormality.qmd
         - nonlinearity.qmd
+        - howtorobustness.qmd
     - part: "5. Feature Engineering"
       chapters:
         - categoricalpredictors.qmd
