@@ -50,8 +50,7 @@ segments(x0=c(0.05,0.05),x1=c(0.95,0.95),col=c('grey50','#0000ff'),
               twofact.lm$coefficients[1]+twofact.lm$coefficients[3]),
          y1=c(twofact.lm$coefficients[1]+twofact.lm$coefficients[2],
               sum(twofact.lm$coefficients)),lty=2)
-legend(x='topleft',pch=c(1,1,4),col=c('grey50','#0000ff','black'),
-       legend=c('Lives with others','Lives alone','Model predictions'))
+legend(x='topleft',pch=c(1,1,4),col=c('grey50','#0000ff','black'),legend=c('Lives with others','Lives alone','Model predictions'))
 ```
  
 Notice how the pet ownership effect is constant among both living situation groups, creating parallel lines of best fit.  However, the model doesn’t fit particularly well: you can see that the predictions are not centered within each group of observations. The model plotted above has the following functional form:
@@ -86,8 +85,7 @@ segments(x0=c(0.05,0.05),x1=c(0.95,0.95),col=c('grey50','#0000ff'),
               twofact.lm2$coefficients[1]+twofact.lm2$coefficients[3]),
          y1=c(twofact.lm2$coefficients[1]+twofact.lm2$coefficients[2],
               sum(twofact.lm2$coefficients)),lty=2)
-legend(x='topleft',pch=c(1,1,4),col=c('grey50','#0000ff','black'),
-       legend=c('Lives with others','Lives alone','Model predictions'))
+legend(x='topleft',pch=c(1,1,4),col=c('grey50','#0000ff','black'),legend=c('Lives with others','Lives alone','Model predictions'))
 ```
  
 You can see that the new interaction term has allowed the effect of pet ownership to vary depending on living situation. The lines of best fit are no longer parallel to each other but do fit the data noticeably better. The model’s functional form has added the new interaction term:
@@ -195,3 +193,66 @@ text(x=2,y=1,labels=paste0('R^2=',round(summary(iris.lm4)$r.squared,2)))
 
 ## Visualizer
 
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 650
+
+library(shiny)
+library(bslib)
+
+ui <- page_fluid(
+      tags$head(tags$style(HTML("body {overflow-x: hidden;}"))),
+  title = "Interaction term explorer",
+  fluidRow(column(width=6,checkboxInput("X1cat","X1 is categorical")),
+           column(width=6,checkboxInput("X2cat","X2 is categorical"))),
+  fluidRow(column(width=6,checkboxInput("b2","Include X2 term?")),
+           column(width=6,checkboxInput("b3","Include Interaction?"))),
+  fluidRow(plotOutput("distPlot")))
+
+catcols <- c('#bb33ff','#0000ff')
+concols <- c('#bb33ff','#aa30ff','#9927ff','#8824ff','#7721ff','#6618ff',
+             '#5515ff','#4412ff','#3309ff','#2206ff','#1103ff','#0000ff')
+fewcols <- c('#aa30ff','#7721ff','#4412ff','#1103ff')
+   
+server <- function(input, output){
+  output$distPlot <- renderPlot({
+    X1 <- reactive(ifelse(rep(!input$X1cat,100),runif(100,0,3),1*(runif(100,0,3) > 1.5)))
+    X2 <- reactive(ifelse(rep(!input$X2cat,100),runif(100,3,6),1*(runif(100,3,6) > 4.5)))
+    Y <- reactive(15 - 2*c(X1()) + 0.5*c(X2()) - 1.2*c(X1())*c(X2()) + rnorm(100))
+    plot(x=X1(),y=Y(),main=NULL,xlab='X1',ylab='Y',type='p',
+         col=ifelse(rep(input$X2cat,100),catcols[1+X2()],concols[1+floor(4*(X2()-3))]))
+    if (!input$b2 & !input$b3){
+      lm1 <- lm(Y() ~ X1())
+      abline(lm1$coefficients[1],lm1$coefficients[2],col='grey50',lwd=3,lty=2)}
+    if (input$b2 & !input$b3){
+      lm1 <- lm(Y() ~ X1() + X2())
+      if (input$X2cat){
+        abline(lm1$coefficients[1],lm1$coefficients[2],lwd=3,lty=2,col=catcols[1])
+        abline(lm1$coefficients[1]+lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=catcols[2])} else {
+          abline(lm1$coefficients[1]+3.375*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[1])
+            abline(lm1$coefficients[1]+4.125*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[2])
+            abline(lm1$coefficients[1]+4.875*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[3])
+            abline(lm1$coefficients[1]+5.625*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[4])}}
+    if (!input$b2 & input$b3){
+      lm1 <- lm(Y() ~ X1() + X1():X2())
+      if (input$X2cat){
+        abline(lm1$coefficients[1],lm1$coefficients[2],lwd=3,lty=2,col=catcols[1])
+        abline(lm1$coefficients[1],lm1$coefficients[2]+lm1$coefficients[3],lwd=3,lty=2,col=catcols[2])} else {
+          abline(lm1$coefficients[1],lm1$coefficients[2]+3.375*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[1])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+4.125*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[2])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+4.875*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[3])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+5.625*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[4])}}
+    if (input$b2 & input$b3){
+      lm1 <- lm(Y() ~ X1() + X2() + X1():X2())
+      if (input$X2cat){
+        abline(lm1$coefficients[1],lm1$coefficients[2],lwd=3,lty=2,col=catcols[1])
+        abline(lm1$coefficients[1]+lm1$coefficients[3],lm1$coefficients[2]+lm1$coefficients[4],lwd=3,lty=2,col=catcols[2])} else {
+          abline(lm1$coefficients[1]+3.375*lm1$coefficients[3],lm1$coefficients[2]+3.375*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[1])
+            abline(lm1$coefficients[1]+4.125*lm1$coefficients[3],lm1$coefficients[2]+4.125*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[2])
+            abline(lm1$coefficients[1]+4.875*lm1$coefficients[3],lm1$coefficients[2]+4.875*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[3])
+            abline(lm1$coefficients[1]+5.625*lm1$coefficients[3],lm1$coefficients[2]+5.625*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[4])}}
+    })
+}
+
+shinyApp(ui = ui, server = server)
+```
