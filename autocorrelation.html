@@ -674,8 +674,93 @@ min; returning Inf</code></pre>
 <section id="hypothesis-tests" class="level3">
 <h3 class="anchored" data-anchor-id="hypothesis-tests">Hypothesis tests</h3>
 <p>As mentioned earlier, plots are helpful but the human eye can easily fail us or lead to subjective differences in opinion between different analysts. Hypothesis tests can be a reliable partner to diagnostic plots and <em>vice versa</em>.</p>
-<p>Two widely used tests for serial correlation are the Durbin-Watson test and the Ljung-Box test. Both</p>
-<p>&lt;TO BE CONTINUED?&gt;</p>
+<p>Two widely used tests for serial correlation are the <strong>Durbin-Watson test</strong> and the <strong>Ljung-Box test</strong>. Both examine the correlation between the current residuals and the lagged residuals, testing whether the amount of sample correlation would be unlikely from a generating process which was truly uncorrelated.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>The Durbin-Watson test looks <em>only at serial correlation between the residuals and their first lag</em>, and creates a test statistic between 0 and 4, with total positive correlation scoring 0, zero correlation scoring 2, and total negative correlation scoring 4. So we would like to see scores near 2:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1941</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(lmtest)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lmtest</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: zoo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#completely independent errors </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dwtest</span>(<span class="fu">lm</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>)<span class="sc">~</span><span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Durbin-Watson test
+
+data:  lm(rnorm(100) ~ 1)
+DW = 2.0633, p-value = 0.6255
+alternative hypothesis: true autocorrelation is greater than 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#errors made with correlation +0.5</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dwtest</span>(<span class="fu">lm</span>(<span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.5</span>),<span class="at">n=</span><span class="dv">100</span>)<span class="sc">~</span><span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Durbin-Watson test
+
+data:  lm(arima.sim(list(ar = 0.5), n = 100) ~ 1)
+DW = 1.3793, p-value = 0.0008599
+alternative hypothesis: true autocorrelation is greater than 0</code></pre>
+</div>
+</div>
+<p>The Ljung-Box test is more often used in formal time series modeling, but can be used for regression purposes as well. It allows the user to test for autocorrelation not just between adjacent residuals, but also between higher-order lags. For example, some daily datasets describing human activity (<em>e.g.</em> highway traffic volume) have weekly ‘seasonality’ — each day’s response has more in common with the observation 7 days ago than with the observation 1 day ago:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1914</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>traffic <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">0.15</span>,<span class="fl">0.8</span>)),<span class="at">n=</span><span class="dv">70</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(traffic,<span class="at">type=</span><span class="st">'l'</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">2</span>,<span class="dv">23</span>,<span class="dv">7</span>),<span class="at">y=</span>traffic[<span class="fu">seq</span>(<span class="dv">2</span>,<span class="dv">23</span>,<span class="dv">7</span>)])</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">2</span>,<span class="dv">23</span>,<span class="dv">7</span>),<span class="at">y=</span>traffic[<span class="fu">seq</span>(<span class="dv">2</span>,<span class="dv">23</span>,<span class="dv">7</span>)],</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels=</span><span class="fu">rep</span>(<span class="st">'Mon'</span>,<span class="dv">5</span>),<span class="at">pos=</span><span class="dv">4</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">25</span>,<span class="dv">46</span>,<span class="dv">7</span>),<span class="at">y=</span>traffic[<span class="fu">seq</span>(<span class="dv">25</span>,<span class="dv">46</span>,<span class="dv">7</span>)])</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">25</span>,<span class="dv">46</span>,<span class="dv">7</span>),<span class="at">y=</span>traffic[<span class="fu">seq</span>(<span class="dv">25</span>,<span class="dv">46</span>,<span class="dv">7</span>)],</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels=</span><span class="fu">rep</span>(<span class="st">'Wed'</span>,<span class="dv">5</span>),<span class="at">pos=</span><span class="dv">4</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">56</span>,<span class="dv">70</span>,<span class="dv">7</span>),<span class="at">y=</span>traffic[<span class="fu">seq</span>(<span class="dv">56</span>,<span class="dv">70</span>,<span class="dv">7</span>)])</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">56</span>,<span class="dv">70</span>,<span class="dv">7</span>),<span class="at">y=</span>traffic[<span class="fu">seq</span>(<span class="dv">56</span>,<span class="dv">70</span>,<span class="dv">7</span>)],</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels=</span><span class="fu">rep</span>(<span class="st">'Sat'</span>,<span class="dv">5</span>),<span class="at">pos=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="autocorrelation_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Simulated daily data with weekly seasonality</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Although a Durbin-Watson test might not notice this correlation structure, a Ljung-Box test including 7 lags would:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dwtest</span>(<span class="fu">lm</span>(traffic<span class="sc">~</span><span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Durbin-Watson test
+
+data:  lm(traffic ~ 1)
+DW = 2.2768, p-value = 0.8787
+alternative hypothesis: true autocorrelation is greater than 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(traffic,<span class="at">lag=</span><span class="dv">7</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Pierce test
+
+data:  traffic
+X-squared = 53.823, df = 7, p-value = 2.549e-09</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="correcting-or-mitigating-serial-correlation" class="level2">
@@ -730,6 +815,7 @@ shinyApp(ui = ui, server = server)</code></pre>
 <hr>
 <ol>
 <li id="fn1"><p>Another plot, the partial autocorrelation function (or PACF), measures a different type of time series behavior. The full interpretation of these functions and plots must be left to a dedicated time series course.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Of course, in a finite sample, even a truly uncorrelated residual series will show a slight degree of serial correlation, just as a truly fair coin will rarely show a sample sequence that is perfectly 50% heads.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
