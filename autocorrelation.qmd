@@ -106,9 +106,45 @@ The figure above shows a set of residuals with complicated serial correlation (p
 
 As mentioned earlier, plots are helpful but the human eye can easily fail us or lead to subjective differences in opinion between different analysts. Hypothesis tests can be a reliable partner to diagnostic plots and *vice versa*.
 
-Two widely used tests for serial correlation are the Durbin-Watson test and the Ljung-Box test. Both 
+Two widely used tests for serial correlation are the **Durbin-Watson test** and the **Ljung-Box test**. Both examine the correlation between the current residuals and the lagged residuals, testing whether the amount of sample correlation would be unlikely from a generating process which was truly uncorrelated.^[Of course, in a finite sample, even a truly uncorrelated residual series will show a slight degree of serial correlation, just as a truly fair coin will rarely show a sample sequence that is perfectly 50% heads.]
 
-<TO BE CONTINUED?>
+The Durbin-Watson test looks *only at serial correlation between the residuals and their first lag*, and creates a test statistic between 0 and 4, with total positive correlation scoring 0, zero correlation scoring 2, and total negative correlation scoring 4. So we would like to see scores near 2:
+
+```{r}
+set.seed(1941)
+require(lmtest)
+#completely independent errors 
+dwtest(lm(rnorm(100)~1))
+
+#errors made with correlation +0.5
+dwtest(lm(arima.sim(list(ar=0.5),n=100)~1))
+```
+
+The Ljung-Box test is more often used in formal time series modeling, but can be used for regression purposes as well.  It allows the user to test for autocorrelation not just between adjacent residuals, but also between higher-order lags. For example, some daily datasets describing human activity (*e.g.* highway traffic volume) have weekly 'seasonality' --- each day's response has more in common with the observation 7 days ago than with the observation 1 day ago:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Simulated daily data with weekly seasonality"
+set.seed(1914)
+traffic <- arima.sim(list(ar=c(0,0,0,0,0,0.15,0.8)),n=70)
+plot(traffic,type='l')
+points(x=seq(2,23,7),y=traffic[seq(2,23,7)])
+text(x=seq(2,23,7),y=traffic[seq(2,23,7)],
+     labels=rep('Mon',5),pos=4)
+points(x=seq(25,46,7),y=traffic[seq(25,46,7)])
+text(x=seq(25,46,7),y=traffic[seq(25,46,7)],
+     labels=rep('Wed',5),pos=4)
+points(x=seq(56,70,7),y=traffic[seq(56,70,7)])
+text(x=seq(56,70,7),y=traffic[seq(56,70,7)],
+     labels=rep('Sat',5),pos=3)
+```
+
+Although a Durbin-Watson test might not notice this correlation structure, a Ljung-Box test including 7 lags would:
+
+```{r}
+dwtest(lm(traffic~1))
+Box.test(traffic,lag=7)
+```
 
 ## Correcting or mitigating serial correlation
 
