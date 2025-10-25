@@ -42,6 +42,7 @@ book:
         - revisitinganova.qmd
         - interactions.qmd
         - featureengineering.qmd
+        - howtofeature.qmd
     - part: "6. Model Selection"
       chapters:
         - overfitting.qmd
