@@ -588,7 +588,7 @@ window.Quarto = {
 woolB       -5.777778   3.536974 -1.633537 1.083971e-01</code></pre>
 </div>
 </div>
-<p>You can see that we have a beta for when <code>wool=='B'</code> and that R calls this predictor <variablename><levelvalue>, here “woolB”. From the summary, we learn that wool type B produced (on average) 5.8 <em>fewer</em> warp breaks than type A.</levelvalue></variablename></p></li>
+<p>You can see that we have a beta for when <code>wool=='B'</code> and that R calls this predictor <code>&lt;variablename&gt;&lt;levelvalue&gt;</code>, here “woolB”. From the summary, we learn that wool type B produced (on average) 5.8 <em>fewer</em> warp breaks than type A.</p></li>
 <li><p><em>Logical variables.</em> One simple way to code for an effect is to create a TRUE/FALSE logical variable for some binary condition. R will automatically assign the FALSE condition to 0 (the reference level), and the TRUE condition to 1:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>warpbreaks<span class="sc">$</span>lowtension <span class="ot">&lt;-</span> warpbreaks<span class="sc">$</span>tension<span class="sc">==</span><span class="st">'L'</span></span>
@@ -791,7 +791,7 @@ tensionH    -14.722222   3.872378 -3.801856 3.913842e-04</code></pre>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>body_mass ~ (flipper_len + bill_len)^2</code></td>
-<td style="text-align: left;">Include the all terms inside the parenthesis and all their pairwise interactions</td>
+<td style="text-align: left;">Include all terms inside the parentheses and all their pairwise interactions</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>body_mass ~ .</code></td>
@@ -874,7 +874,7 @@ tensionH    -14.722222   3.872378 -3.801856 3.913842e-04</code></pre>
 </tbody>
 </table>
 <p>These are just a few examples of the many features that could be built from the <code>penguins</code> dataset. Strictly linear transformations are usually avoided except when seeking to aid interpretation, since a linear transformation of a predictor will not change the fitted values, residuals, R<sup>2</sup>, nor the <em>p</em>-values on significance tests.</p>
-<p>However, when linear transformations are applied only to some observations and not others, they can create a novel non-linear effect. For example, in this penguin data, if we de-meaned bill length (that is, changed “bill length in mm” to “length in mm above or below the average bill length”), we would not improve the model in any way. But if we de-meaned bill length by <em>sex</em>, and measured whether bill lengths were large <em>relative to other maler or female penguins</em>, that might possibly improve model fit.</p>
+<p>However, when linear transformations are applied only to some observations and not others, they can create a novel non-linear effect. For example, in this penguin data, if we de-meaned bill length (that is, changed “bill length in mm” to “length in mm above or below the average bill length”), we would not improve the model in any way. But if we de-meaned bill length by <em>sex</em>, and measured whether bill lengths were large <em>relative to other male or female penguins</em>, that might possibly improve model fit.</p>
 
 
 </section>
