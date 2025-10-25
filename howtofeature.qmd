@@ -27,7 +27,7 @@ A single binary predictor (*e.g.* TRUE or FALSE, survive or die, purchase a prod
     summary(wool.basic)$coefficients
     ```
 
-    You can see that we have a beta for when `wool=='B'` and that R calls this predictor <variablename><levelvalue>, here "woolB". From the summary, we learn that wool type B produced (on average) 5.8 *fewer* warp breaks than type A.
+    You can see that we have a beta for when `wool=='B'` and that R calls this predictor `<variablename><levelvalue>`, here "woolB". From the summary, we learn that wool type B produced (on average) 5.8 *fewer* warp breaks than type A.
 
 -   *Logical variables.* One simple way to code for an effect is to create a TRUE/FALSE logical variable for some binary condition. R will automatically assign the FALSE condition to 0 (the reference level), and the TRUE condition to 1:
 
@@ -81,7 +81,7 @@ When describing a variable several different values, we usually avoid TRUE/FALSE
     ```
 
     You can see that although L(ow) is in the middle alphabetically, the variable has been stored as a factor in the sensible order of 1--L(ow) 2--M(edium) 3--H(igh). Therefore R treats L(ow) as the reference level, which is why only M and H are listed as predictors.
-    
+
 ## Interpreting ANOVA information about factors
 
 Resuming our statistical use of the word 'factor' to mean any categorical predictor, we can now find another use for the `anova` function seen earlier in @sec-howtoregress.
@@ -111,40 +111,44 @@ fullpengs <- penguins[complete.cases(penguins),]
 head(fullpengs)
 ```
 
-The general formula is `formula = [response] ~ [predictors]`, with the `~` (tilde) operator separating the two sides.^[Some advanced R use cases explore less-common variants.] Consider the following formulae:
+The general formula is `formula = [response] ~ [predictors]`, with the `~` (tilde) operator separating the two sides.[^howtofeature-2] Consider the following formulae:
 
-|R formula |Meaning |
-|:---------|:-------|
-|`body_mass ~ 1`|Include only an intercept, no predictors|
-|`body_mass ~ bill_len`|Include bill length as a predictor|
-|`body_mass ~ 0 + bill_len`|Include bill length, but do *not* use an intercept|
-|`body_mass ~ bill_len + 0`|*same*|
-|`body_mass ~ bill_len - 1`|*same*|
-|`body_mass ~ bill_len + flipper_len`|Include both bill length and flipper length|
-|`body_mass ~ bill_len : flipper_len`|Include only a bill length-flipper length interaction term, without using either predictor alone|
-|`body_mass ~ bill_len + bill_len : flipper_len`|Include bill length and a bill length-flipper length interaction term, without using flipper length|
-|`body_mass ~ bill_len * flipper_len`|Include bill length, flipper length, *and* their interaction|
-|`body_mass ~ bill_len + flipper_len + bill_len : flipper_len`|*same*|
-|`body_mass ~ bill_len + flipper_len + bill_len * flipper_len`|*same*|
-|`body_mass ~ log(flipper_len)`|Include log of flipper length|
-|`body_mass ~ I(flipper_len + bill_len)`|Include the actual sum of flipper length and bill length as a single predictor|
-|`body_mass ~ I((flipper_len + bill_len)^2)`|Include the squared sum of flipper length and bill length as a single predictor|
-|`body_mass ~ (flipper_len + bill_len)^2`|Include the all terms inside the parenthesis and all their pairwise interactions|
-|`body_mass ~ .`|Regress body mass on *all* other variables in the dataset|
-|`body_mass ~ .^2`|Regress body mass on *all* other variables in the dataset *and* all pairwise interactions|
+[^howtofeature-2]: Some advanced R use cases explore less-common variants.
+
+| R formula | Meaning |
+|:---------------------------------------|:-------------------------------|
+| `body_mass ~ 1` | Include only an intercept, no predictors |
+| `body_mass ~ bill_len` | Include bill length as a predictor |
+| `body_mass ~ 0 + bill_len` | Include bill length, but do *not* use an intercept |
+| `body_mass ~ bill_len + 0` | *same* |
+| `body_mass ~ bill_len - 1` | *same* |
+| `body_mass ~ bill_len + flipper_len` | Include both bill length and flipper length |
+| `body_mass ~ bill_len : flipper_len` | Include only a bill length-flipper length interaction term, without using either predictor alone |
+| `body_mass ~ bill_len + bill_len : flipper_len` | Include bill length and a bill length-flipper length interaction term, without using flipper length |
+| `body_mass ~ bill_len * flipper_len` | Include bill length, flipper length, *and* their interaction |
+| `body_mass ~ bill_len + flipper_len + bill_len : flipper_len` | *same* |
+| `body_mass ~ bill_len + flipper_len + bill_len * flipper_len` | *same* |
+| `body_mass ~ log(flipper_len)` | Include log of flipper length |
+| `body_mass ~ I(flipper_len + bill_len)` | Include the actual sum of flipper length and bill length as a single predictor |
+| `body_mass ~ I((flipper_len + bill_len)^2)` | Include the squared sum of flipper length and bill length as a single predictor |
+| `body_mass ~ (flipper_len + bill_len)^2` | Include all terms inside the parentheses and all their pairwise interactions |
+| `body_mass ~ .` | Regress body mass on *all* other variables in the dataset |
+| `body_mass ~ .^2` | Regress body mass on *all* other variables in the dataset *and* all pairwise interactions |
 
 Keep in mind,
 
- * The order of the terms doesn't typically matter^[One exception is that the order used here *will* affect the order of the `anova()` output, if you compute one.]
- 
- * R is smart enough to not add the same variable(s) twice, which is why `A + B + A*B` and `A*B` create the same regression formula (`A + B + A:B`)
- 
- * Use the `I()` notation to pass R mathematical commands that would normally be mistaken for formula syntax, such as addition (`+`), multiplication (`*`), and powers (`^2`)
- 
-  * Create 2-way and 3-way interactions between groups of variables by placing them in parentheses and adding `^2` or `^3` respectively
-  
-  * Include all remaining non-response fields with `.`
-  
+-   The order of the terms doesn't typically matter[^howtofeature-3]
+
+-   R is smart enough to not add the same variable(s) twice, which is why `A + B + A*B` and `A*B` create the same regression formula (`A + B + A:B`)
+
+-   Use the `I()` notation to pass R mathematical commands that would normally be mistaken for formula syntax, such as addition (`+`), multiplication (`*`), and powers (`^2`)
+
+-   Create 2-way and 3-way interactions between groups of variables by placing them in parentheses and adding `^2` or `^3` respectively
+
+-   Include all remaining non-response fields with `.`
+
+[^howtofeature-3]: One exception is that the order used here *will* affect the order of the `anova()` output, if you compute one.
+
 ## Additional feature engineering
 
 We can create many useful features from the data, either directly within the formula statement or beforehand as a part of our data cleaning and feature engineering process. Using the `penguins` dataset above, and choosing `body_mass` as the response variable, consider each of the following predictors and their meanings:
@@ -153,19 +157,17 @@ We can create many useful features from the data, either directly within the for
 head(fullpengs)
 ```
 
-|Variable(s) |Meaning |
-|:---------|:-------|
-|`sqrt(bill_len)`|Square root of bill length|
-|`1*(bill_len>40)`|Indicator for when bill length is over 40mm|
-|`bill_dep`,`bill_dep^2`,`bill_dep^3`|Polynomial trends on bill depth|
-|`bill_len/flipper_len`|Ratio of bill length to flipper length|
-|`rank(bill_len)`|Change bill length from a linear measure to its empirical rank (ordinal)|
-|`pnorm((bill_len-mean(bill_len))/sd(bill_len))`|Change bill length from a linear measure to a Normal quantile|
-|`paste(species,island)`|Combine two categorical variables into one (essentially, fits an interaction effect)|
-|`1*(bill_len < tapply(bill_len,island,mean)[island])`|Indicator for whether each penguin has a longer-than-average bill *for its specific island*|
+| Variable(s) | Meaning |
+|:---------------------------------------|:-------------------------------|
+| `sqrt(bill_len)` | Square root of bill length |
+| `1*(bill_len>40)` | Indicator for when bill length is over 40mm |
+| `bill_dep`,`bill_dep^2`,`bill_dep^3` | Polynomial trends on bill depth |
+| `bill_len/flipper_len` | Ratio of bill length to flipper length |
+| `rank(bill_len)` | Change bill length from a linear measure to its empirical rank (ordinal) |
+| `pnorm((bill_len-mean(bill_len))/sd(bill_len))` | Change bill length from a linear measure to a Normal quantile |
+| `paste(species,island)` | Combine two categorical variables into one (essentially, fits an interaction effect) |
+| `1*(bill_len < tapply(bill_len,island,mean)[island])` | Indicator for whether each penguin has a longer-than-average bill *for its specific island* |
 
 These are just a few examples of the many features that could be built from the `penguins` dataset. Strictly linear transformations are usually avoided except when seeking to aid interpretation, since a linear transformation of a predictor will not change the fitted values, residuals, R^2^, nor the *p*-values on significance tests.
 
-However, when linear transformations are applied only to some observations and not others, they can create a novel non-linear effect. For example, in this penguin data, if we de-meaned bill length (that is, changed "bill length in mm" to "length in mm above or below the average bill length"), we would not improve the model in any way. But if we de-meaned bill length by *sex*, and measured whether bill lengths were large *relative to other maler or female penguins*, that might possibly improve model fit.
-
-
+However, when linear transformations are applied only to some observations and not others, they can create a novel non-linear effect. For example, in this penguin data, if we de-meaned bill length (that is, changed "bill length in mm" to "length in mm above or below the average bill length"), we would not improve the model in any way. But if we de-meaned bill length by *sex*, and measured whether bill lengths were large *relative to other male or female penguins*, that might possibly improve model fit.
