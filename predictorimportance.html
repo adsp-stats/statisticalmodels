@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>predictorimportance – Statistical Analysis Using R: Online Notes</title>
+<title>Predictor importance – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./predictorimportance.html"><span class="chapter-title">predictorimportance.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./predictorimportance.html"><span class="chapter-title">Predictor importance</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -324,12 +388,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./overfitting.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">overfitting.html</span></a>
+  <a href="./overfitting.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Overfitting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./predictorimportance.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">predictorimportance.html</span></a>
+  <a href="./predictorimportance.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Predictor importance</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -454,17 +518,178 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#assessing-a-linear-numeric-predictor" id="toc-assessing-a-linear-numeric-predictor" class="nav-link active" data-scroll-target="#assessing-a-linear-numeric-predictor">Assessing a linear numeric predictor</a></li>
+  <li><a href="#assessing-a-categorical-predictor" id="toc-assessing-a-categorical-predictor" class="nav-link" data-scroll-target="#assessing-a-categorical-predictor">Assessing a categorical predictor</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./predictorimportance.html"><span class="chapter-title">predictorimportance.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./predictorimportance.html"><span class="chapter-title">Predictor importance</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-predictorimportance" class="quarto-section-identifier"><span class="chapter-title">Predictor importance</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>The very simplest forms of model selection involve decisions to keep or remove one or all of the terms already found in the model. Let’s consider our available analytical tools and how they might help or mislead us.</p>
+<p>For the rest of this section, I will refer to a regression performed on a small dataset of different car models, available in R as <code>mtcars</code>. Specifically, I will examine a model which explains car fuel efficiency (in miles per gallon, or mpg) as a function of three numeric predictors (horsepower, weight, and engine displacement) as well as a three-level categorical predictor of the engine cylinders (four, six, or eight).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The functional form of this model would be:</p>
+<p><span class="math display">\[\begin{aligned} \hat{\boldsymbol{mpg}} = \hat{\beta}_0 &amp;+ \hat{\beta}_1 \cdot \textbf{horsepower} + \hat{\beta}_2 \cdot \textbf{weight} + \hat{\beta}_3 \cdot \textbf{displacement} \\ &amp;+ \hat{\beta}_4 \cdot 1\!\!1\{\textbf{cylinder}=6\} + \hat{\beta}_5 \cdot 1\!\!1\{\textbf{cylinder}=8\} \end{aligned}\]</span></p>
+<p>If you run this model and the data through any statistical software, you should recover the following table of coefficients and model information:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mtcars<span class="sc">$</span>cyl <span class="ot">&lt;-</span> <span class="fu">factor</span>(mtcars<span class="sc">$</span>cyl)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>carlm <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> hp <span class="sc">+</span> wt <span class="sc">+</span> disp <span class="sc">+</span> cyl,mtcars)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(carlm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mpg ~ hp + wt + disp + cyl, data = mtcars)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.2740 -1.0349 -0.3831  0.9810  5.4192 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 36.002405   2.130726  16.897 1.54e-15 ***
+hp          -0.023517   0.012216  -1.925  0.06523 .  
+wt          -3.428626   1.055455  -3.248  0.00319 ** 
+disp         0.004199   0.012917   0.325  0.74774    
+cyl6        -3.466011   1.462979  -2.369  0.02554 *  
+cyl8        -3.753227   2.813996  -1.334  0.19385    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.482 on 26 degrees of freedom
+Multiple R-squared:  0.8578,    Adjusted R-squared:  0.8305 
+F-statistic: 31.37 on 5 and 26 DF,  p-value: 3.18e-10</code></pre>
+</div>
+</div>
+<section id="assessing-a-linear-numeric-predictor" class="level2">
+<h2 class="anchored" data-anchor-id="assessing-a-linear-numeric-predictor">Assessing a linear numeric predictor</h2>
+<p>Please recall that the <em>t</em>-values and <em>p</em>-values printed above describe the results of a <em>t</em>-test for whether each true beta might really be zero. If any of the true betas <span class="math inline">\(\beta_j\)</span> were zero, then the predictor <span class="math inline">\(X_j\)</span> would not belong in the model, since any prediction <span class="math inline">\(\hat{y}\)</span> would be the same no matter what value <span class="math inline">\(X_j\)</span> assumed. So when the true beta could <em>reasonably</em> be zero, we generally choose to remove it.</p>
+<p>Another way to think about this idea: in cases where the true beta could reasonably be zero, it could also reasonably be slightly negative or slightly positive. Statisticians find it risky to include a predictor when we cannot even be sure whether it causes the response variable to increase or decrease!</p>
+<p>Therefore, our first tool for model selection is to simply to consider our linear, numeric predictors one at a time, and remove them if they cannot be found significantly different than zero (at a significance threshold of our choosing) or keep them if they are found to be significant. This tool is both the easiest and the least sophisticated method we will learn.</p>
+<p>Applying this reasoning to the car model above, and adopting a significance threshold of <span class="math inline">\(\alpha = 0.05\)</span>, we would remove horsepower (<span class="math inline">\(p = 0.065\)</span>) and displacement (<span class="math inline">\(p = 0.748\)</span>), keeping weight (<span class="math inline">\(p = 0.003\)</span>) and the two cylinder dummy variables, since these last are factors and not linear numeric predictors.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>However, we should be careful with this method, as it is a blunt tool and prone to error. The true relationships between predictors and the response variable sometimes only emerge with the proper control variables present in the model. In other instances, adding a confounding variable will distort or mask the true explanatory effect of another predictor. For example, we know there is a real-world connection between the removed predictors (horsepower and displacement) and the response variable (fuel efficiency). Larger, more powerful engines are generally less fuel-efficient. This is not a simple data trend but a fact, a causal statement based in rigid physical laws.</p>
+<p>This method can also be fooled by the issue of <strong>multiple comparisons</strong>, in which we simultaneously conduct many hypothesis tests at the same time. Even though each individual test result has no more than an <span class="math inline">\(\alpha\)</span> Type I error rate, if we examine enough test results at a time we become quite likely to wrongly include a “significant” predictor in the model when it has no true explanatory power. We saw an example of this earlier when discussing spurious correlation, and focusing on individual predictor p-values will make this risk real. What’s more, the risk increases with every predictor in the model:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1776</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sim.false.p <span class="ot">&lt;-</span> <span class="cf">function</span>(k,<span class="at">nobs=</span><span class="dv">100</span>,<span class="at">nsim=</span><span class="dv">10000</span>,<span class="at">alpha=</span><span class="fl">0.05</span>){</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  dat <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">rnorm</span>((k<span class="sc">+</span><span class="dv">1</span>)<span class="sc">*</span>nobs<span class="sc">*</span>nsim),<span class="fu">c</span>(nobs,k<span class="sc">+</span><span class="dv">1</span>,nsim))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  sims <span class="ot">&lt;-</span> <span class="fu">apply</span>(dat,<span class="dv">3</span>,<span class="cf">function</span>(z) <span class="fu">min</span>(<span class="fu">summary</span>(<span class="fu">lm</span>(z[,<span class="dv">1</span>]<span class="sc">~</span>z[,<span class="sc">-</span><span class="dv">1</span>]))<span class="sc">$</span>coefficients[<span class="sc">-</span><span class="dv">1</span>,<span class="dv">4</span>])<span class="sc">&lt;</span>alpha)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">mean</span>(sims))}</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>t1.rates <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,sim.false.p) <span class="co">#will take time</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,t1.rates,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">xlab=</span><span class="st">'Predictors in model'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Aggregate Type I Error Rate'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Simulated Chance of At Least One Spurious Correlation'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="predictorimportance_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Multiple comparisons issues grow as more predictors enter the model</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The response variable, errors, and predictors used to create the figure are all uncorrelated standard normal variates, and the significance threshold used was <span class="math inline">\(\alpha = 0.05\)</span>. Real-world situations would create slightly different patterns, but the lesson remains the same: examining every line of a multiple comparison invites an added risk of Type I errors which might far exceed our theoretical threshold <span class="math inline">\(\alpha\)</span>.</p>
+</section>
+<section id="assessing-a-categorical-predictor" class="level2">
+<h2 class="anchored" data-anchor-id="assessing-a-categorical-predictor">Assessing a categorical predictor</h2>
+<p>We can’t apply this same approach to categorical predictors, because each categorical predictor generates several 1/0 indicator variables which all enter or leave the model at the same time. Furthermore, the significance of each indicator variable does not imply that the corresponding group is useful or necessary—these tests only describe differences between each group and the reference level. If the reference level happens to be the only outlier group, betas for the other groups will seem “significant” because they are far from the reference level, even if they all are identical to each other.</p>
+<p>Consider again the table of parameter coefficients shown before, where cylinder entered as a categorical predictor. Let’s isolate the two dummy variables corresponding to cylinder count:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(carlm)<span class="sc">$</span>coefficients[<span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>,]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Estimate Std. Error   t value   Pr(&gt;|t|)
+cyl6 -3.466011   1.462979 -2.369146 0.02553904
+cyl8 -3.753227   2.813996 -1.333771 0.19384581</code></pre>
+</div>
+</div>
+<p>From this table we notice that cars with 6-cylinder engines have roughly 3.466 mpg worse fuel efficiency than cars with 4-cylinder engines (the reference level), and that this difference is statistically significant. But notice that 8-cylinder engine cars have even <em>worse</em> fuel efficiency, yet this difference <em>isn’t</em> statistically significant!<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> What are we to conclude?</p>
+<p>In these situations we can rely on the same F-test introduced earlier in <a href="revisitinganova.html" class="quarto-xref"><span>Revisiting ANOVA</span></a>, when we examined models which only included a single factor. Now our model space contains both a factor as well as some linear predictors. We can use an <strong>ANOVA test</strong> to isolate the additional model sum of squares due to the factor and test whether adding its two extra parameters was worth the small gain in explanatory power. Software packages would display the test something like so:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(carlm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: mpg
+          Df Sum Sq Mean Sq  F value    Pr(&gt;F)    
+hp         1 678.37  678.37 110.1482 7.677e-11 ***
+wt         1 252.63  252.63  41.0193 8.741e-07 ***
+disp       1   0.06    0.06   0.0093   0.92404    
+cyl        2  34.86   17.43   2.8304   0.07724 .  
+Residuals 26 160.13    6.16                       
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>The logic behind the table is the same as the F-test introduced earlier: a model which fits separate group means for 4-, 6-, and 8-cylinder cars <em>does not seem supported by the data</em>. While the groups do differentiate themselves somewhat, when considered as a whole we do not see greater explanatory power than we would expect by chance alone.</p>
+<p>We should note that the ANOVA line for <code>cyl</code> (cylinder) benchmarks this predictor’s contributions against a model which <em>already contains the other predictors</em>; if we were to consider <code>cyl</code> all on its own, it would be found highly significant. ANOVA tables such as this are dependent upon the order in which predictors enter the model; each new line conducts a test of whether the new term is helpful to a model which already includes all the previous predictors.</p>
+<p>This conclusion hints at another type of multiple comparison problem. When a factor contains many levels, we should not be surprised when the sample averages of some groups seem significantly far from the sample averages of other groups. These significant differences do not always imply a real-world value to the grouping variable.</p>
+<p>As an illustration, consider flipping a perfectly fair coin 400 times, recording the result of each flip. After all the flips are done, we could retroactively create a factor variable which groups the first 40 flips, the second 40 flips, and so on until the tenth and last 40 flips. Sometimes, the chance behavior of the coin will make the “groups” look different, even though they were chosen arbitrarily and all share exactly the same generating process:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1066</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>coin.groups <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">size=</span><span class="dv">400</span>,<span class="at">replace=</span><span class="cn">TRUE</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>coin.groups.means <span class="ot">&lt;-</span> <span class="fu">tapply</span>(coin.groups,<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">each=</span><span class="dv">40</span>),mean)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>coin.groups.lower <span class="ot">&lt;-</span> <span class="fu">tapply</span>(coin.groups,<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">each=</span><span class="dv">40</span>),<span class="cf">function</span>(z){</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prop.test</span>(<span class="fu">sum</span>(z),<span class="fu">length</span>(z),<span class="at">p=</span><span class="fl">0.5</span>,<span class="at">conf.level=</span><span class="fl">0.9</span>)<span class="sc">$</span>conf.int[[<span class="dv">1</span>]]})</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>coin.groups.upper <span class="ot">&lt;-</span> <span class="fu">tapply</span>(coin.groups,<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">each=</span><span class="dv">40</span>),<span class="cf">function</span>(z){</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prop.test</span>(<span class="fu">sum</span>(z),<span class="fu">length</span>(z),<span class="at">p=</span><span class="fl">0.5</span>,<span class="at">conf.level=</span><span class="fl">0.9</span>)<span class="sc">$</span>conf.int[[<span class="dv">2</span>]]})</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,coin.groups.means,<span class="at">ylim=</span><span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>),<span class="at">xlab=</span><span class="st">'Subsample (40 obs each)'</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Proportion heads'</span>,<span class="at">main=</span><span class="st">"Repeated tests for the true 'p' of a fair coin"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">16</span>,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'#0000ff'</span>),<span class="at">times=</span><span class="fu">c</span>(<span class="dv">9</span>,<span class="dv">1</span>)))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">y0=</span>coin.groups.lower,<span class="at">y1=</span>coin.groups.upper,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'#0000ff'</span>),<span class="at">times=</span><span class="fu">c</span>(<span class="dv">9</span>,<span class="dv">1</span>)))</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fl">0.5</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">16</span>,<span class="cn">NA</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">1</span>),</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Point estimates'</span>,<span class="st">'90% CIs for subgroup mean'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="predictorimportance_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>False suggestion of between-group differences caused by random variation</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In the diagram above, the tenth “group” might fail a hypothesis test to confirm that its true proportion of heads was 50%. But of course the “groups” are fictional and do not code for real differences between the flips.</p>
+<p>The danger we face as modelers is that the world is full of real groups which nonetheless do not provide useful information on our response variable. Cylinder counts are a very real grouping variable for car models, but that doesn’t mean the predictor is helpful in explaining fuel efficiency, at least not when related variables such as horsepower, weight, and displacement are accounted for. The more factors we add, and the more levels they contain, the greater the risk of falsely finding differences between groups.</p>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Note that this predictor is measured numerically but makes more sense as a categorical variable!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>As we saw in the previous section, a significant factor coefficient merely establishes a significant difference from the reference level;it does not necessarily mean the entire factor belongs in the model.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>This seeming paradox is caused by the small number of 8-cylinder cars in the data, making the standard error of their group effect much larger than that of the 6-cylinder cars.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -906,10 +1131,10 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./overfitting.html" class="pagination-link" aria-label="overfitting.html">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">overfitting.html</span></span>
+      <a href="./overfitting.html" class="pagination-link" aria-label="Overfitting">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Overfitting</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

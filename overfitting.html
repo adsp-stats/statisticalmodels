@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>overfitting – Statistical Analysis Using R: Online Notes</title>
+<title>Overfitting – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./overfitting.html"><span class="chapter-title">overfitting.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./overfitting.html"><span class="chapter-title">Overfitting</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -324,12 +388,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./overfitting.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">overfitting.html</span></a>
+  <a href="./overfitting.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Overfitting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./predictorimportance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">predictorimportance.html</span></a>
+  <a href="./predictorimportance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Predictor importance</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -454,17 +518,244 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-dangers-of-overfitting-or-misfitting-a-model" id="toc-the-dangers-of-overfitting-or-misfitting-a-model" class="nav-link active" data-scroll-target="#the-dangers-of-overfitting-or-misfitting-a-model">The dangers of overfitting or misfitting a model</a></li>
+  <li><a href="#learning-from-uninformative-error-variance" id="toc-learning-from-uninformative-error-variance" class="nav-link" data-scroll-target="#learning-from-uninformative-error-variance">“Learning” from uninformative error variance</a></li>
+  <li><a href="#distorting-the-parameter-estimates-through-multicollinearity" id="toc-distorting-the-parameter-estimates-through-multicollinearity" class="nav-link" data-scroll-target="#distorting-the-parameter-estimates-through-multicollinearity">Distorting the parameter estimates through multicollinearity</a></li>
+  <li><a href="#reducing-the-error-degrees-of-freedom-by-overfitting" id="toc-reducing-the-error-degrees-of-freedom-by-overfitting" class="nav-link" data-scroll-target="#reducing-the-error-degrees-of-freedom-by-overfitting">Reducing the error degrees of freedom by overfitting</a></li>
+  <li><a href="#causing-the-model-to-fail-completely" id="toc-causing-the-model-to-fail-completely" class="nav-link" data-scroll-target="#causing-the-model-to-fail-completely">Causing the model to fail completely</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./overfitting.html"><span class="chapter-title">overfitting.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./overfitting.html"><span class="chapter-title">Overfitting</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-overfitting" class="quarto-section-identifier"><span class="chapter-title">Overfitting</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>We have studied several ways to <em>add</em> predictors to the model: multiple linear regression, regression with multi-level factors, interaction terms, and further feature engineering. Now we shall learn ways to <em>remove</em> predictors from the model: how to know which predictors belong and which are superfluous; when and why a smaller and less powerful model might be considered better than a larger model that explains more variance. The process of finding the “right” set of predictors for a response variable is called <strong>model selection.</strong></p>
+<section id="the-dangers-of-overfitting-or-misfitting-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-dangers-of-overfitting-or-misfitting-a-model">The dangers of overfitting or misfitting a model</h2>
+<p>First, we must discuss <em>why</em> we would ever want to remove terms from a model, or choose not to use potential predictors in the first place. After all, every new predictor increases our model explanatory power, parameter likelihood, and R<sup>2</sup>, and reduces the sum of squared errors.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>But as has been said by economists and science fiction authors, “there ain’t no such thing as a free lunch” (TANSTAAFL). We pay a price for every new predictor added to the model, and at some point the price we pay exceeds the explanatory value we gain. In fact, we can pay several different prices.</p>
+</section>
+<section id="learning-from-uninformative-error-variance" class="level2">
+<h2 class="anchored" data-anchor-id="learning-from-uninformative-error-variance">“Learning” from uninformative error variance</h2>
+<p>As we add more and more predictors to our model, we expand our “model space” (the subspace containing all the possible predictor vectors <span class="math inline">\(\hat{\boldsymbol{y}}\)</span>, for every possible choice of betas) by more and more dimensions. In theory, the new predictors give us access to new dimensions which in turn allow us to create predictor vectors closer and closer to <span class="math inline">\(\boldsymbol{y}\)</span>. Generally, though, we see diminishing returns: our first few predictors capture the majority of <span class="math inline">\(\boldsymbol{y}\)</span>’s variance, while the later predictors contribute less and less to R<sup>2</sup>.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>As each new predictor “sucks out” some part of the explainable variance of <span class="math inline">\(\boldsymbol{y}\)</span> into the model sum of squares, the unexplainable error term <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> comprises more and more of the model’s residual variance. Once we’ve built a reasonably complete model, any new predictors we add are likely correlated by chance alone with <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> more than they are with the remaining explainable variance of <span class="math inline">\(\boldsymbol{y}\)</span>. We call this phenomenon <strong>spurious correlation.</strong></p>
+<p>Since these unnecessary predictors appear to explain <span class="math inline">\(\boldsymbol{y}\)</span>, we wrongly include them in our “story” of what causes <span class="math inline">\(Y\)</span> to be large or small. We also wrongly use these predictors to forecast future values of <span class="math inline">\(Y\)</span> when really they only helped to explain <em>the specific set of errors found in our sample</em>, and not any other errors in the future.</p>
+<p>Consider the following thought experiment: generate eleven columns of 100 standard normal variates, with every observation generated independently from each other. Call the first column <span class="math inline">\(Y\)</span> and call the remaining ten columns predictors <span class="math inline">\(A\)</span>–<span class="math inline">\(J\)</span>. Clearly, there are no real relationships between any of these columns (or rows, for that matter). The data contain nothing but random noise, simple “static”. And yet, if you carried out this experiment and regressed <span class="math inline">\(Y\)</span> on the predictors <span class="math inline">\(A\)</span>–<span class="math inline">\(J\)</span>, in nearly 40% of trials you would find at least one predictor significant at a 5% level:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3141</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>junk <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">1100</span>),<span class="at">ncol=</span><span class="dv">11</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(junk) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Y'</span>,<span class="fu">sapply</span>(LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="cf">function</span>(z) <span class="fu">paste</span>(<span class="st">'Column'</span>,z)))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">summary</span>(<span class="fu">lm</span>(Y<span class="sc">~</span>.,junk))<span class="sc">$</span>coefficients[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span>)],<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>p</em>-Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Intercept</td>
+<td style="text-align: right;">-0.017</td>
+<td style="text-align: right;">0.870</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Column A</td>
+<td style="text-align: right;">0.200</td>
+<td style="text-align: right;">0.066</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column B</td>
+<td style="text-align: right;">-0.090</td>
+<td style="text-align: right;">0.395</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><mark>Column C</mark></td>
+<td style="text-align: right;"><mark>-0.214</mark></td>
+<td style="text-align: right;"><mark>0.018</mark></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column D</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.997</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Column E</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">0.719</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column F</td>
+<td style="text-align: right;">-0.015</td>
+<td style="text-align: right;">0.879</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Column G</td>
+<td style="text-align: right;">0.075</td>
+<td style="text-align: right;">0.432</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column H</td>
+<td style="text-align: right;">0.115</td>
+<td style="text-align: right;">0.215</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Column I</td>
+<td style="text-align: right;">-0.028</td>
+<td style="text-align: right;">0.770</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column J</td>
+<td style="text-align: right;">0.079</td>
+<td style="text-align: right;">0.392</td>
+</tr>
+</tbody>
+</table>
+<p>The table above shows an example of such an experiment. The data are generated randomly, and repeated instances of this experiment would yield different results. But you can see that some of the “junk” columns were not correlated at all with <span class="math inline">\(\boldsymbol{y}\)</span>, some of the junk columns were weakly correlated with <span class="math inline">\(\boldsymbol{y}\)</span>, and one column (C) was so strongly correlated with <span class="math inline">\(\boldsymbol{y}\)</span> <em>by chance alone</em> that the model flagged it as a significant predictor. There are no real connections to learn from such data! We are only chasing ghosts.</p>
+</section>
+<section id="distorting-the-parameter-estimates-through-multicollinearity" class="level2">
+<h2 class="anchored" data-anchor-id="distorting-the-parameter-estimates-through-multicollinearity">Distorting the parameter estimates through multicollinearity</h2>
+<p>Throughout the previous sections I have maintained that the least squares (and/or maximum likelihood) estimators for the betas are unbiased. These estimated slopes will almost always be wrong, but neither too low nor too high. Such statements, I’m afraid, require an important caveat.</p>
+<p>OLS regression models the response vector <span class="math inline">\(\boldsymbol{y}\)</span> by projecting it into a subspace formed by the vector of ones along with all of our predictors <span class="math inline">\(\boldsymbol{x}_1,\boldsymbol{x}_2,\ldots,\boldsymbol{x}_k\)</span>. When all of our predictors are orthogonal (uncorrelated), we can uniquely decompose the model sum of squares SSM into sum-of-squares components contributed by each predictor. In fact, we can add and remove any of the predictors without changing the estimate (beta-hat) or the significance of the remaining parameters.</p>
+<p>However, when the predictors are correlated with each other, their parameter estimates become extremely sensitive to small changes in the data. We call this phenomenon <strong>multicollinearity</strong> and say that one or more predictors are <strong>collinear</strong> with each other. Recall the “hat matrix” from which we derive the parameter estimates:</p>
+<p><span class="math display">\[\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\boldsymbol{y}\]</span></p>
+<p>You can see that estimating the betas requires us to invert the predictor cross-products <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span>. Inverting a matrix is not always possible. In particular, we can <em>only</em> invert a matrix which is full rank (<em>i.e.</em> where the rows and columns are linearly independent). If the predictors are truly and fully collinear, then we cannot even estimate betas at all.</p>
+<p>Serious problems remain even when the predictors are only <em>mostly</em> collinear. The inverted matrix <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\)</span> will be extremely sensitive to the slight idiosyncratic errors in our data, and so the estimates <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> will vary wildly depending on these specific errors. While the estimates will remain technically <em>unbiased</em>, their <em>variance</em> will be so large that any single regression will likely find estimates for the beta-hats which are very far away from the true values.</p>
+<p>The exact amount of this distortion will depend on many factors, including sample size, the amount of correlation between the predictors, and the relative size of the error variance. But as one example, consider the iris measurement data described earlier. We could choose to predict the petal length of each flower either <em>(i)</em> using petal width, or sepal length, or sepal width alone, or <em>(ii)</em> using petal width, and sepal length, and sepal width together. See how their estimated betas change:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Petal.Width,iris))<span class="sc">$</span>coefficients</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Sepal.Length,iris))<span class="sc">$</span>coefficients</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Sepal.Width,iris))<span class="sc">$</span>coefficients</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Petal.Width<span class="sc">+</span>Sepal.Length<span class="sc">+</span>Sepal.Width,iris))<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p><em>Approach (i): Three simple regressions</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"><em>Predictor</em></th>
+<th style="text-align: right;"><em>Parameter estimate</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Petal width</td>
+<td style="text-align: right;">2.23</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sepal length</td>
+<td style="text-align: right;">1.86</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sepal width</td>
+<td style="text-align: right;">-1.74</td>
+</tr>
+</tbody>
+</table>
+<p><em>Approach (ii): One multiple regression</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"><em>Predictor</em></th>
+<th style="text-align: right;"><em>Parameter estimate</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Petal width</td>
+<td style="text-align: right;">1.44</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sepal length</td>
+<td style="text-align: right;">0.73</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sepal width</td>
+<td style="text-align: right;">-0.65</td>
+</tr>
+</tbody>
+</table>
+<p>Which is it? Should a one-unit increase in petal length lead us to expect a 2.23-unit increase in petal width, or a 1.44-unit increase? We cannot say. When our predictors are partly collinear, adding them both to the model may help reveal certain nuanced relationships <em>and</em> at the same time distort the true coefficients. We cannot easily untangle these effects.</p>
+<p>Despite this troubling new vulnerability for our modeling, I should reassure the reader that multicollinearity will not affect the overall explanatory power of the model: the fitted values, the total R<sup>2</sup>, the error variance, etc. Multicollinearity only affects our interpretation of individual coefficients.</p>
+</section>
+<section id="reducing-the-error-degrees-of-freedom-by-overfitting" class="level2">
+<h2 class="anchored" data-anchor-id="reducing-the-error-degrees-of-freedom-by-overfitting">Reducing the error degrees of freedom by overfitting</h2>
+<p>Even if the predictors are not highly correlated with the response variable <span class="math inline">\(Y\)</span>, or the other predictors, <em>or</em> the idiosyncratic errors, by adding enough predictors we can always guarantee a perfect or near-perfect model fit.</p>
+<p>Consider polynomial curves. As you likely learned many years ago, any two points uniquely define a line of the form <span class="math inline">\(y=a+bx\)</span>. Said differently, with two free parameters <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> to choose as we wish, we can always perfectly fit any two pairs <span class="math inline">\((x_1,y_1)\)</span> and <span class="math inline">\((x_2,y_2)\)</span>. We may also have learned to extend this rule: any three points define a parabola between them, a quadratic curve of the form <span class="math inline">\(y=a+bx+cx^2\)</span>. And any four points can be fit by a cubic equation with four free parameters, as illustrated by the figure below. These points were chosen randomly from uniform distributions: they have no true connection to each other. But with enough terms, we can create a perfect “model” for <span class="math inline">\(\boldsymbol{y}\)</span>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1414</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>overfitting <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">10</span><span class="sc">*</span><span class="fu">runif</span>(<span class="dv">4</span>),<span class="at">y=</span><span class="dv">10</span><span class="sc">*</span><span class="fu">runif</span>(<span class="dv">4</span>)),<span class="dv">2</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>overfitting.lm <span class="ot">&lt;-</span><span class="fu">lm</span>(y<span class="sc">~</span>x<span class="sc">+</span><span class="fu">I</span>(x<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(x<span class="sc">^</span><span class="dv">3</span>),overfitting)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(overfitting<span class="sc">$</span>x,overfitting<span class="sc">$</span>y,<span class="at">pch=</span><span class="dv">19</span>,<span class="at">cex=</span><span class="fl">1.5</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Perfect fit for four points using four parameters'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Y'</span>,<span class="at">xlab=</span><span class="st">'X'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="fl">1.5</span>,<span class="dv">5</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="fl">0.01</span>),<span class="fu">predict</span>(overfitting.lm,<span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="fl">0.01</span>))),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">3</span>,<span class="at">y=</span><span class="fl">9.6</span>,<span class="at">cex=</span><span class="fl">1.3</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">hat</span>(y)<span class="sc">==-</span><span class="fl">114.3+126.8</span><span class="sc">*</span>x<span class="fl">-41.7</span><span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span><span class="fl">+4.3</span><span class="sc">*</span>x<span class="sc">^</span><span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="overfitting_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>A perfect model fit caused by too many free parameters</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The same principles hold true for regression analysis (and parametric inference more broadly). With <span class="math inline">\(n\)</span> freely-varying parameters, we can always create a perfect fit for <span class="math inline">\(n\)</span> data points. Moreover, as the number of parameters comes close to <span class="math inline">\(n\)</span>, our model performance will grow very close to perfect even if the predictors contain no real information about <span class="math inline">\(Y\)</span>. The predictors are no longer driving the explanatory power of the model; rather, our explanatory power reflects the enormous range of prediction vectors <span class="math inline">\(\hat{\boldsymbol{y}}\)</span> made possible by all the different choices of weights for our many betas.</p>
+<p>Not only do we gain a false sense of explanatory power, but the statistical properties of our estimators will worsen even as the raw model fit improves. The “error degrees of freedom” of our model equals <span class="math inline">\(n-k-1\)</span>. We use this number to choose the <em>t</em> distribution to test our parameters, the F distribution which tests our entire model, adjusted R<sup>2</sup> (which we shall learn shortly), and the ANOVA tests which compare our model to other candidates. As <span class="math inline">\(k\)</span> becomes close to <span class="math inline">\(n\)</span>, this number shrinks and we lose precision in our estimates, calculate wider confidence intervals, and are generally less sure of the knowledge the model purports to provide.</p>
+</section>
+<section id="causing-the-model-to-fail-completely" class="level2">
+<h2 class="anchored" data-anchor-id="causing-the-model-to-fail-completely">Causing the model to fail completely</h2>
+<p>In extreme cases, using too many predictors will simply break our regression model:</p>
+<ul>
+<li><p>When we add predictors that are perfectly collinear (either with a single existing predictor, or with a combination of multiple existing predictors), then the hat matrix cannot be estimated since <span class="math inline">\(\mathbf{X}^T \mathbf{X}\)</span> will not be full-rank, and thus singular. Modern software often automatically identifies an arbitrary set of fully collinear predictors and removes all but one of them, or assigns parameter estimates but not significances.</p></li>
+<li><p>When we use at least as many predictors as we have observations (<span class="math inline">\(k \ge n\)</span>), the model becomes <strong>overdetermined</strong>. Multiple sets of estimated betas <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> will perfectly fit the data, and so no single result can be reported. Modern software usually exits the regression routine with an error condition in such situations.</p></li>
+</ul>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Technically, this is only true when adding new predictors which are not perfectly collinear with one or more existing predictors.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>This phenomenon is exacerbated by multicollinearity, but will also be observed in most real-world situations even when the predictors are uncorrelated.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -906,15 +1197,15 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./howtofeature.html" class="pagination-link" aria-label="Coding it up in R">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Coding it up in R</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./predictorimportance.html" class="pagination-link" aria-label="predictorimportance.html">
-        <span class="nav-page-text"><span class="chapter-title">predictorimportance.html</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./predictorimportance.html" class="pagination-link" aria-label="Predictor importance">
+        <span class="nav-page-text"><span class="chapter-title">Predictor importance</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
