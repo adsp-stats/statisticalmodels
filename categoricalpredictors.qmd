@@ -19,7 +19,7 @@ Simply to ensure we understand one another, let’s first cover what I mean by a
 
 **Ratio data** is also truly numeric, and furthermore contains a meaningful zero which permits proportional comparisons. 200 meters is twice as far as 100 meters. A 400 Hz tone is half the frequency of an 800 Hz tone. A -5% stock return is just as large as a +5% stock return. Temperature measured in Kelvin is ratio data, as is the time between meteor impacts, the number of traffic tickets received by drivers, and countries’ median life expectancies.
 
-Notice that I have not described these data types as continuous or discrete.  Interval and ratio data can be discrete, and categorical or interval data can be (in theory) infinitely subdivisible. We may choose a concept such as the difficulty of a baseball pitch and represent it as ratio data (the pitch speed), as ordinal data (“fast”, “medium”, “slow”), or as categorical data (“curveball”, “slider”, “four-seam fastball”, “two-seam fastball”).
+Notice that I have not described these data types as continuous or discrete. Interval and ratio data can be discrete, and categorical or ordinal data can be (in theory) infinitely subdivisible. We may choose a concept such as the difficulty of a baseball pitch and represent it as ratio data (the pitch speed), as ordinal data (“fast”, “medium”, “slow”), or as categorical data (“curveball”, “slider”, “four-seam fastball”, “two-seam fastball”).
 
 ## Using a binary variable as a predictor
 
