@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>multiplecomparisons – Statistical Analysis Using R: Online Notes</title>
+<title>Multiple comparisons – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -72,6 +72,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +113,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./multiplecomparisons.html"><span class="chapter-title">multiplecomparisons.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./multiplecomparisons.html"><span class="chapter-title">Multiple comparisons</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -334,17 +363,17 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./multiplecomparisons.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">multiplecomparisons.html</span></a>
+  <a href="./multiplecomparisons.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Multiple comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./modelcomparison.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">modelcomparison.html</span></a>
+  <a href="./modelcomparison.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./selectionalgorithms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">selectionalgorithms.html</span></a>
+  <a href="./selectionalgorithms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Selection algorithms</span></a>
   </div>
 </li>
       </ul>
@@ -454,17 +483,103 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-omnibus-f-test-revisited" id="toc-the-omnibus-f-test-revisited" class="nav-link active" data-scroll-target="#the-omnibus-f-test-revisited">The omnibus F-test, revisited</a></li>
+  <li><a href="#the-bonferroni-correction" id="toc-the-bonferroni-correction" class="nav-link" data-scroll-target="#the-bonferroni-correction">The Bonferroni correction</a></li>
+  <li><a href="#other-corrections-with-niche-applications" id="toc-other-corrections-with-niche-applications" class="nav-link" data-scroll-target="#other-corrections-with-niche-applications">Other corrections with niche applications</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./multiplecomparisons.html"><span class="chapter-title">multiplecomparisons.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./multiplecomparisons.html"><span class="chapter-title">Multiple comparisons</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-multiplecomparisons" class="quarto-section-identifier"><span class="chapter-title">Multiple comparisons</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>Many data scientists do not bother to make formal corrections for multiple comparisons when performing casual modeling, or with a small number of total predictors (say, <span class="math inline">\(k \lt 10\)</span>). But such corrections can be important, and we do have some useful tools. The methods below will help you build trust in your model findings when considering large factors, or looking at a wall of <em>t</em>-tests, or when needing to make a high-stakes argument that survives close scrutiny or opposition.</p>
+<section id="the-omnibus-f-test-revisited" class="level2">
+<h2 class="anchored" data-anchor-id="the-omnibus-f-test-revisited">The omnibus F-test, revisited</h2>
+<p>The first of these methods is the <em>omnibus</em> F-test, introduced earlier in the discussion of categorical predictors. The omnibus test can be extended to cover any linear model, containing either categorical or linear numeric predictors or both. This F test is a composite hypothesis test, where the null hypothesis is that <em>every non-intercept beta is truly zero</em>. If this null hypothesis were true, then none of the predictors we have tried belong in the model. The response variable <span class="math inline">\(Y\)</span> would be better modeled by a single intercept, a grand mean, rather than a predictive model.</p>
+<p>In the discussion of categorical predictors, I wrote out a formula for the omnibus F-test which used factor notation. We can now write the same test in our more conventional notation, to emphasize that the test can be applied even to models with numeric linear predictors.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}\)</span> be a regression model describing a response variable <span class="math inline">\(Y\)</span> as a linear combination of one or more predictor variables <span class="math inline">\(X\)</span> and an error term <span class="math inline">\(\varepsilon\)</span> which we assume to be IID Normal with mean 0 and constant variance. Let <span class="math inline">\(k\)</span> be the number of betas <span class="math inline">\(\beta_1,\beta_2,\ldots,\beta_k\)</span> used as coefficients for the predictors <span class="math inline">\(X\)</span>, (which does not include the intercept β_0), and let <span class="math inline">\(n\)</span> be the total number of observations. Then we may write the <strong>omnibus F-test</strong> for the model as:</p>
+<p><span class="math display">\[\frac{\mathrm{MSM}}{\mathrm{MSE}} = \frac{\sum_i (\hat{y}_i - \bar{y})^2⁄k}{\sum_i (y_i - \hat{y}_i)^2⁄(n-k-1)} \sim F_{k,n-k-1}\]</span></p>
+<p>The hypotheses of this test are: <span class="math display">\[H_0:\qquad \beta_j = 0 \quad\forall j:1 \le j \le k\]</span> (“All the true slopes of the model are zero, other than the intercept <span class="math inline">\(\beta_0\)</span>”)</p>
+<p><span class="math display">\[H_1: \qquad \exists \; j:1 \le j \le k \quad \mathrm{s.t.} \; \beta_j \ne 0\]</span> (“At least one of the true slopes, other than the intercept <span class="math inline">\(\beta_0\)</span>, is nonzero”)</p>
+</div>
+</div>
+<p>In the model which begins <a href="predictorimportance.html" class="quarto-xref"><span>Predictor importance</span></a>, we saw that the model F-statistic was 31.37 on 5 and 26 degrees of freedom, for a <span class="math inline">\(p\)</span>-value of &lt;0.0001. From such a large F-statistic we conclude that <em>at least some</em> of our predictors do provide significant explanatory power. We cannot say which ones, but we feel confident that the model provides a real explanatory improvement over no model at all, <em>i.e.</em> a flat prediction of the same fuel efficiency for every car.</p>
+<p>This omnibus F test avoids the multiple comparison problem by simply drawing a single comparison across every predictor beta in our model. The advantage of this approach is that the true Type I error rate is restored to <span class="math inline">\(\alpha\)</span>. The disadvantage is that we lose the ability to say which of the terms <span class="math inline">\(X_1,X_2,\ldots,X_k\)</span> are significantly explaining <span class="math inline">\(Y\)</span>.</p>
+</section>
+<section id="the-bonferroni-correction" class="level2">
+<h2 class="anchored" data-anchor-id="the-bonferroni-correction">The Bonferroni correction</h2>
+<p>The disadvantage of the omnibus F-test is that we no longer learn the significance or importance of individual predictors. We can address that difficulty with our second method for dealing with multiple comparisons: the Bonferroni correction. This method is quite simple to learn and simple to perform, though it suffers from one drawback.</p>
+<p>The Bonferroni correction simply alters our significance threshold, dividing it by the number of test results we are examining. If we were using a significance level of <span class="math inline">\(\alpha = 0.05\)</span>, and we examine five test results, then we should only reject the null hypothesis of those tests where <span class="math inline">\(p \le \alpha⁄5 = 0.01\)</span>:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(H_0^1, H_0^2, \ldots, H_0^m\)</span> be a set of <span class="math inline">\(m\)</span> null hypotheses, and let <span class="math inline">\(\alpha\)</span> be the intended family-wise Type I error rate, <em>i.e.</em> the probability of falsely rejecting at least one of the null hypotheses.</p>
+<p>The <strong>Bonferroni correction</strong> holds that the true family-wise Type I error rate will be no more than <span class="math inline">\(\alpha\)</span> if each component hypothesis is evaluated using an individual significance threshold of <span class="math inline">\(\alpha^* = \alpha⁄m\)</span>.</p>
+</div>
+</div>
+<p>If we were to apply this correction to the full model summarized at the top of <a href="predictorimportance.html" class="quarto-xref"><span>Predictor importance</span></a>, aiming for a true family-wise error rate of 5%, we would hold each of the non-intercept predictor t-tests to a new standard of <span class="math inline">\(\alpha^* = 0.01\)</span>.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> The only conclusion altered by this correction is that the Cylinder=6 dummy variable would no longer be found significant (<em>p</em>=0.026). At this point, both the Cylinder=6 dummy and the Cylinder=8 dummy would be considered insignificant, and many statisticians would thus choose to remove Cylinder from the model altogether, just as the ANOVA table F test suggested.</p>
+<p>The simplicity and flexibility of the Bonferroni correction is self-evident, but it suffers from one disadvantage: it’s a very <em>conservative</em> test, meaning that it will tend to discourage us from rejecting the null hypothesis in situations where we <em>should</em> reject the null. Bonferroni is a sledgehammer, and sometimes we need a scalpel. On the other hand, in cases where we need to prove to a skeptical or hostile audience that our predictors belong in the model, the Bonferroni correction can be a powerful and immunizing choice: any set of terms that survives the Bonferroni correction will be difficult to criticize as not really belonging in the model.</p>
+</section>
+<section id="other-corrections-with-niche-applications" class="level2">
+<h2 class="anchored" data-anchor-id="other-corrections-with-niche-applications">Other corrections with niche applications</h2>
+<p>There are other methods which are seen somewhat rarely, or in specialized circumstances. The application of these methods may be beyond the scope of the current course, but students are encouraged to learn more about these techniques if they should find themselves in the right situation:</p>
+<ul>
+<li><p><em>Tukey’s honest significant difference (Tukey’s HSD)</em> works well with models which only examine a single categorical predictor, or which can otherwise be expressed as a single set of group means. The method provides a point estimate of every true difference between every possible pair of groups, and also provides an adjusted confidence interval for the true differences between these groups. The method is quite accurate and adjusts each comparison differently, based on sample sizes and the total spread of group means. The test statistic is the <em>studentized range distribution</em>, which is calculated by table lookup, and which we will not otherwise use in this document. This method would usually be considered superior to the Bonferroni correction when used in a model containing only categorical predictors.</p></li>
+<li><p><em>Contrasts</em> are another way to study differences between group means. Using contrasts allows the modeler to not simply ask whether two groups share the same mean (<span class="math inline">\(\mu_a = \mu_b\)</span>), but to ask more complicated questions such as whether a variable with five levels/groups might be best understood as one supergroup of two levels and another supergroup of three levels. Contrasts can be calculated after a regression has been run, and they can inspire new features to use in future models. Contrasts can test single hypotheses about a combination of group means in the data or composite hypotheses about <em>multiple</em> overlapping combinations of group means which are all tested at the same time, using an F test. However, contrasts cannot be easily used in models with continuous numeric predictors.</p></li>
+<li><p><em>Scheffe’s method</em>. This technique combines elements of both Tukey’s HSD as well as contrasts, allowing the user to simultaneously test multiple contrasts of the group means while adjusting each <em>p</em>-value by an amount specific to its group means and sample sizes. Scheffe’s method can be used on more complex contrasts while Tukey’s HSD can only be used to examine whether pairs of group means are equal to each other. However, for a small number of comparisons, Tukey’s HSD will often have slightly greater resolution.</p></li>
+</ul>
+<p>All of these methods are used in regression models where every predictor is a categorical factor. The corresponding methods for dealing with multiple comparisons among continuous predictors mostly boil down to F tests, including the omnibus F test mentioned here, the ANOVA F test mentioned in <a href="predictorimportance.html" class="quarto-xref"><span>Predictor importance</span></a>, and an ANOVA comparison test which we will learn in the next section.</p>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Notice that the omnibus F test <em>does</em> require our residuals to be IID normal.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Without a compelling reason, we do not have to test the intercept or include it in <em>m</em> for this correction.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -906,15 +1021,15 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./predictorimportance.html" class="pagination-link" aria-label="Predictor importance">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Predictor importance</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./modelcomparison.html" class="pagination-link" aria-label="modelcomparison.html">
-        <span class="nav-page-text"><span class="chapter-title">modelcomparison.html</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./modelcomparison.html" class="pagination-link" aria-label="Model comparisons">
+        <span class="nav-page-text"><span class="chapter-title">Model comparisons</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

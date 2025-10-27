@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>modelcomparison – Statistical Analysis Using R: Online Notes</title>
+<title>Model comparisons – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./modelcomparison.html"><span class="chapter-title">modelcomparison.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./modelcomparison.html"><span class="chapter-title">Model comparisons</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -334,17 +398,17 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./multiplecomparisons.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">multiplecomparisons.html</span></a>
+  <a href="./multiplecomparisons.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Multiple comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./modelcomparison.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">modelcomparison.html</span></a>
+  <a href="./modelcomparison.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Model comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./selectionalgorithms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">selectionalgorithms.html</span></a>
+  <a href="./selectionalgorithms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Selection algorithms</span></a>
   </div>
 </li>
       </ul>
@@ -454,17 +518,305 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#anova-tests-to-choose-between-nested-models" id="toc-anova-tests-to-choose-between-nested-models" class="nav-link active" data-scroll-target="#anova-tests-to-choose-between-nested-models">ANOVA tests to choose between nested models</a></li>
+  <li><a href="#adjusted-r2-aic-and-choosing-between-non-nested-models" id="toc-adjusted-r2-aic-and-choosing-between-non-nested-models" class="nav-link" data-scroll-target="#adjusted-r2-aic-and-choosing-between-non-nested-models">Adjusted R2, AIC, and choosing between non-nested models</a>
+  <ul class="collapse">
+  <li><a href="#adjusted-r2" id="toc-adjusted-r2" class="nav-link" data-scroll-target="#adjusted-r2">Adjusted R<sup>2</sup></a></li>
+  <li><a href="#aic" id="toc-aic" class="nav-link" data-scroll-target="#aic">AIC</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./modelcomparison.html"><span class="chapter-title">modelcomparison.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overfitting.html">6. Model Selection</a></li><li class="breadcrumb-item"><a href="./modelcomparison.html"><span class="chapter-title">Model comparisons</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-modelcomparisons" class="quarto-section-identifier"><span class="chapter-title">Model comparisons</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>We’ve now seen how to assess individual predictors and also how to determine if none of our predictors offer significant explanatory power. However, we still lack tools for comparing two fully-featured models and determining whether one is meaningfully better or worse than the other. This section provides several methods and metrics which will help us compare models, even models with no common predictors.</p>
+<p>First, let’s establish the reason why we even care. After all, among any two models for the same response vector <span class="math inline">\(\boldsymbol{y}\)</span>, one has the higher R<sup>2</sup> and the smaller residual sum-of-squares.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> We could simply pick that model, every time. Why don’t we?</p>
+<p>Statisticians place a great deal of belief in the <strong>principle of parsimony</strong>: among competing explanations, we often choose the larger and more complicated model only when it explains <em>significantly</em> more of <span class="math inline">\(\boldsymbol{y}\)</span>. If the two models provide <em>similar</em> explanatory power, we generally choose the smaller and simpler model, even if it performs a little worse.</p>
+<section id="anova-tests-to-choose-between-nested-models" class="level2">
+<h2 class="anchored" data-anchor-id="anova-tests-to-choose-between-nested-models">ANOVA tests to choose between nested models</h2>
+<p>When one model contains all the terms of a smaller model, and other terms besides, then we say that the two are <strong>nested models</strong> and that the smaller model is nested within the larger model. Because the larger model starts from exactly the same terms as the smaller model and simply adds more predictors, it will always perform at least as well as the smaller model. But will it perform significantly better? Together, the IID Normal assumption for our errors and the least squares framework give us a convenient framework for evaluating which model is superior.</p>
+<p>Consider two nested models: the <strong>full model</strong> which contains all terms, and the <strong>reduced model</strong> which contains some fewer number of terms. The model space of the reduced model is therefore different from the model space of the full model. In particular, the residuals of the reduced model will be orthogonal to its <em>own</em> model space, but <em>not orthogonal</em> to the model space of the full model. Consequently, SSE<sub><em>red</em></sub>, which is related to the length of the vector of the residuals, will be longer than SSE<sub><em>full</em></sub>. And through the relation that SST = SSM + SSE, we can see that SSM<sub><em>full</em></sub> will be longer than SSM<sub><em>red</em></sub>:<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>vec.length <span class="ot">&lt;-</span> <span class="cf">function</span>(v) <span class="fu">sqrt</span>(v<span class="sc">%*%</span>v)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">2</span>,<span class="dv">3</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>Yhat <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y<span class="sc">~</span>X)<span class="sc">$</span>fitted.values</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y<span class="sc">~</span>X)<span class="sc">$</span>residuals</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="cn">NA</span>,<span class="at">y=</span><span class="cn">NA</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.6</span>,<span class="fl">3.2</span>),<span class="at">xlab=</span><span class="st">'Model space'</span>,<span class="at">ylab=</span><span class="st">'Error space'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">axes=</span><span class="cn">FALSE</span>,<span class="at">main=</span><span class="st">'Geometry of ANOVA Model Comparisons'</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y)),<span class="dv">0</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fu">vec.length</span>(e),<span class="dv">0</span>),<span class="at">lwd=</span><span class="dv">3</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y)),<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y))),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fu">vec.length</span>(e)))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y))<span class="sc">-</span><span class="fl">0.4</span>,<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y))),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span><span class="fl">-0.6</span>,<span class="fu">vec.length</span>(e)),<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y)),<span class="fu">vec.length</span>(Yhat<span class="sc">-</span><span class="fu">mean</span>(Y))<span class="sc">-</span><span class="fl">0.4</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="fl">0.6</span>),<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lwd=</span><span class="dv">3</span>,<span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">0.8</span>,<span class="at">y=</span><span class="fl">1.2</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bold</span>(<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">bgroup</span>(<span class="st">'|'</span>,Y<span class="sc">-</span><span class="fu">tilde</span>(Y),<span class="st">'|'</span>),<span class="st">'|'</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>SST)))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span>,<span class="at">y=</span><span class="fl">0.25</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">hat</span>(Y)<span class="sc">-</span><span class="fu">tilde</span>(Y),<span class="st">'|'</span>),<span class="st">'|'</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>SSM[full]))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span>,<span class="at">y=</span><span class="sc">-</span><span class="fl">0.6</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">hat</span>(Y)<span class="sc">-</span><span class="fu">tilde</span>(Y),<span class="st">'|'</span>),<span class="st">'|'</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>SSM[red]),<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">4.4</span>,<span class="at">y=</span><span class="fl">1.5</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">bgroup</span>(<span class="st">'|'</span>,Y<span class="sc">-</span><span class="fu">hat</span>(Y),<span class="st">'|'</span>),<span class="st">'|'</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>SSE[full]))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">3</span>,<span class="at">y=</span><span class="fl">1.5</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bgroup</span>(<span class="st">'|'</span>,<span class="fu">bgroup</span>(<span class="st">'|'</span>,Y<span class="sc">-</span><span class="fu">hat</span>(Y),<span class="st">'|'</span>),<span class="st">'|'</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>SSE[red]),<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">4.2</span>,<span class="at">y=</span><span class="sc">-</span><span class="fl">0.3</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bold</span>(SSM[full]<span class="sc">-</span>SSM[red])),<span class="at">col=</span><span class="st">'grey50'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="modelcomparison_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>The least-squares basis for an ANOVA comparison test</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In the diagram above, consider what would happen if the additional model space dimensions afforded by the full model were, essentially, junk — spurious correlation — random noise. Under this hypothesis, the blue reduced model is the “true” model, and the full model is a distraction. We can show that the distance the grey dashed line moves us away from the “truth” would be equal to the sum of squares of uncorrelated normal errors, equal in number to the extra parameters of the full model. This suggests that the squared-distance of the grey line is chi-square distributed under the null hypothesis, which in turn produces an F-test of the difference in model strengths:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{y}\)</span> be a sample of <span class="math inline">\(n\)</span> observations of some response variable <span class="math inline">\(Y\)</span>, and let <span class="math inline">\(\mathrm{M}_{red}\)</span> be an OLS regression of <span class="math inline">\(\boldsymbol{y}\)</span> using <span class="math inline">\(k_{red}\)</span> predictors. Suppose that <span class="math inline">\(\mathrm{M}_{red}\)</span> is nested inside <span class="math inline">\(\mathrm{M}_{full}\)</span>, a larger OLS regression model containing <span class="math inline">\(k_full\)</span> predictors, and let <span class="math inline">\(\beta_{k_{red}+1}, \beta_{k_{red}+2}, \ldots, \beta_{k_{full}}\)</span> be the parameters of <span class="math inline">\(\mathrm{M}_{full}\)</span> not found in <span class="math inline">\(\mathrm{M}_{red}\)</span>. Then,</p>
+<p><span class="math display">\[\frac{\mathrm{SSE}_{red} - \mathrm{SSE}_{full}}{k_{full} - k_{red}} \left/ \frac{\mathrm{SSE}_{full}}{n - k_{full} - 1} \sim F_{(k_{full} - k_{red}),(n - k_{full} - 1)} \right.\]</span></p>
+<p>is an F-distributed test statistic for the null hypothesis that <span class="math inline">\(\beta_{k_{red}+1}, \beta_{k_{red}+2}, \ldots, \beta_{k_{full}}\)</span> all equal zero, <em>i.e.</em> that the full model’s extra parameters are irrelevant to the regression.</p>
+</div>
+</div>
+<p>Let’s implement this test using model information from a statistical software package. Consider the fuel efficiency dataset discussed earlier (in <a href="predictorimportance.html" class="quarto-xref"><span>Predictor importance</span></a>). Imagine a full model which contains a categorical predictor for cylinder count (4, 6, or 8 — requiring two dummy variables) and numeric predictors for horsepower, weight, and displacement. We can compare this to a reduced model which only contains the categorical predictor for cylinder count. Once we fit both models, we can easily extract their respective SSMs and SSEs:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Full model</strong></th>
+<th style="text-align: left;"><strong>Reduced model</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Predictor names</td>
+<td style="text-align: left;">Horsepower, weight, displacement, cylinder</td>
+<td style="text-align: left;">Cylinder</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>k</em> (non-intercept betas)</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>n</em> (sample size)</td>
+<td style="text-align: left;">32</td>
+<td style="text-align: left;">32</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SSM</td>
+<td style="text-align: left;">965.92</td>
+<td style="text-align: left;">824.78</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SSE</td>
+<td style="text-align: left;">160.13</td>
+<td style="text-align: left;">301.26</td>
+</tr>
+</tbody>
+</table>
+<p>And with this information we can complete the hypothesis test:</p>
+<p><span class="math display">\[\frac{\mathrm{SSE}_{red} - \mathrm{SSE}_{full}}{k_{full} - k_{red}} \left/ \frac{\mathrm{SSE}_{full}}{n - k_{full} - 1} \right. =  \frac{301.26 - 160.13}{5 - 2} \left/ \frac{160.13}{32 - 5 - 1} \right. \approx 7.64 \sim F_{3,26}\]</span></p>
+<p>With a table or software assistance we find that the <em>p</em>-value of this F score is &lt;0.001, which provides plenty of evidence to reject the null. We might interpret the test as follows: horsepower, weight, and displacement improve our model fit by a large amount; in contrast, three “junk predictors”, containing nothing but spurious correlations, would only improve our model fit by the same amount in fewer than 0.1% of random samples. Therefore we will keep the predictors, and choose the full model.</p>
+<p>This test is very straightforward and can be used with <em>any</em> nested least-squares models, including those with categorical predictors and interaction terms. The disadvantage of this test is that it <em>only</em> works with nested models and a firm belief that the errors are truly IID normal. Otherwise — and as with any distribution-based hypothesis test — the <em>p</em>-values of the test will be unreliable. When the <em>p</em>-values are very large (say, <span class="math inline">\(p \gt 0.5\)</span>) or very small (say, <span class="math inline">\(p \lt 10^{-6}\)</span>), some mildly non-IID behavior should not stop you from relying on these tests.</p>
+</section>
+<section id="adjusted-r2-aic-and-choosing-between-non-nested-models" class="level2">
+<h2 class="anchored" data-anchor-id="adjusted-r2-aic-and-choosing-between-non-nested-models">Adjusted R2, AIC, and choosing between non-nested models</h2>
+<p>While the ANOVA test above is both conceptually straightforward and easy to calculate, we cannot use it to compare non-nested models. For example, we might want to test whether a predictor is more effective when log-transformed or not: <span class="math inline">\(Y \sim X\)</span> and <span class="math inline">\(Y \sim \log X\)</span> are not nested models, since log is a nonlinear transformation of the original variable. As another example, we might want to compare an established academic model, <span class="math inline">\(Y \sim X_1 + X_2 + X_3\)</span>, against a new theoretical model with no terms in common, <span class="math inline">\(Y \sim X_4 + X_5\)</span>. In this section we’ll discuss two new tools which help us with such comparisons.</p>
+<section id="adjusted-r2" class="level3">
+<h3 class="anchored" data-anchor-id="adjusted-r2">Adjusted R<sup>2</sup></h3>
+<p>Our first tool is called “adjusted” R<sup>2</sup> and, as the name implies, it subtly alters the original R<sup>2</sup> calculation in order to make comparisons between models of different sizes:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose an OLS regression model trained on a sample of <span class="math inline">\(n\)</span> observations and using <span class="math inline">\(k\)</span> predictor terms (not including the intercept). Then the adjusted R<sup>2</sup> of the model is given by the following formula:</p>
+<p><span class="math display">\[R_{adj}^2 = 1 - \frac{\mathrm{SSE}/(n-k-1)}{\mathrm{SST}⁄(n-1)}\]</span></p>
+</div>
+</div>
+<p>For comparison, recall that <span class="math inline">\(R^2 = 1 - \mathrm{SSE}⁄\mathrm{SST}\)</span>. So this adjusted R<sup>2</sup> calculation converges toward the raw R<sup>2</sup> when <span class="math inline">\(k \ll n\)</span>, and becomes very small — or even negative — when <span class="math inline">\(k\)</span> approaches <span class="math inline">\(n\)</span> in size.</p>
+<p>Adjusted R<sup>2</sup> therefore provides a metric which balances explanatory power against the number of terms in the model. We have seen before that adding predictors can never <em>decrease</em> raw R<sup>2</sup>, and so we could create arbitrarily high R<sup>2</sup> values simply by adding enough “junk” predictors to the model. Adjusted R<sup>2</sup> would penalize this approach:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#penalty rate of adjusted r^2 (will take time to run)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8192</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>adjr2.sims <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="dv">21</span><span class="sc">*</span><span class="dv">100</span><span class="sc">*</span><span class="dv">10000</span>),<span class="at">dim=</span><span class="fu">c</span>(<span class="dv">100</span>,<span class="dv">21</span>,<span class="dv">10000</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>adjr2.r2 <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(<span class="fu">apply</span>(adjr2.sims,<span class="dv">3</span>,<span class="cf">function</span>(z)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">21</span>,<span class="cf">function</span>(y) <span class="fu">summary</span>(<span class="fu">lm</span>(z[,<span class="dv">1</span>]<span class="sc">~</span>z[,<span class="dv">2</span><span class="sc">:</span>y]))<span class="sc">$</span>r.squared)))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>adjr2.adjr2 <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(<span class="fu">apply</span>(adjr2.sims,<span class="dv">3</span>,<span class="cf">function</span>(z)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">21</span>,<span class="cf">function</span>(y) <span class="fu">summary</span>(<span class="fu">lm</span>(z[,<span class="dv">1</span>]<span class="sc">~</span>z[,<span class="dv">2</span><span class="sc">:</span>y]))<span class="sc">$</span>adj.r.squared)))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>adjr2.Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fl">0.5</span>,<span class="at">nrow=</span><span class="dv">21</span>,<span class="at">ncol=</span><span class="dv">21</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(adjr2.Sigma) <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>adjr2b.r2 <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(<span class="fu">replicate</span>(<span class="at">n=</span><span class="dv">10000</span>,<span class="fu">sapply</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">21</span>,<span class="cf">function</span>(z){</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="dv">100</span>,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">21</span>),adjr2.Sigma)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(<span class="fu">lm</span>(tmp[,<span class="dv">1</span>]<span class="sc">~</span>tmp[,<span class="dv">2</span><span class="sc">:</span>z]))<span class="sc">$</span>r.squared})))</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>adjr2b.adjr2 <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(<span class="fu">replicate</span>(<span class="at">n=</span><span class="dv">10000</span>,<span class="fu">sapply</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">21</span>,<span class="cf">function</span>(z){</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="dv">100</span>,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">21</span>),adjr2.Sigma)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(<span class="fu">lm</span>(tmp[,<span class="dv">1</span>]<span class="sc">~</span>tmp[,<span class="dv">2</span><span class="sc">:</span>z]))<span class="sc">$</span>adj.r.squared})))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,adjr2.r2,<span class="at">main=</span><span class="st">'R^2 metrics for models with "junk" predictors'</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Number of predictors'</span>,<span class="at">ylab=</span><span class="st">'Model metric'</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">16</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.01</span>,<span class="fl">0.21</span>))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,adjr2.adjr2,<span class="at">pch=</span><span class="dv">16</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">pch=</span><span class="dv">16</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'R^2'</span>,<span class="st">'Adj R^2'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="modelcomparison_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Adjusted R^2 penalties in different modeling contexts</figcaption>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,adjr2b.r2,<span class="at">main=</span><span class="st">'R^2 metrics for models with "good" predictors'</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Number of predictors'</span>,<span class="at">ylab=</span><span class="st">'Model metric'</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">16</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.01</span>,<span class="fl">0.61</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,adjr2b.adjr2,<span class="at">pch=</span><span class="dv">16</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">pch=</span><span class="dv">16</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'R^2'</span>,<span class="st">'Adj R^2'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="modelcomparison_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Adjusted R^2 penalties in different modeling contexts</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above shows how adjusted R<sup>2</sup> can differ significantly from raw R<sup>2</sup>. The left plot was based on simulated data where every predictor was truly uncorrelated with the response. Raw R<sup>2</sup> still climbs almost linearly due to spurious correlations, but adjusted R<sup>2</sup> correctly hovers near 0% no matter how many predictors we add to the model. The right plot uses predictors which were designed to have “real” explanatory power. The R<sup>2</sup> values are much higher here, and continue to climb as we add more predictors. The adjusted R<sup>2</sup> scores also go up as we add more and more “real” predictors, but these gains taper sharply as the model grows.</p>
+<p>In short, adjusted R<sup>2</sup> provides an “apples-to-apples” comparison of the explanatory power of any two models for the same response vector y, even if the models have a different number of terms. We can use adjusted R<sup>2</sup> to compare nested models, or non-nested models. When comparing two models of the same size, we can use either adjusted R<sup>2</sup> or raw R<sup>2</sup>, since the parameter penalty will be the same for both models.</p>
+<p>Adjusted R<sup>2</sup> does bring two small disadvantages. The first is that it lacks the easy interpretability of R<sup>2</sup>, which literally measures the proportion of the variance of <span class="math inline">\(\boldsymbol{y}\)</span> described by our model predictions <span class="math inline">\(\hat{\boldsymbol{y}}\)</span>. Adjusted R<sup>2</sup> measures something <em>similar</em>, but because of its parameter penalty it remains slightly harder to communicate to a non-technical audience. The second disadvantage is that adjusted R<sup>2</sup>, like raw R<sup>2</sup>, is a least squares technique that we cannot use when comparing to models built outside the least squares framework, such as the generalized linear models described in later sections, or machine learning methods.</p>
+</section>
+<section id="aic" class="level3">
+<h3 class="anchored" data-anchor-id="aic">AIC</h3>
+<p>The second tool we have for comparing non-nested models is called the <em>Akaike Information Criterion</em> and known much more commonly as <em>AIC</em>:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose a parametric model containing <span class="math inline">\(p\)</span> parameters (including the intercept, if present, and any other estimated parameter, such as the error variance <span class="math inline">\(\sigma\)</span>). Let <span class="math inline">\(\ell_{ML}\)</span> be the log-likelihood of the model when using the maximum likelihood estimators for the parameters. Then the <strong>Akaike Information Criterion (AIC)</strong> of the model is given by the following formula:</p>
+<p><span class="math display">\[\mathrm{AIC} = 2p - 2\ell_{LM}\]</span></p>
+</div>
+</div>
+<p>Because we try to maximize likelihood, which enters AIC with a negative sign, <em>lower values of AIC describe better models.</em> By “lower”, I mean that large negative values such as -100 would be even better than small negative values such as -5.</p>
+<p>Since the number of parameters enters the model with a positive sign, larger models will create a penalty as we try to find the lowest AIC. Just like adjusted R<sup>2</sup>, we have found a way to balance a pure measure of model fit (log-likelihood) against a penalty for model size (number of parameters).<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>AIC addresses one of the problems faced by adjusted R<sup>2</sup>: we can use AIC to compare any two parametric models, even models outside the least squares framework. However, AIC brings its own disadvantage: it lacks any sense of absolute scale. Recall that R<sup>2</sup> is always between 0 and 1, and adjusted R<sup>2</sup> is almost always between 0 and 1 as well. Even when we are not comparing models, we know that a score of 0 is “bad” and a score near 1 is “good.” But AIC provides no sense of scale. The exact same model applied to a new sample might have wildly different AICs, and even simply changing the sample size can drastically change AIC. Put another way, <em>a model’s AIC has almost no meaning by itself, and only gains meaning when compared to another model’s AIC</em>.</p>
+<p>These two tools, adjusted R<sup>2</sup> and AIC, share one trait: they are only metrics, and not hypothesis tests. When you compare two models using either adjusted R<sup>2</sup> or AIC, you will always receive an answer of which model is “better”. This answer will even account for differences in model size. But neither adjusted R<sup>2</sup> nor AIC can tell us whether the better model is <em>significantly</em> better. For that we would need a hypothesis test, such as the ANOVA comparison test above.</p>
+<p>Earlier, in #sec-interactions, we examined a dataset of iris flower measurements, and considered four models of increasing complexity. Let’s examine those again, with these new tools:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>iris.lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Species,iris)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>iris.lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Petal.Width,iris)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>iris.lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Species<span class="sc">+</span>Petal.Width,iris)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>iris.lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Petal.Length<span class="sc">~</span>Species<span class="sc">*</span>Petal.Width,iris)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">summary</span>(iris.lm1)<span class="sc">$</span>r.squared,<span class="fu">summary</span>(iris.lm1)<span class="sc">$</span>adj.r.squared,<span class="fu">AIC</span>(iris.lm1))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">summary</span>(iris.lm2)<span class="sc">$</span>r.squared,<span class="fu">summary</span>(iris.lm2)<span class="sc">$</span>adj.r.squared,<span class="fu">AIC</span>(iris.lm2))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">summary</span>(iris.lm3)<span class="sc">$</span>r.squared,<span class="fu">summary</span>(iris.lm3)<span class="sc">$</span>adj.r.squared,<span class="fu">AIC</span>(iris.lm3))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">summary</span>(iris.lm4)<span class="sc">$</span>r.squared,<span class="fu">summary</span>(iris.lm4)<span class="sc">$</span>adj.r.squared,<span class="fu">AIC</span>(iris.lm4))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Model</th>
+<th style="text-align: left;">Predictors for petal length</th>
+<th style="text-align: left;">R<sup>2</sup></th>
+<th style="text-align: left;">Adj R<sup>2</sup></th>
+<th style="text-align: left;">AIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">species</td>
+<td style="text-align: left;">0.941</td>
+<td style="text-align: left;">0.941</td>
+<td style="text-align: left;">177.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">petal width</td>
+<td style="text-align: left;">0.927</td>
+<td style="text-align: left;">0.927</td>
+<td style="text-align: left;">208.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">species + petal width</td>
+<td style="text-align: left;">0.955</td>
+<td style="text-align: left;">0.954</td>
+<td style="text-align: left;">139.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">species * petal width</td>
+<td style="text-align: left;">0.959</td>
+<td style="text-align: left;">0.958</td>
+<td style="text-align: left;">128.3</td>
+</tr>
+</tbody>
+</table>
+<p>In this case, all of the evidence points in the same direction. The model with an interaction term not only explains the response variable best, but it also performs the best even when taking into account its larger model size.</p>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Technically they could tie, but in practice this only happens when they are essentially the same model.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>And by equal amounts: SSM<sub><em>full</em></sub> – SSM<sub><em>red</em></sub> = SSE<sub><em>red</em></sub> – SSE<sub><em>full</em></sub>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Further research has suggested alternative penalties. You may come across BIC (Bayesian Information Criterion), which is also called SBC, or see AICc, which is a “corrected” AIC used for small samples. These differences or improvements are usually marginal, and most data scientists continue to use AIC or at least accept AIC-based conclusions.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -906,15 +1258,15 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./multiplecomparisons.html" class="pagination-link" aria-label="multiplecomparisons.html">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">multiplecomparisons.html</span></span>
+      <a href="./multiplecomparisons.html" class="pagination-link" aria-label="Multiple comparisons">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Multiple comparisons</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./selectionalgorithms.html" class="pagination-link" aria-label="selectionalgorithms.html">
-        <span class="nav-page-text"><span class="chapter-title">selectionalgorithms.html</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./selectionalgorithms.html" class="pagination-link" aria-label="Selection algorithms">
+        <span class="nav-page-text"><span class="chapter-title">Selection algorithms</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
