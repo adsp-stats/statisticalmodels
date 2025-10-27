@@ -1,0 +1,53 @@
+# Multiple comparisons {#sec-multiplecomparisons}
+
+Many data scientists do not bother to make formal corrections for multiple comparisons when performing casual modeling, or with a small number of total predictors (say, $k \lt 10$). But such corrections can be important, and we do have some useful tools. The methods below will help you build trust in your model findings when considering large factors, or looking at a wall of *t*-tests, or when needing to make a high-stakes argument that survives close scrutiny or opposition.
+
+## The omnibus F-test, revisited
+The first of these methods is the *omnibus* F-test, introduced earlier in the discussion of categorical predictors. The omnibus test can be extended to cover any linear model, containing either categorical or linear numeric predictors or both. This F test is a composite hypothesis test, where the null hypothesis is that *every non-intercept beta is truly zero*. If this null hypothesis were true, then none of the predictors we have tried belong in the model. The response variable $Y$ would be better modeled by a single intercept, a grand mean, rather than a predictive model.
+
+In the discussion of categorical predictors, I wrote out a formula for the omnibus F-test which used factor notation. We can now write the same test in our more conventional notation, to emphasize that the test can be applied even to models with numeric linear predictors.^[Notice that the omnibus F test *does* require our residuals to be IID normal.]
+
+::: {.callout-note}
+Let $\boldsymbol{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}$ be a regression model describing a response variable $Y$ as a linear combination of one or more predictor variables $X$ and an error term $\varepsilon$ which we assume to be IID Normal with mean 0 and constant variance. Let $k$ be the number of betas $\beta_1,\beta_2,\ldots,\beta_k$ used as coefficients for the predictors $X$, (which does not include the intercept β_0), and let $n$ be the total number of observations. Then we may write the **omnibus F-test** for the model as:
+
+$$\frac{\mathrm{MSM}}{\mathrm{MSE}} = \frac{\sum_i (\hat{y}_i - \bar{y})^2⁄k}{\sum_i (y_i - \hat{y}_i)^2⁄(n-k-1)} \sim F_{k,n-k-1}$$
+
+The hypotheses of this test are:
+$$H_0:\qquad \beta_j = 0 \quad\forall j:1 \le j \le k$$
+(“All the true slopes of the model are zero, other than the intercept $\beta_0$”)
+
+$$H_1: \qquad \exists \; j:1 \le j \le k \quad \mathrm{s.t.} \; \beta_j \ne 0$$
+(“At least one of the true slopes, other than the intercept $\beta_0$, is nonzero”)
+:::
+
+In the model which begins @sec-predictorimportance, we saw that the model F-statistic was 31.37 on 5 and 26 degrees of freedom, for a $p$-value of <0.0001. From such a large F-statistic we conclude that *at least some* of our predictors do provide significant explanatory power. We cannot say which ones, but we feel confident that the model provides a real explanatory improvement over no model at all, *i.e.* a flat prediction of the same fuel efficiency for every car.
+
+This omnibus F test avoids the multiple comparison problem by simply drawing a single comparison across every predictor beta in our model. The advantage of this approach is that the true Type I error rate is restored to $\alpha$. The disadvantage is that we lose the ability to say which of the terms $X_1,X_2,\ldots,X_k$ are significantly explaining $Y$.
+
+## The Bonferroni correction 
+
+The disadvantage of the omnibus F-test is that we no longer learn the significance or importance of individual predictors. We can address that difficulty with our second method for dealing with multiple comparisons: the Bonferroni correction. This method is quite simple to learn and simple to perform, though it suffers from one drawback.
+
+The Bonferroni correction simply alters our significance threshold, dividing it by the number of test results we are examining. If we were using a significance level of $\alpha = 0.05$, and we examine five test results, then we should only reject the null hypothesis of those tests where $p \le \alpha⁄5 = 0.01$: 
+
+::: {.callout-note}
+Let $H_0^1, H_0^2, \ldots, H_0^m$ be a set of $m$ null hypotheses, and let $\alpha$ be the intended family-wise Type I error rate, *i.e.* the probability of falsely rejecting at least one of the null hypotheses.
+
+The **Bonferroni correction** holds that the true family-wise Type I error rate will be no more than $\alpha$ if each component hypothesis is evaluated using an individual significance threshold of $\alpha^* = \alpha⁄m$.
+:::
+
+If we were to apply this correction to the full model summarized at the top of @sec-predictorimportance, aiming for a true family-wise error rate of 5%, we would hold each of the non-intercept predictor t-tests to a new standard of $\alpha^* = 0.01$.^[Without a compelling reason, we do not have to test the intercept or include it in *m* for this correction.] The only conclusion altered by this correction is that the Cylinder=6 dummy variable would no longer be found significant (*p*=0.026). At this point, both the Cylinder=6 dummy and the Cylinder=8 dummy would be considered insignificant, and many statisticians would thus choose to remove Cylinder from the model altogether, just as the ANOVA table F test suggested.
+
+The simplicity and flexibility of the Bonferroni correction is self-evident, but it suffers from one disadvantage: it’s a very *conservative* test, meaning that it will tend to discourage us from rejecting the null hypothesis in situations where we *should* reject the null. Bonferroni is a sledgehammer, and sometimes we need a scalpel. On the other hand, in cases where we need to prove to a skeptical or hostile audience that our predictors belong in the model, the Bonferroni correction can be a powerful and immunizing choice: any set of terms that survives the Bonferroni correction will be difficult to criticize as not really belonging in the model.
+
+## Other corrections with niche applications
+
+There are other methods which are seen somewhat rarely, or in specialized circumstances. The application of these methods may be beyond the scope of the current course, but students are encouraged to learn more about these techniques if they should find themselves in the right situation:
+
+ * *Tukey’s honest significant difference (Tukey’s HSD)* works well with models which only examine a single categorical predictor, or which can otherwise be expressed as a single set of group means. The method provides a point estimate of every true difference between every possible pair of groups, and also provides an adjusted confidence interval for the true differences between these groups. The method is quite accurate and adjusts each comparison differently, based on sample sizes and the total spread of group means. The test statistic is the *studentized range distribution*, which is calculated by table lookup, and which we will not otherwise use in this document. This method would usually be considered superior to the Bonferroni correction when used in a model containing only categorical predictors.
+ 
+ * *Contrasts* are another way to study differences between group means. Using contrasts allows the modeler to not simply ask whether two groups share the same mean ($\mu_a = \mu_b$), but to ask more complicated questions such as whether a variable with five levels/groups might be best understood as one supergroup of two levels and another supergroup of three levels. Contrasts can be calculated after a regression has been run, and they can inspire new features to use in future models. Contrasts can test single hypotheses about a combination of group means in the data or composite hypotheses about *multiple* overlapping combinations of group means which are all tested at the same time, using an F test. However, contrasts cannot be easily used in models with continuous numeric predictors.
+ 
+ * *Scheffe’s method*. This technique combines elements of both Tukey’s HSD as well as contrasts, allowing the user to simultaneously test multiple contrasts of the group means while adjusting each *p*-value by an amount specific to its group means and sample sizes. Scheffe’s method can be used on more complex contrasts while Tukey’s HSD can only be used to examine whether pairs of group means are equal to each other. However, for a small number of comparisons, Tukey’s HSD will often have slightly greater resolution.
+
+All of these methods are used in regression models where every predictor is a categorical factor. The corresponding methods for dealing with multiple comparisons among continuous predictors mostly boil down to F tests, including the omnibus F test mentioned here, the ANOVA F test mentioned in @sec-predictorimportance, and an ANOVA comparison test which we will learn in the next section.

@@ -1,0 +1,117 @@
+# Selection algorithms {#sec-selectionalgorithms}
+
+When our data suggest only a small number of possible predictors, we can generally run *every conceivable regression model* and pick the one which best meets our needs: the highest R^2^, the highest adjusted R^2^, the lowest AIC, the easiest to interpret, etc. Yet when the number of predictors is large, not even statistical software packages can easily examine all the possible models. Consider that with five possible predictors we need only examine 32 models, but with 10 possible predictors we need to examine 2^10^ = 1024 models, and with 20 possible predictors that number grows to over a million models.
+
+In such situations, we must resign ourselves to a hard truth: we will never be able to run every possible model, and therefore we may never find the *best* possible model. Instead, we might be interested in learning algorithmic ways to examine a much smaller number of models, and reliably identify a *very good* model, even if it is not the best.
+
+The most common algorithm for this purpose is called **stepwise selection.** It builds a tree of nested models and searches up and down the tree for better models. At every step it chooses a current “champion” model and compares it to a nearby group of “challenger” models which are either one predictor larger or one predictor smaller. If any of the challengers beats the champion, the model crowns the best challenger as the new champion and repeats the process at the new model size. If none of the challengers beat the champion, the algorithm finishes its search.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Illustration of all models made possible by four predictors"
+plot(runif(1),runif(1),type='n',xlim=c(-11,11),ylim=c(1,19),
+     axes=FALSE,xlab='',ylab='',
+     main='Models using none, some, or all of predictors A, B, C, and D')
+rect(xleft=c(-1,-7,-3,1,5,-11,-7,-3,1,5,9,-7,-3,1,5,-1),
+     ybottom=c(1,5,5,5,5,9,9,9,9,9,9,13,13,13,13,17),
+     xright=c(1,-5,-1,3,7,-9,-5,-1,3,7,11,-5,-1,3,7,1),
+     ytop=c(3,7,7,7,7,11,11,11,11,11,11,15,15,15,15,19))
+text(x=c(0,-6,-2,2,6,-10,-6,-2,2,6,10,-6,-2,2,6,0),
+     y=c(2,6,6,6,6,10,10,10,10,10,10,14,14,14,14,18),
+     labels=c('1','A','B','C','D','AB','AC','AD','BC',
+              'BD','CD','ABC','ABD','ACD','BCD','ABCD'))
+segments(x0=c(0,0,0,0,-6,-6,-6,-2,-2,-2,2,2,2,6,6,6,
+              -10,-10,-6,-6,-2,-2,2,2,6,6,10,10,-6,-2,2,6),
+         y0=c(rep(3,4),rep(7,12),rep(11,12),rep(15,4)),
+         x1=c(-6,-2,2,6,-10,-6,-2,-10,2,6,-6,2,10,-2,6,10,
+                -6,-2,-6,2,-2,2,-6,6,-2,6,2,6,0,0,0,0),
+         y1=c(rep(5,4),rep(9,12),rep(13,12),rep(17,4)))
+```
+ 
+The figure above shows the tree of 2^4^ = 16 different models which can be built from four predictors, including the “null model” which only fits an intercept (represented here by a “1”). We have four single-predictor models, six two-predictor models, etc. We may add natural links between models which are nested within each other; notice that not every pair of larger and smaller models are nested.
+
+With a larger number of predictors, this tree would be much too large to display on the page. We would also be unable to evaluate every model in the tree, so we would need a well-defined method for searching a tractable subset of those models.
+
+::: {.callout-note}
+Let $M_\Omega = \{M_0, \ldots, M_j, \ldots, M_k \}$ be a *set of sets* of regression models which use some of the predictors $\mathbf{X} = (X_1, \ldots, X_i, \ldots, X_k)$, such that $M_0$ contains one model with only an intercept term, $M_k$ contains one model with all $k$ predictors, and $M_j$ contains all of the $k_Cj$ models using $j$ predictors. Define a model selection algorithm called **forward selection** thusly:
+
+ 1. Choose a model fit metric, such as AIC or Adjusted R^2^
+
+ 2. Begin the model search with the intercept-only model $M_0$. Score this model using the chosen model fit metric. This model is the current “champion”.
+
+ 3. If the current champion model has $i$ predictors, identify the subset of models within $M_{i+1}$ which can be built by adding one more unused predictor to the current champion model. Score each of these challenger models using the same model fit metric and compare to the champion model.
+
+ 4. If none of the challengers outscore the current champion, then end the search process by choosing the current champion. If one or more of the challengers does outscore the current champion, then select the best-scoring model among those challengers, declare it the new champion, and repeat Steps 3 and 4.
+
+An alternative to this method, called **backwards elimination**, begins with the full model $M_k$ and at every step considers models which are one predictor smaller.
+:::
+
+These two algorithmic methods are not guaranteed to find the best model, and they are not guaranteed to agree with each other. They are examples of “greedy” algorithms: at every step they consider only those choices directly in front of them, without the capacity for long-term recall or planning. Both stepwise methods can wrongly reject valuable predictors because they were considered at a time when the other predictors in the model obscured the true relationship and explanatory power. Still, these stepwise selection algorithms are very commonly used in cases where a full examination of every possible model is impossible.
+
+In general, we should not prefer forward selection over backwards elimination, or *vice versa*. However, there are some contextual advantages to each model. If we suspect complex interdependencies between the variables, backwards elimination may be more likely to recognize the contribution each makes, rather than forward selection which would consider them in isolation. And in cases where we have more possible predictors than observations, backwards elimination becomes *impossible*, and so we would default to forward selection.
+ 
+```{r}
+#| code-fold: true
+#| fig-cap: "Algorithmic search models for regression predictors"
+plot(runif(1),runif(1),type='n',xlim=c(-11,11),ylim=c(1,19),
+     axes=FALSE,xlab='',ylab='',
+     main='Forward selection choosing model Y=A+C')
+rect(xleft=c(-1,-7,-3,1,5,-11,-7,-3,1,5,9,-7,-3,1,5,-1),
+     ybottom=c(1,5,5,5,5,9,9,9,9,9,9,13,13,13,13,17),
+     xright=c(1,-5,-1,3,7,-9,-5,-1,3,7,11,-5,-1,3,7,1),
+     ytop=c(3,7,7,7,7,11,11,11,11,11,11,15,15,15,15,19))
+text(x=c(0,-6,-2,2,6,-10,-6,-2,2,6,10,-6,-2,2,6,0),
+     y=c(2,6,6,6,6,10,10,10,10,10,10,14,14,14,14,18),
+     labels=c('1','A','B','C','D','AB','AC','AD','BC',
+              'BD','CD','ABC','ABD','ACD','BCD','ABCD'))
+segments(x0=c(0,0,0,0,-6,-6,-6,-2,-2,-2,2,2,2,6,6,6,
+              -10,-10,-6,-6,-2,-2,2,2,6,6,10,10,-6,-2,2,6),
+         y0=c(rep(3,4),rep(7,12),rep(11,12),rep(15,4)),
+         x1=c(-6,-2,2,6,-10,-6,-2,-10,2,6,-6,2,10,-2,6,10,
+              -6,-2,-6,2,-2,2,-6,6,-2,6,2,6,0,0,0,0),
+         y1=c(rep(5,4),rep(9,12),rep(13,12),rep(17,4)),col='grey50')
+segments(x0=c(rep(0,4),rep(-6,5)),
+         y0=c(rep(3,4),rep(7,3),rep(11,2)),
+         x1=c(-6,-2,2,6,-10,-6,-2,-6,2),
+         y1=c(rep(5,4),rep(9,3),rep(13,2)),
+         col='#0000ff',lwd=c(3,2,2,2,2,3,2,2,2),lty=c(1,2,2,2,2,1,2,2,2))
+rect(xleft=c(-1,-7,-3,1,5,-11,-7,-3,-7,1),
+     ybottom=c(1,5,5,5,5,9,9,9,13,13),
+     xright=c(1,-5,-1,3,7,-9,-5,-1,-5,3),
+     ytop=c(3,7,7,7,7,11,11,11,15,15),
+     border='#0000ff',lwd=c(3,3,2,2,2,2,3,2,2,2),lty=c(1,1,2,2,2,2,1,2,2,2))
+legend(x='topleft',bty='n',lty=c(2,1),lwd=c(2,3),
+       legend=c('Evaluated','Chosen Path'),col='#0000ff')
+
+plot(runif(1),runif(1),type='n',xlim=c(-11,11),ylim=c(1,19),
+     axes=FALSE,xlab='',ylab='',
+     main='Backward elimination choosing model Y=B+C')
+rect(xleft=c(-1,-7,-3,1,5,-11,-7,-3,1,5,9,-7,-3,1,5,-1),
+     ybottom=c(1,5,5,5,5,9,9,9,9,9,9,13,13,13,13,17),
+     xright=c(1,-5,-1,3,7,-9,-5,-1,3,7,11,-5,-1,3,7,1),
+     ytop=c(3,7,7,7,7,11,11,11,11,11,11,15,15,15,15,19))
+text(x=c(0,-6,-2,2,6,-10,-6,-2,2,6,10,-6,-2,2,6,0),
+     y=c(2,6,6,6,6,10,10,10,10,10,10,14,14,14,14,18),
+     labels=c('1','A','B','C','D','AB','AC','AD','BC',
+              'BD','CD','ABC','ABD','ACD','BCD','ABCD'))
+segments(x0=c(0,0,0,0,-6,-6,-6,-2,-2,-2,2,2,2,6,6,6,
+              -10,-10,-6,-6,-2,-2,2,2,6,6,10,10,-6,-2,2,6),
+         y0=c(rep(3,4),rep(7,12),rep(11,12),rep(15,4)),
+         x1=c(-6,-2,2,6,-10,-6,-2,-10,2,6,-6,2,10,-2,6,10,
+              -6,-2,-6,2,-2,2,-6,6,-2,6,2,6,0,0,0,0),
+         y1=c(rep(5,4),rep(9,12),rep(13,12),rep(17,4)),col='grey50')
+segments(x0=c(rep(0,4),rep(-6,3),rep(2,2)),
+         y0=c(rep(17,4),rep(13,3),rep(9,2)),
+         x1=c(-6,-2,2,6,-10,-6,2,-2,2),
+         y1=c(rep(15,4),rep(11,3),rep(7,2)),
+         col='#0000ff',lwd=c(3,2,2,2,2,2,3,2,2),lty=c(1,2,2,2,2,2,1,2,2))
+rect(xleft=c(-1,-7,-3,1,5,-11,-7,1,-3,1),
+     ybottom=c(17,13,13,13,13,9,9,9,5,5),
+     xright=c(1,-5,-1,3,7,-9,-5,3,-1,3),
+     ytop=c(19,15,15,15,15,11,11,11,7,7),
+     border='#0000ff',lwd=c(3,3,2,2,2,2,2,3,2,2),lty=c(1,1,2,2,2,2,2,1,2,2))
+legend(x='topleft',bty='n',lty=c(2,1),lwd=c(2,3),
+       legend=c('Evaluated','Chosen Path'),col='#0000ff')
+```
+  
+The figure above shows two simulated search paths using forward selection and backwards elimination.  Both methods considered 10 out of the possible 16 models, and if the best-performing model were “B+D” or “C+D”, neither method would have found it.  Remember that this “bug” is actually a feature --- in practical use, when searching among thousands or millions of potential models, both forward selection and backwards elimination tend to reach a stopping point after considering only dozens or hundreds of models.  The model chosen by either method may not be the best, but it usually performs similarly to the best model.
