@@ -2012,6 +2012,102 @@
     ]
   },
   {
+    "objectID": "dist_chisquared.html",
+    "href": "dist_chisquared.html",
+    "title": "Chi-squared distribution",
+    "section": "",
+    "text": "Assumptions\nThe chi-squared (\\(\\chi^2\\)) distribution will not often describe real-world random variables such as the waiting time between buses or the number of phone calls being simultaneously placed through a single cell tower. Instead, the chi-squared distribution describes the sample distribution of several interesting model statistics under their null hypotheses.\nWe most commonly observe the chi-squared distribution when examining the sum of squares of an IID normally-distributed vector, or (equivalently) measuring the length of that vector. As you might imagine, this happens all the time when examining the properties of an OLS regression model!\nChi-squared distributions even serve as test statistics outside of OLS regression, since many different models create discrepancies between the expected theoretical values and the actual, observed values, which can be transformed into roughly-Normal quantities.\nOne classic example is Pearson’s chi-square test for goodness-of-fit test, independence, and homogeneity; another example is the deviance test used both to assess GLM model fit and also to perform GLM model selection, described in #sec-glmgoodnessoffit.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#assumptions",
+    "href": "dist_chisquared.html#assumptions",
+    "title": "Chi-squared distribution",
+    "section": "",
+    "text": "Note\n\n\n\nAssume a set of \\(n\\) independently-distributed Normal(0,1) random variables \\(\\boldsymbol{Z} = Z_1, \\ldots, Z_n\\). Every time we sample from this set of random variables we produce a new sample \\(\\boldsymbol{z} \\in \\mathbb{R}^n = (z_1, \\ldots, z_n)\\).\nIf \\(X = \\sum_{i=1}^n Z_i^2\\) then \\(X \\sim \\chi^2_{n}\\), that is, if \\(X\\) is the sum of squares of all the standard normal variates \\(\\boldsymbol{Z}\\), then \\(X\\) is chi-squared distributed with \\(n\\) degrees of freedom.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#degrees-of-freedom",
+    "href": "dist_chisquared.html#degrees-of-freedom",
+    "title": "Chi-squared distribution",
+    "section": "Degrees of freedom",
+    "text": "Degrees of freedom\nThe parameter for a chi-squared variables is its “degrees of freedom”, and knowing the right degrees of freedom to use is important for correct use of a chi-squared test.\n\nFor simulating chi-squared data using squared standard Normal variates, \\(df = n\\), meaning that the number of squared Normal terms is your degrees of freedom parameter.\nWhen benchmarking the SSM or SSE1 of a regression, you will want to use \\(df = \\mathrm{rank}(\\mathcal{S^m})\\) or \\(df = \\mathrm{rank}(\\mathcal{S^e})\\), meaning the dimensionality of the model space or the error space. Generally,\n\nDegrees of freedom for the model space (SSM) is equal to \\(k\\), the number of non-intercept betas fit to the model\nDegrees of freedom for the error space (SSE) is equal to \\(n - k - 1\\).\n\nWhen comparing two nested models which differ by \\(m\\) parameters,2 the degrees of freedom for the test comparing the models will be \\(df = m\\).\nWhen performing a chi-squared goodness-of-fit test, independence test, or homogeneity test on contingency table data (not covered in these notes), the degrees of freedom will be \\(df = I - 1\\) for a one-dimensionsal contingency table, or \\(df = (I - 1) (J - 1)\\) for a two-dimensional contingency table.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#definition",
+    "href": "dist_chisquared.html#definition",
+    "title": "Chi-squared distribution",
+    "section": "Definition",
+    "text": "Definition\n\\[\\begin{array}{ll}\n  \\text{Support:} & \\mathbb{R}^+ \\\\\n  \\text{Parameter(s):} & df,\\text{ the degrees of fredom }(df \\in \\mathbb{Z}^+) \\\\\n  \\text{PMF:} & (complex) \\\\\n  \\text{CDF:} & (also\\; complex) \\\\\n  \\text{Mean:} & \\mathbb{E}[X] = df \\\\\n  \\text{Variance:} & \\mathbb{V}[X] = 2 \\cdot df \\\\\n\\end{array}\\]",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#visualizer",
+    "href": "dist_chisquared.html#visualizer",
+    "title": "Chi-squared distribution",
+    "section": "Visualizer",
+    "text": "Visualizer\nThe chi-squared distribution is asymmetric, but for large \\(df\\) it asymptotically approximates a Normal distribution.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 650\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_fluid(\n      tags$head(tags$style(HTML(\"body {overflow-x: hidden;}\"))),\n  title = \"Chi-squared distribution PDF\",\n  fluidRow(plotOutput(\"distPlot\")),\n  fluidRow(column(width=12,sliderInput(\"df\",\"Degrees of freedom (df)\", min=1, max=100, value=5))))\n\nserver &lt;- function(input, output) {\n  output$distPlot &lt;- renderPlot({\n    x &lt;- seq(0,input$df+4*sqrt(2*input$df),input$df/50)\n    y &lt;- dchisq(x,input$df)\n    plot(x=x,y=y,main=NULL,xlab='x',ylab='Density',type='l',lwd=2)\n    abline(v=input$df,col='#0000ff',lwd=2,lty=2)\n    text(input$df,0.1*dchisq(input$df,input$df),pos=4,labels='mean',col='#0000ff')\n  })\n}\n\nshinyApp(ui = ui, server = server)",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#properties",
+    "href": "dist_chisquared.html#properties",
+    "title": "Chi-squared distribution",
+    "section": "Properties",
+    "text": "Properties\nSince chi-squared distributions resemble Normal distributions for large \\(df\\), we can perform a very rough hypothesis test using a critical value of:\n\\[\\begin{aligned} \\chi^2_{0.975} &\\approx \\mu + 2\\sigma \\\\ &\\approx df + 2 \\sqrt{2 \\cdot df} \\end{aligned}\\]\nConsider when \\(df=200\\). Then values larger than 240 would provide significant evidence against the null hypothesis.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#relations-to-other-distributions",
+    "href": "dist_chisquared.html#relations-to-other-distributions",
+    "title": "Chi-squared distribution",
+    "section": "Relations to other distributions",
+    "text": "Relations to other distributions\n\nThe F distribution is a ratio of two different chi-squared distributions, normalized by their degrees of freedom. That is, if \\(X \\sim \\chi^2_{(n)}\\) and \\(Y \\sim \\chi^2_{(d)}\\), then\n\n\\[\\frac{X/n}{Y/d} \\sim F_{(n,d)}\\]",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
+    "objectID": "dist_chisquared.html#footnotes",
+    "href": "dist_chisquared.html#footnotes",
+    "title": "Chi-squared distribution",
+    "section": "",
+    "text": "Also called RSS.↩︎\nRemember that one categorical predictor might generate several model parameters!↩︎",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "Chi-squared distribution"
+    ]
+  },
+  {
     "objectID": "dist_exponential.html",
     "href": "dist_exponential.html",
     "title": "Exponential distribution",
@@ -2081,6 +2177,78 @@
       "Appendices",
       "Distributions",
       "Exponential distribution"
+    ]
+  },
+  {
+    "objectID": "dist_f.html",
+    "href": "dist_f.html",
+    "title": "F distribution",
+    "section": "",
+    "text": "Assumptions\nThe F distribution will not often describe real-world random variables such as the waiting time between buses or the number of phone calls being simultaneously placed through a single cell tower. Instead, the F distribution describes the sample distribution of several interesting model statistics under their null hypotheses.\nIn particular, the F distribution is used to perform joint tests of multiple hypotheses. A common use of an F-test in regression analysis is to test whether multiple slopes \\(\\beta_i, \\ldots, \\beta_j\\) might actually all be zero:\nThe F distribution is a ratio of two different chi-squared distributions, normalized by their degrees of freedom. That is, if \\(X \\sim \\chi^2_{(df_1)}\\) and \\(Y \\sim \\chi^2_{(df_2)}\\), then\n\\[\\frac{X/df_1}{Y/df_2} \\sim F_{(df_1,df_2)}\\]",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "*F* distribution"
+    ]
+  },
+  {
+    "objectID": "dist_f.html#degrees-of-freedom",
+    "href": "dist_f.html#degrees-of-freedom",
+    "title": "F distribution",
+    "section": "Degrees of freedom",
+    "text": "Degrees of freedom\nThe two parameters for F-distributed variables are called the “numerator degrees of freedom” and the “denominator degrees of freedom”.\n\nIn general, for regression analysis, the numerator degrees of freedom will be equal to the number of simultaneously tested hypotheses (e.g. betas).\nIn general, for regression analysis, the denominator degrees of freedom will be the error degrees of freedom, \\(n - k - 1\\) where \\(k\\) is the number of non-intercept betas in the model.\nWhen the F-test compares two different nested models, the numerator df is generally equal to the difference in parameters between the model (essentially, we are testing whether these are all zero), and the denominator df is equal to the error degrees of freedom of the larger model.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "*F* distribution"
+    ]
+  },
+  {
+    "objectID": "dist_f.html#definition",
+    "href": "dist_f.html#definition",
+    "title": "F distribution",
+    "section": "Definition",
+    "text": "Definition\n\\[\\begin{array}{ll}\n  \\text{Support:} & \\mathbb{R}^+ \\\\\n  \\text{Parameter(s):} & df_1,\\text{ the numerator degrees of fredom }(df_1 \\in \\mathbb{Z}^+) \\\\ & df_2,\\text{ the denominator degrees of fredom }(df_2 \\in \\mathbb{Z}^+) \\\\\n  \\text{PMF:} & (complex) \\\\\n  \\text{CDF:} & (also\\; complex) \\\\\n  \\text{Mean:} & \\mathbb{E}[X] = \\frac{df_2}{df_2 - 2} \\\\\n  \\text{Variance:} & \\mathbb{V}[X] = \\frac{2df^2_2 \\cdot (df_1 + df_2 - 2)}{df_1 \\cdot (df_2 - 2)^2 \\cdot (df_2 - 4)} \\\\\n\\end{array}\\]",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "*F* distribution"
+    ]
+  },
+  {
+    "objectID": "dist_f.html#visualizer",
+    "href": "dist_f.html#visualizer",
+    "title": "F distribution",
+    "section": "Visualizer",
+    "text": "Visualizer\nBecause the F distribution has two parameters, it can assume a wide variety of distribution “shapes”. Try examining the PDF of an F distribution under four scenarios:\n\nWhen both \\(df_1\\) and \\(df_2\\) are small\nWhen \\(df_1 \\gg df_2\\)\nWhen \\(df_2 \\gg df_1\\)\nWhen both \\(df_1\\) and \\(df_2\\) are large\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 650\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_fluid(\n      tags$head(tags$style(HTML(\"body {overflow-x: hidden;}\"))),\n  title = \"Chi-squared distribution PDF\",\n  fluidRow(plotOutput(\"distPlot\")),\n  fluidRow(column(width=6,sliderInput(\"df1\",\"Numerator df\", min=1, max=25, value=5)),\n           column(width=6,sliderInput(\"df2\",\"Denominator df\", min=5, max=125, value=5))))\n\nserver &lt;- function(input, output) {\n  output$distPlot &lt;- renderPlot({\n    x &lt;- seq(0,5,0.01)\n    y &lt;- df(x,input$df1,input$df2)\n    plot(x=x,y=y,main=NULL,xlab='x',ylab='Density',type='l',lwd=2)\n    abline(v=input$df2/(input$df2 - 2),col='#0000ff',lwd=2,lty=2)\n    text(input$df2/(input$df2 - 2),0.1,pos=4,labels='mean',col='#0000ff')\n  })\n}\n\nshinyApp(ui = ui, server = server)",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "*F* distribution"
+    ]
+  },
+  {
+    "objectID": "dist_f.html#properties",
+    "href": "dist_f.html#properties",
+    "title": "F distribution",
+    "section": "Properties",
+    "text": "Properties\nThe construction of an F test resembles the engineering concept of a “signal-to-noise ratio”. Since the expectation of any chi-squared variable is its own degrees of freedom, under the null hypothesis we would assume an F statistic to be close to 1.\nIf the F statistic is instead much greater than 1 (say, 5, or 50), then the normalized “signal” is 5x or 50x stronger than the normalized “noise” in the data, which is usually strong evidence we can use to reject the null.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "*F* distribution"
+    ]
+  },
+  {
+    "objectID": "dist_f.html#relations-to-other-distributions",
+    "href": "dist_f.html#relations-to-other-distributions",
+    "title": "F distribution",
+    "section": "Relations to other distributions",
+    "text": "Relations to other distributions\n\nIf \\(X \\sim F_{(1,df_2)}\\) (i.e. X is F-distributed with one numerator degree of freedom), then \\(\\sqrt{X} \\sim t_{df_2}\\) (i.e. the square root of X is t-distributed).\nBecause of this, any t-test for whether a single beta could be zero (such as those shown in the regression summary table) is equivalent to an F-test of whether “all one” of those betas could be zero. This is why the p-value of a model’s omnibus F test matches the p-value of the slope \\(\\hat{\\beta}_1\\) in a simple regression.",
+    "crumbs": [
+      "Appendices",
+      "Distributions",
+      "*F* distribution"
     ]
   },
   {

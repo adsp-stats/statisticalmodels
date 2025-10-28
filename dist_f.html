@@ -43,6 +43,11 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -72,6 +77,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -454,11 +488,22 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link active" data-scroll-target="#assumptions">Assumptions</a></li>
+  <li><a href="#degrees-of-freedom" id="toc-degrees-of-freedom" class="nav-link" data-scroll-target="#degrees-of-freedom">Degrees of freedom</a></li>
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#visualizer" id="toc-visualizer" class="nav-link" data-scroll-target="#visualizer">Visualizer</a></li>
+  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  <li><a href="#relations-to-other-distributions" id="toc-relations-to-other-distributions" class="nav-link" data-scroll-target="#relations-to-other-distributions">Relations to other distributions</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content">
+<main class="content column-body" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Appendices</li><li class="breadcrumb-item"><a href="./dist_bernoulli.html">Distributions</a></li><li class="breadcrumb-item"><a href="./dist_f.html"><em>F</em> distribution</a></li></ol></nav>
 <div class="quarto-title">
@@ -467,7 +512,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-title-meta column-page-right">
+<div class="quarto-title-meta column-body">
 
     
   
@@ -479,8 +524,89 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>The F distribution will not often describe real-world random variables such as the waiting time between buses or the number of phone calls being simultaneously placed through a single cell tower. Instead, the F distribution describes the sample distribution of several interesting <em>model statistics</em> under their null hypotheses.</p>
+<p>In particular, the F distribution is used to perform <em>joint tests of multiple hypotheses</em>. A common use of an F-test in regression analysis is to test whether multiple slopes <span class="math inline">\(\beta_i, \ldots, \beta_j\)</span> might actually all be zero:</p>
+<ul>
+<li><p>When the betas in question are <em>all</em> the non-intercept betas in a regression model, the F-test becomes a test of whether a model should be fit at all, that is, whether <span class="math inline">\(Y\)</span> really can be explained by <em>any</em> of the available predictors.</p></li>
+<li><p>When the betas in question are the only terms which are different between two nested models, the F-test becomes a test of which model explains significantly more of the response variable <span class="math inline">\(Y\)</span>.</p></li>
+<li><p>When the betas in question are all the dummy variables which code for the non-reference levels of a categorical predictor, the F-test becomes a test of whether the entire categorical predictor adds significant explanatory power to the model (regardless of whether one or more level means are statistically different from the reference level mean.)</p></li>
+</ul>
+<section id="assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="assumptions">Assumptions</h2>
+<p>The F distribution is a ratio of two different chi-squared distributions, normalized by their degrees of freedom. That is, if <span class="math inline">\(X \sim \chi^2_{(df_1)}\)</span> and <span class="math inline">\(Y \sim \chi^2_{(df_2)}\)</span>, then</p>
+<p><span class="math display">\[\frac{X/df_1}{Y/df_2} \sim F_{(df_1,df_2)}\]</span></p>
+</section>
+<section id="degrees-of-freedom" class="level2">
+<h2 class="anchored" data-anchor-id="degrees-of-freedom">Degrees of freedom</h2>
+<p>The two parameters for F-distributed variables are called the “numerator degrees of freedom” and the “denominator degrees of freedom”.</p>
+<ul>
+<li><p>In general, for regression analysis, the numerator degrees of freedom will be equal to the number of simultaneously tested hypotheses (<em>e.g.</em> betas).</p></li>
+<li><p>In general, for regression analysis, the denominator degrees of freedom will be the error degrees of freedom, <span class="math inline">\(n - k - 1\)</span> where <span class="math inline">\(k\)</span> is the number of non-intercept betas in the model.</p></li>
+<li><p>When the F-test compares two different nested models, the numerator <em>df</em> is generally equal to the difference in parameters between the model (essentially, we are testing whether these are all zero), and the denominator <em>df</em> is equal to the error degrees of freedom of the larger model.</p></li>
+</ul>
+</section>
+<section id="definition" class="level2">
+<h2 class="anchored" data-anchor-id="definition">Definition</h2>
+<p><span class="math display">\[\begin{array}{ll}
+  \text{Support:} &amp; \mathbb{R}^+ \\
+  \text{Parameter(s):} &amp; df_1,\text{ the numerator degrees of fredom }(df_1 \in \mathbb{Z}^+) \\ &amp; df_2,\text{ the denominator degrees of fredom }(df_2 \in \mathbb{Z}^+) \\
+  \text{PMF:} &amp; (complex) \\
+  \text{CDF:} &amp; (also\; complex) \\
+  \text{Mean:} &amp; \mathbb{E}[X] = \frac{df_2}{df_2 - 2} \\
+  \text{Variance:} &amp; \mathbb{V}[X] = \frac{2df^2_2 \cdot (df_1 + df_2 - 2)}{df_1 \cdot (df_2 - 2)^2 \cdot (df_2 - 4)} \\
+\end{array}\]</span></p>
+</section>
+<section id="visualizer" class="level2">
+<h2 class="anchored" data-anchor-id="visualizer">Visualizer</h2>
+<p>Because the F distribution has two parameters, it can assume a wide variety of distribution “shapes”. Try examining the PDF of an F distribution under four scenarios:</p>
+<ul>
+<li>When both <span class="math inline">\(df_1\)</span> and <span class="math inline">\(df_2\)</span> are small</li>
+<li>When <span class="math inline">\(df_1 \gg df_2\)</span></li>
+<li>When <span class="math inline">\(df_2 \gg df_1\)</span></li>
+<li>When both <span class="math inline">\(df_1\)</span> and <span class="math inline">\(df_2\)</span> are large</li>
+</ul>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 650
+
+library(shiny)
+library(bslib)
+
+ui &lt;- page_fluid(
+      tags$head(tags$style(HTML("body {overflow-x: hidden;}"))),
+  title = "Chi-squared distribution PDF",
+  fluidRow(plotOutput("distPlot")),
+  fluidRow(column(width=6,sliderInput("df1","Numerator df", min=1, max=25, value=5)),
+           column(width=6,sliderInput("df2","Denominator df", min=5, max=125, value=5))))
+
+server &lt;- function(input, output) {
+  output$distPlot &lt;- renderPlot({
+    x &lt;- seq(0,5,0.01)
+    y &lt;- df(x,input$df1,input$df2)
+    plot(x=x,y=y,main=NULL,xlab='x',ylab='Density',type='l',lwd=2)
+    abline(v=input$df2/(input$df2 - 2),col='#0000ff',lwd=2,lty=2)
+    text(input$df2/(input$df2 - 2),0.1,pos=4,labels='mean',col='#0000ff')
+  })
+}
+
+shinyApp(ui = ui, server = server)</code></pre>
+</section>
+<section id="properties" class="level2">
+<h2 class="anchored" data-anchor-id="properties">Properties</h2>
+<p>The construction of an F test resembles the engineering concept of a “signal-to-noise ratio”. Since the expectation of any chi-squared variable is its own degrees of freedom, under the null hypothesis we would assume an F statistic to be close to 1.</p>
+<p>If the F statistic is instead much greater than 1 (say, 5, or 50), then the normalized “signal” is 5x or 50x stronger than the normalized “noise” in the data, which is usually strong evidence we can use to reject the null.</p>
+</section>
+<section id="relations-to-other-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="relations-to-other-distributions">Relations to other distributions</h2>
+<ul>
+<li><p>If <span class="math inline">\(X \sim F_{(1,df_2)}\)</span> (<em>i.e.</em> X is F-distributed with one numerator degree of freedom), then <span class="math inline">\(\sqrt{X} \sim t_{df_2}\)</span> (<em>i.e.</em> the square root of X is <em>t</em>-distributed).</p></li>
+<li><p>Because of this, any <em>t</em>-test for whether a single beta could be zero (such as those shown in the regression summary table) is equivalent to an F-test of whether “all one” of those betas could be zero. This is why the <em>p</em>-value of a model’s omnibus F test matches the <em>p</em>-value of the slope <span class="math inline">\(\hat{\beta}_1\)</span> in a simple regression.</p></li>
+</ul>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -922,7 +1048,7 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./dist_exponential.html" class="pagination-link" aria-label="Exponential distribution">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Exponential distribution</span>
