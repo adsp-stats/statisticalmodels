@@ -1,1 +1,92 @@
-# Chi-squared distribution {.unnumbered #sec-chisquared}
+# Chi-squared distribution {#sec-chisquared .unnumbered}
+
+The chi-squared ($\chi^2$) distribution will not often describe real-world random variables such as the waiting time between buses or the number of phone calls being simultaneously placed through a single cell tower. Instead, the chi-squared distribution describes the sample distribution of several interesting *model statistics* under their null hypotheses.
+
+## Assumptions
+
+::: callout-note
+Assume a set of $n$ independently-distributed Normal(0,1) random variables $\boldsymbol{Z} = Z_1, \ldots, Z_n$. Every time we sample from this set of random variables we produce a new sample $\boldsymbol{z} \in \mathbb{R}^n = (z_1, \ldots, z_n)$.
+
+If $X = \sum_{i=1}^n Z_i^2$ then $X \sim \chi^2_{n}$, that is, if $X$ is the sum of squares of all the standard normal variates $\boldsymbol{Z}$, then $X$ is chi-squared distributed with $n$ degrees of freedom.
+:::
+
+We most commonly observe the chi-squared distribution when examining the sum of squares of an IID normally-distributed vector, or (equivalently) measuring the length of that vector. As you might imagine, this happens *all the time* when examining the properties of an OLS regression model!
+
+Chi-squared distributions even serve as test statistics outside of OLS regression, since many different models create discrepancies between the expected theoretical values and the actual, observed values, which can be transformed into roughly-Normal quantities.
+
+One classic example is [Pearson's chi-square test](https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test) for goodness-of-fit test, independence, and homogeneity; another example is the deviance test used both to assess GLM model fit and also to perform GLM model selection, described in #sec-glmgoodnessoffit.
+
+## Degrees of freedom
+
+The parameter for a chi-squared variables is its "degrees of freedom", and knowing the right degrees of freedom to use is important for correct use of a chi-squared test.
+
+-   For simulating chi-squared data using squared standard Normal variates, $df = n$, meaning that the number of squared Normal terms is your degrees of freedom parameter.
+
+-   When benchmarking the SSM or SSE[^dist_chisquared-1] of a regression, you will want to use $df = \mathrm{rank}(\mathcal{S^m})$ or $df = \mathrm{rank}(\mathcal{S^e})$, meaning the dimensionality of the model space or the error space. *Generally*,
+
+    -   Degrees of freedom for the model space (SSM) is equal to $k$, the number of non-intercept betas fit to the model
+
+    -   Degrees of freedom for the error space (SSE) is equal to $n - k - 1$.
+
+-   When comparing two nested models which differ by $m$ parameters,[^dist_chisquared-2] the degrees of freedom for the test comparing the models will be $df = m$.
+
+-   When performing a chi-squared goodness-of-fit test, independence test, or homogeneity test on contingency table data (not covered in these notes), the degrees of freedom will be $df = I - 1$ for a one-dimensionsal contingency table, or $df = (I - 1) (J - 1)$ for a two-dimensional contingency table.
+
+[^dist_chisquared-1]: Also called RSS.
+
+[^dist_chisquared-2]: Remember that one categorical predictor might generate several model parameters!
+
+## Definition
+
+$$\begin{array}{ll}
+  \text{Support:} & \mathbb{R}^+ \\
+  \text{Parameter(s):} & df,\text{ the degrees of fredom }(df \in \mathbb{Z}^+) \\
+  \text{PMF:} & (complex) \\
+  \text{CDF:} & (also\; complex) \\
+  \text{Mean:} & \mathbb{E}[X] = df \\
+  \text{Variance:} & \mathbb{V}[X] = 2 \cdot df \\
+\end{array}$$
+
+## Visualizer
+
+The chi-squared distribution is asymmetric, but for large $df$ it asymptotically approximates a Normal distribution.
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 650
+
+library(shiny)
+library(bslib)
+
+ui <- page_fluid(
+      tags$head(tags$style(HTML("body {overflow-x: hidden;}"))),
+  title = "Chi-squared distribution PDF",
+  fluidRow(plotOutput("distPlot")),
+  fluidRow(column(width=12,sliderInput("df","Degrees of freedom (df)", min=1, max=100, value=5))))
+
+server <- function(input, output) {
+  output$distPlot <- renderPlot({
+    x <- seq(0,input$df+4*sqrt(2*input$df),input$df/50)
+    y <- dchisq(x,input$df)
+    plot(x=x,y=y,main=NULL,xlab='x',ylab='Density',type='l',lwd=2)
+    abline(v=input$df,col='#0000ff',lwd=2,lty=2)
+    text(input$df,0.1*dchisq(input$df,input$df),pos=4,labels='mean',col='#0000ff')
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+## Properties
+
+Since chi-squared distributions resemble Normal distributions for large $df$, we can perform a very rough hypothesis test using a critical value of:
+
+$$\begin{aligned} \chi^2_{0.975} &\approx \mu + 2\sigma \\ &\approx df + 2 \sqrt{2 \cdot df} \end{aligned}$$
+
+Consider when $df=200$. Then values larger than 240 would provide significant evidence against the null hypothesis.
+
+## Relations to other distributions
+
+ * The F distribution is a ratio of two different chi-squared distributions, normalized by their degrees of freedom.  That is, if $X \sim \chi^2_{(n)}$ and $Y \sim \chi^2_{(d)}$, then 
+ 
+$$\frac{X/n}{Y/d} \sim F_{(n,d)}$$
