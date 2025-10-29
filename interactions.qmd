@@ -158,14 +158,14 @@ plot(iris$Petal.Width,iris$Petal.Length,col=rep(c('grey50','#0000ff','black'),ea
      main='Petal length predicted by species',xlab='Petal width',ylab='Petal length')
 abline(h=tapply(iris$Petal.Length,iris$Species,mean),
        col=c('grey50','#0000ff','black'),lty=2)
-legend(x='topleft',legend=c('versicolor','virginica','setosa','Predictions'),
+legend(x='topleft',legend=c('setosa','versicolor','virginica','Predictions'),
        col=c('grey50','#0000ff','black','black'),pch=c(1,1,1,NA),lty=c(NA,NA,NA,2))
 text(x=2,y=1,labels=paste0('R^2=',round(summary(iris.lm1)$r.squared,2)))
 
 plot(iris$Petal.Width,iris$Petal.Length,col=rep(c('grey50','#0000ff','black'),each=50),
      main='Petal length predicted by petal width',xlab='Petal width',ylab='Petal length')
 abline(a=iris.lm2$coefficients[1],b=iris.lm2$coefficients[2],lty=2)
-legend(x='topleft',legend=c('versicolor','virginica','setosa','Predictions'),
+legend(x='topleft',legend=c('setosa','versicolor','virginica','Predictions'),
        col=c('grey50','#0000ff','black','black'),pch=c(1,1,1,NA),lty=c(NA,NA,NA,2))
 text(x=2,y=1,labels=paste0('R^2=',round(summary(iris.lm2)$r.squared,2)))
 
@@ -174,7 +174,7 @@ plot(iris$Petal.Width,iris$Petal.Length,col=rep(c('grey50','#0000ff','black'),ea
 abline(a=iris.lm3$coefficients[1],b=iris.lm3$coefficients[4],lty=2,col='grey50')
 abline(a=iris.lm3$coefficients[1]+iris.lm3$coefficients[2],b=iris.lm3$coefficients[4],lty=2,col='#0000ff')
 abline(a=iris.lm3$coefficients[1]+iris.lm3$coefficients[3],b=iris.lm3$coefficients[4],lty=2,col='black')
-legend(x='topleft',legend=c('versicolor','virginica','setosa','Predictions'),
+legend(x='topleft',legend=c('setosa','versicolor','virginica','Predictions'),
        col=c('grey50','#0000ff','black','black'),pch=c(1,1,1,NA),lty=c(NA,NA,NA,2))
 text(x=2,y=1,labels=paste0('R^2=',round(summary(iris.lm1)$r.squared,2)))
 
@@ -186,7 +186,7 @@ abline(a=iris.lm4$coefficients[1]+iris.lm4$coefficients[2],
        b=iris.lm4$coefficients[4]+iris.lm4$coefficients[5],lty=2,col='#0000ff')
 abline(a=iris.lm4$coefficients[1]+iris.lm4$coefficients[3],
        b=iris.lm4$coefficients[4]+iris.lm4$coefficients[6],lty=2,col='black')
-legend(x='topleft',legend=c('versicolor','virginica','setosa','Predictions'),
+legend(x='topleft',legend=c('setosa','versicolor','virginica','Predictions'),
        col=c('grey50','#0000ff','black','black'),pch=c(1,1,1,NA),lty=c(NA,NA,NA,2))
 text(x=2,y=1,labels=paste0('R^2=',round(summary(iris.lm4)$r.squared,2)))
 ```
