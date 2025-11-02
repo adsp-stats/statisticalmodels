@@ -209,18 +209,24 @@ ui <- page_fluid(
            column(width=6,checkboxInput("b3","Include Interaction?"))),
   fluidRow(plotOutput("distPlot")))
 
-catcols <- c('#bb33ff','#0000ff')
-concols <- c('#bb33ff','#aa30ff','#9927ff','#8824ff','#7721ff','#6618ff',
-             '#5515ff','#4412ff','#3309ff','#2206ff','#1103ff','#0000ff')
-fewcols <- c('#aa30ff','#7721ff','#4412ff','#1103ff')
+catcols <- c('#ee7011','#0000ff')
+concols <- c('#ee7011','#dd6822','#cc6033','#bb5844','#aa5055',
+             '#994866','#884077','#773888','#663099','#5528aa',
+             '#4420bb','#3318cc','#2210dd','#1108ee','#0000ff')
+fewcols <- c('#dd6822','#aa5055','#773888','#4420bb','#1108ee')
    
 server <- function(input, output){
   output$distPlot <- renderPlot({
-    X1 <- reactive(ifelse(rep(!input$X1cat,100),runif(100,0,3),1*(runif(100,0,3) > 1.5)))
-    X2 <- reactive(ifelse(rep(!input$X2cat,100),runif(100,3,6),1*(runif(100,3,6) > 4.5)))
-    Y <- reactive(15 - 2*c(X1()) + 0.5*c(X2()) - 1.2*c(X1())*c(X2()) + rnorm(100))
-    plot(x=X1(),y=Y(),main=NULL,xlab='X1',ylab='Y',type='p',
-         col=ifelse(rep(input$X2cat,100),catcols[1+X2()],concols[1+floor(4*(X2()-3))]))
+    X1 <- reactive(if (!input$X1cat) runif(100,0,3) else sample(0:1,100,TRUE))
+    X2 <- reactive(if (!input$X2cat) runif(100,3,6) else sample(0:1,100,TRUE))
+    Y <- reactive(15-2*c(X1())+c(X2())-1.2*c(X1())*c(X2())+rnorm(100))
+    if (input$X1cat){
+      plot(x=jitter(X1(),factor=0.25),y=Y(),main=NULL,xlab='X1',ylab='Y',
+           type='p',cex=1.5,xlim=c(-1,2),xaxt='n',
+           col=ifelse(rep(input$X2cat,100),catcols[1+X2()],concols[1+floor(5*(X2()-3))]))
+      axis(side=1,at=c(0,1),labels=c('Level A','Level B'))} else {
+           plot(x=X1(),y=Y(),main=NULL,xlab='X1',ylab='Y',type='p',cex=1.5,
+                col=ifelse(rep(input$X2cat,100),catcols[1+X2()],concols[1+floor(5*(X2()-3))]))} 
     if (!input$b2 & !input$b3){
       lm1 <- lm(Y() ~ X1())
       abline(lm1$coefficients[1],lm1$coefficients[2],col='grey50',lwd=3,lty=2)}
@@ -229,28 +235,31 @@ server <- function(input, output){
       if (input$X2cat){
         abline(lm1$coefficients[1],lm1$coefficients[2],lwd=3,lty=2,col=catcols[1])
         abline(lm1$coefficients[1]+lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=catcols[2])} else {
-          abline(lm1$coefficients[1]+3.375*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[1])
-            abline(lm1$coefficients[1]+4.125*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[2])
-            abline(lm1$coefficients[1]+4.875*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[3])
-            abline(lm1$coefficients[1]+5.625*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[4])}}
+          abline(lm1$coefficients[1]+3.3*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[1])
+            abline(lm1$coefficients[1]+3.9*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[2])
+            abline(lm1$coefficients[1]+4.5*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[3])
+            abline(lm1$coefficients[1]+5.1*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[4])
+            abline(lm1$coefficients[1]+5.7*lm1$coefficients[3],lm1$coefficients[2],lwd=3,lty=2,col=fewcols[5])}}
     if (!input$b2 & input$b3){
       lm1 <- lm(Y() ~ X1() + X1():X2())
       if (input$X2cat){
         abline(lm1$coefficients[1],lm1$coefficients[2],lwd=3,lty=2,col=catcols[1])
         abline(lm1$coefficients[1],lm1$coefficients[2]+lm1$coefficients[3],lwd=3,lty=2,col=catcols[2])} else {
-          abline(lm1$coefficients[1],lm1$coefficients[2]+3.375*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[1])
-            abline(lm1$coefficients[1],lm1$coefficients[2]+4.125*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[2])
-            abline(lm1$coefficients[1],lm1$coefficients[2]+4.875*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[3])
-            abline(lm1$coefficients[1],lm1$coefficients[2]+5.625*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[4])}}
+          abline(lm1$coefficients[1],lm1$coefficients[2]+3.3*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[1])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+3.9*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[2])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+4.5*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[3])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+5.1*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[4])
+            abline(lm1$coefficients[1],lm1$coefficients[2]+5.7*lm1$coefficients[3],lwd=3,lty=2,col=fewcols[5])}}
     if (input$b2 & input$b3){
       lm1 <- lm(Y() ~ X1() + X2() + X1():X2())
       if (input$X2cat){
         abline(lm1$coefficients[1],lm1$coefficients[2],lwd=3,lty=2,col=catcols[1])
         abline(lm1$coefficients[1]+lm1$coefficients[3],lm1$coefficients[2]+lm1$coefficients[4],lwd=3,lty=2,col=catcols[2])} else {
-          abline(lm1$coefficients[1]+3.375*lm1$coefficients[3],lm1$coefficients[2]+3.375*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[1])
-            abline(lm1$coefficients[1]+4.125*lm1$coefficients[3],lm1$coefficients[2]+4.125*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[2])
-            abline(lm1$coefficients[1]+4.875*lm1$coefficients[3],lm1$coefficients[2]+4.875*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[3])
-            abline(lm1$coefficients[1]+5.625*lm1$coefficients[3],lm1$coefficients[2]+5.625*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[4])}}
+          abline(lm1$coefficients[1]+3.3*lm1$coefficients[3],lm1$coefficients[2]+3.3*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[1])
+            abline(lm1$coefficients[1]+3.9*lm1$coefficients[3],lm1$coefficients[2]+3.9*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[2])
+            abline(lm1$coefficients[1]+4.5*lm1$coefficients[3],lm1$coefficients[2]+4.5*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[3])
+            abline(lm1$coefficients[1]+5.1*lm1$coefficients[3],lm1$coefficients[2]+5.1*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[4])
+            abline(lm1$coefficients[1]+5.7*lm1$coefficients[3],lm1$coefficients[2]+5.7*lm1$coefficients[4],lwd=3,lty=2,col=fewcols[5])}}
     })
 }
 

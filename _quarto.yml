@@ -50,6 +50,18 @@ book:
         - multiplecomparisons.qmd
         - modelcomparison.qmd
         - selectionalgorithms.qmd
+    - part: "7. Building GLMs"
+      chapters:
+        - generalizingregression.qmd
+        - linearpredictors.qmd
+        - logisticregression.qmd
+        - buildingnewglms.qmd
+    - part: "8. Assessing GLMs"
+      chapters:
+        - constructingglms.qmd
+        - probitregression.qmd
+        - glmgoodnessoffit.qmd
+        - classificationmetrics.qmd
   appendices:
     - part: "Distributions"
       chapters: 
