@@ -10,13 +10,13 @@ And yet we have spent so long working with linear models --- where the response 
 
 Let’s review our previous assumptions about the data, so that we can identify what to keep and what we need to change. Previously, we assumed that $Y$ was *conditionally* Normal, meaning that for every row vector of predictors $\boldsymbol{x}_i$, the response variable will be IID-normally distributed around its prediction: $y_i \sim \mathrm{Normal}(\boldsymbol{x}_i\boldsymbol{\beta},\sigma^2)$. Let’s isolate two key elements from these assumptions which we can use for non-linear modeling:
 
- * Conditional on a fixed vector of predictors $\boldsymbol{x}_i$, the response variable y_i follows a particular probability distribution
+ * Conditional on a fixed vector of predictors $\boldsymbol{x}_i$, the response variable $y_i$ follows a particular probability distribution
  
    - For OLS regression, this distribution is the Normal distribution
    
  * The mean of the response variable $\mu_i = \mathbb{E}[y_i]$ can be expressed as some function of the linear predictor $\boldsymbol{x}_i\boldsymbol{\beta}$
  
-   - For OLS regression, the relationship is as simple as function $\mu_i = \boldsymbol{x}_i\boldsymbol{\beta}$
+   - For OLS regression, the relationship is as simple as the identity function: $\mu_i = \boldsymbol{x}_i\boldsymbol{\beta}$
    
 By keeping these two assumptions, we can significantly broaden the linear regression model to cover many different distributions, data types, and non-linear trends, while still including OLS regression as a special case
 
@@ -86,7 +86,7 @@ legend(x='left',pch=c(1,NA,16),lty=c(NA,1,NA),
        legend=c('Data','Distr. of Y|X','Conditional Mean'))
 ```
  
-Let’s push this generalization even further away from the normal case we first learned. In the figure above, the values of X are the same as before, but the values of Y are Bernoulli distributed, *i.e.* they assume one of two values. Notice that when $X$ is small, $Y$ is most often 1, but as $X$ increases, $Y=0$ becomes more common. Although every value of $Y$ is either 0 or 1, the mean can still be plotted and represents the probability of observing 1. We can see that the mean depends on X, though the relationship does not seem linear. This data would be a *terrible* fit for linear regression, which would predict fitted probabilities greater than 1 and less than 0, and which assumes a continuous cloud of errors when at each observation $x_i$ there are only two possible values and so only two possible errors.
+Let’s push this generalization even further away from the normal case we first learned. In the figure above, the values of X are the same as before, but the values of Y are Bernoulli distributed, *i.e.* they assume one of two values. Notice that when $X$ is small, $Y$ is most often 1, but as $X$ increases, $Y=0$ becomes more common. Although every value of $Y$ is either 0 or 1, the mean can still be plotted and represents the probability of observing 1. We can see that the mean depends on $X$, though the relationship does not seem linear. This data would be a *terrible* fit for linear regression, which would predict fitted probabilities greater than 1 and less than 0, and which assumes a continuous cloud of errors when at each observation $x_i$ there are only two possible values and so only two possible errors.
  
 ```{r}
 #| code-fold: true

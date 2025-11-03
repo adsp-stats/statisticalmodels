@@ -4,7 +4,7 @@
 
 Our goal now is to link a linear combination of our predictor variables, $\boldsymbol{X\beta}$, to the mean of the conditional distribution $Y|X$. This mean will be our point estimate. Solving for the mean of the distribution will often provide us the information needed to estimate its parameters.^[For example, the mean of the exponential distribution is $1/\lambda$, the inverse of its parameter.] In these cases, a model for the mean will also allow us to make probabilistic statements about values other than the mean. 
 
-Even though we are trying to model non-linear trends between our response variable $Y$ and the predictors $\boldsymbol{X}$, the central idea of GLMs is to *reject* the option of creating a truly non-linear model, and instead to *linearly model a reversible transformation of the mean response*. And once we modeled this transformation of the mean, we can simply run our model predictions through the inverse of the function, un-transforming them into estimates for the mean of the actual data. 
+Even though we are trying to model non-linear trends between our response variable $Y$ and the predictors $\boldsymbol{X}$, the central idea of GLMs is to *reject* the option of creating a truly non-linear model, and instead to *linearly model a reversible transformation of the mean response*. And once we have modeled this transformation of the mean, we can simply run our model predictions through the inverse of the function, un-transforming them into estimates for the mean of the actual data. 
 
 Let’s start by describing the function which transforms the mean of $Y$ into a quantity modeled by $\boldsymbol{X\beta}$. I’ll begin with the more formal definition and then untangle it through examples. 
 
@@ -26,6 +26,6 @@ Define the **mean function** as the inverse of the link function, which expresse
 $$g^{-1}(\eta_i) = \mu_i $$
 :::
 
-Our goal is to connect a non-linear transformation of the mean of $Y$ to a linear combination of the $X$s. If we start by saying “the mean of $Y$ is equal to...” then we are defining the *mean function*. If we start by saying “the linear combination of the $X$s is equal to...” then we are defining the *link function*. 
+Our goal is to connect (or *link*) a non-linear transformation of the mean of $Y$ to a linear combination of the $X$s. We call the function which defines the mean of $Y$ as some function of $\boldsymbol{X\beta}$ the *mean function*. We call its inverse, which defines $\boldsymbol{X\beta}$ as a function of the mean of $Y$ the *link function*. 
 
 In the next section we will use a concrete example to explore one implementation of this idea, *logistic regression*.

@@ -68,7 +68,7 @@ Most of our problems here are caused by the fact that we are trying to linearly 
 
 ## Solving the problem by modeling log-odds
 
-So instead of linearly modeling $P(\mathrm{Admit} = \mathrm{Yes})$, let’s linearly model a *transformation* of $P(\mathrm{Admit} = \mathrm{Yes})$ which isn’t bounded. We will transform admission probability once to remove the upper bound, and transform it a second time to remove the lower bound. But first, I need to introduce the concept of odds.
+So instead of linearly modeling $P(\mathrm{Admit} = \mathrm{Yes})$, let’s linearly model a *transformation* of $P(\mathrm{Admit} = \mathrm{Yes})$ which isn’t bounded. We will transform admission probability once to remove the upper bound, and transform it a second time to remove the lower bound. To discuss this transformation,I must first introduce the concept of odds.
 
 :::{.callout-note}
 Let $X$ be a random variable and $\mathcal{A}$ be an event within the event space of $X$ with probability $P(\mathcal{A})$. Then the **odds** of $\mathcal{A}$ are:
@@ -159,7 +159,7 @@ We may wish to find the **classification boundary**, the SAT score which helps s
 
 ### Interpretation
 
-In a linear regression, the estimated slope $\hat{\beta}_1$ had a straightforward meaning: if $X$ increases by 1, then we predict that $Y$ increases by \hat{\beta}_1. Logistic regression doesn’t offer us this easy interpretation: after all, capturing a non-linear effect was the goal of our analysis. Instead, we can view a one-unit change in $X$ as causing a $\hat{\beta}_1$ proportional increase in the odds of $Y$:
+In a linear regression, the estimated slope $\hat{\beta}_1$ had a straightforward meaning: if $X$ increases by 1, then we predict that $Y$ increases by $\hat{\beta}_1$. Logistic regression doesn’t offer us this easy interpretation: after all, capturing a non-linear effect was the goal of our analysis. Instead, we can view a one-unit change in $X$ as causing a $\hat{\beta}_1$ proportional increase in the odds of $Y$:
  
 ::: {.callout-note}
 Let $\hat{\boldsymbol{\beta}} = \hat{\beta}_0, \hat{\beta}_1, \ldots, \hat{\beta}_k$ be a set of parameter estimates from a logistic regression model and let $\textrm{odds}(x_i;\hat{\boldsymbol{\beta}})$ be the odds that $y_i=1$ when $X=x_i$, *i.e.* $\textrm{odds} (x_i;\hat{\boldsymbol{\beta}}) = e^{\boldsymbol{x}_i \hat{\boldsymbol{\beta}}}$.

@@ -44,7 +44,7 @@ The table below describes some of the more common distribution-link pairings, in
 ||Identity|$\boldsymbol{x \beta} = \mu$|$\mu = \boldsymbol{x \beta}$|
 |Poisson|Log|$\boldsymbol{x \beta} = \log \mu$|$\mu = e^{\boldsymbol{x \beta}}$|
 ||Square root|$\boldsymbol{x \beta} = \sqrt\mu$|$\mu = (\boldsymbol{x \beta})^2$|
-||Identity|$\boldsymbol{x \beta} = \sqrt\mu$|$\boldsymbol{x \beta} = \mu$|$\mu = \boldsymbol{x \beta}$|
-|Exponential|Negative inverse|$\boldsymbol{x \beta} = -1/\sqrt\mu$|$\boldsymbol{x \beta} = -1/\mu$|$\mu = -1/\boldsymbol{x \beta}$|
-|Negative binomial|Log|$\boldsymbol{x \beta} = \log \boldsymbol{x \beta}$|$\mu = e^{\boldsymbol{x \beta}}$|
-|Gamma|Inverse|$\boldsymbol{x \beta} = 1/\mu$|$\boldsymbol{x \beta} = -1/\mu$|$\mu = -1/(\boldsymbol{x \beta})$|
+||Identity|$\boldsymbol{x \beta} = \mu$|$\mu = \boldsymbol{x \beta}$|
+|Exponential|Negative inverse|$\boldsymbol{x \beta} = -1/\mu$|$\boldsymbol{x \beta} = -1/\mu$|
+|Negative binomial|Log|$\boldsymbol{x \beta} = \log \mu$|$\mu = e^{\boldsymbol{x \beta}}$|
+|Gamma|Inverse|$\boldsymbol{x \beta} = 1/\mu$|$\mu = 1/(\boldsymbol{x \beta})$|
