@@ -619,13 +619,13 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="revisiting-the-ols-model">Revisiting the OLS model</h2>
 <p>Let’s review our previous assumptions about the data, so that we can identify what to keep and what we need to change. Previously, we assumed that <span class="math inline">\(Y\)</span> was <em>conditionally</em> Normal, meaning that for every row vector of predictors <span class="math inline">\(\boldsymbol{x}_i\)</span>, the response variable will be IID-normally distributed around its prediction: <span class="math inline">\(y_i \sim \mathrm{Normal}(\boldsymbol{x}_i\boldsymbol{\beta},\sigma^2)\)</span>. Let’s isolate two key elements from these assumptions which we can use for non-linear modeling:</p>
 <ul>
-<li><p>Conditional on a fixed vector of predictors <span class="math inline">\(\boldsymbol{x}_i\)</span>, the response variable y_i follows a particular probability distribution</p>
+<li><p>Conditional on a fixed vector of predictors <span class="math inline">\(\boldsymbol{x}_i\)</span>, the response variable <span class="math inline">\(y_i\)</span> follows a particular probability distribution</p>
 <ul>
 <li>For OLS regression, this distribution is the Normal distribution</li>
 </ul></li>
 <li><p>The mean of the response variable <span class="math inline">\(\mu_i = \mathbb{E}[y_i]\)</span> can be expressed as some function of the linear predictor <span class="math inline">\(\boldsymbol{x}_i\boldsymbol{\beta}\)</span></p>
 <ul>
-<li>For OLS regression, the relationship is as simple as function <span class="math inline">\(\mu_i = \boldsymbol{x}_i\boldsymbol{\beta}\)</span></li>
+<li>For OLS regression, the relationship is as simple as the identity function: <span class="math inline">\(\mu_i = \boldsymbol{x}_i\boldsymbol{\beta}\)</span></li>
 </ul></li>
 </ul>
 <p>By keeping these two assumptions, we can significantly broaden the linear regression model to cover many different distributions, data types, and non-linear trends, while still including OLS regression as a special case</p>
@@ -715,7 +715,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Let’s push this generalization even further away from the normal case we first learned. In the figure above, the values of X are the same as before, but the values of Y are Bernoulli distributed, <em>i.e.</em> they assume one of two values. Notice that when <span class="math inline">\(X\)</span> is small, <span class="math inline">\(Y\)</span> is most often 1, but as <span class="math inline">\(X\)</span> increases, <span class="math inline">\(Y=0\)</span> becomes more common. Although every value of <span class="math inline">\(Y\)</span> is either 0 or 1, the mean can still be plotted and represents the probability of observing 1. We can see that the mean depends on X, though the relationship does not seem linear. This data would be a <em>terrible</em> fit for linear regression, which would predict fitted probabilities greater than 1 and less than 0, and which assumes a continuous cloud of errors when at each observation <span class="math inline">\(x_i\)</span> there are only two possible values and so only two possible errors.</p>
+<p>Let’s push this generalization even further away from the normal case we first learned. In the figure above, the values of X are the same as before, but the values of Y are Bernoulli distributed, <em>i.e.</em> they assume one of two values. Notice that when <span class="math inline">\(X\)</span> is small, <span class="math inline">\(Y\)</span> is most often 1, but as <span class="math inline">\(X\)</span> increases, <span class="math inline">\(Y=0\)</span> becomes more common. Although every value of <span class="math inline">\(Y\)</span> is either 0 or 1, the mean can still be plotted and represents the probability of observing 1. We can see that the mean depends on <span class="math inline">\(X\)</span>, though the relationship does not seem linear. This data would be a <em>terrible</em> fit for linear regression, which would predict fitted probabilities greater than 1 and less than 0, and which assumes a continuous cloud of errors when at each observation <span class="math inline">\(x_i\)</span> there are only two possible values and so only two possible errors.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>

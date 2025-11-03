@@ -749,7 +749,7 @@ window.Quarto = {
 </section>
 <section id="solving-the-problem-by-modeling-log-odds" class="level2">
 <h2 class="anchored" data-anchor-id="solving-the-problem-by-modeling-log-odds">Solving the problem by modeling log-odds</h2>
-<p>So instead of linearly modeling <span class="math inline">\(P(\mathrm{Admit} = \mathrm{Yes})\)</span>, let’s linearly model a <em>transformation</em> of <span class="math inline">\(P(\mathrm{Admit} = \mathrm{Yes})\)</span> which isn’t bounded. We will transform admission probability once to remove the upper bound, and transform it a second time to remove the lower bound. But first, I need to introduce the concept of odds.</p>
+<p>So instead of linearly modeling <span class="math inline">\(P(\mathrm{Admit} = \mathrm{Yes})\)</span>, let’s linearly model a <em>transformation</em> of <span class="math inline">\(P(\mathrm{Admit} = \mathrm{Yes})\)</span> which isn’t bounded. We will transform admission probability once to remove the upper bound, and transform it a second time to remove the lower bound. To discuss this transformation,I must first introduce the concept of odds.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -880,7 +880,7 @@ Note
 </section>
 <section id="interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
-<p>In a linear regression, the estimated slope <span class="math inline">\(\hat{\beta}_1\)</span> had a straightforward meaning: if <span class="math inline">\(X\)</span> increases by 1, then we predict that <span class="math inline">\(Y\)</span> increases by _1. Logistic regression doesn’t offer us this easy interpretation: after all, capturing a non-linear effect was the goal of our analysis. Instead, we can view a one-unit change in <span class="math inline">\(X\)</span> as causing a <span class="math inline">\(\hat{\beta}_1\)</span> proportional increase in the odds of <span class="math inline">\(Y\)</span>:</p>
+<p>In a linear regression, the estimated slope <span class="math inline">\(\hat{\beta}_1\)</span> had a straightforward meaning: if <span class="math inline">\(X\)</span> increases by 1, then we predict that <span class="math inline">\(Y\)</span> increases by <span class="math inline">\(\hat{\beta}_1\)</span>. Logistic regression doesn’t offer us this easy interpretation: after all, capturing a non-linear effect was the goal of our analysis. Instead, we can view a one-unit change in <span class="math inline">\(X\)</span> as causing a <span class="math inline">\(\hat{\beta}_1\)</span> proportional increase in the odds of <span class="math inline">\(Y\)</span>:</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
