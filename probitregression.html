@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>probitregression – Statistical Analysis Using R: Online Notes</title>
+<title>Probit regression – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -31,7 +66,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./glmgoodnessoffit.html" rel="next">
-<link href="./constructingglms.html" rel="prev">
+<link href="./buildingnewglms.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./constructingglms.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./probitregression.html"><span class="chapter-title">probitregression.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./probitregression.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./probitregression.html"><span class="chapter-title">Probit regression</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -391,17 +455,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./constructingglms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">constructingglms.html</span></a>
+  <a href="./probitregression.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Probit regression</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./probitregression.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">probitregression.html</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./glmgoodnessoffit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">glmgoodnessoffit.html</span></a>
+  <a href="./glmgoodnessoffit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">GLM goodness-of-fit</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -516,17 +575,163 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-probit-link" id="toc-the-probit-link" class="nav-link active" data-scroll-target="#the-probit-link">The probit link</a></li>
+  <li><a href="#motivation-using-latent-variables" id="toc-motivation-using-latent-variables" class="nav-link" data-scroll-target="#motivation-using-latent-variables">Motivation using latent variables</a></li>
+  <li><a href="#probit-regression-for-classifying-iris-species" id="toc-probit-regression-for-classifying-iris-species" class="nav-link" data-scroll-target="#probit-regression-for-classifying-iris-species">Probit regression for classifying iris species</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./constructingglms.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./probitregression.html"><span class="chapter-title">probitregression.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./probitregression.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./probitregression.html"><span class="chapter-title">Probit regression</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-probitregression" class="quarto-section-identifier"><span class="chapter-title">Probit regression</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>In this section I want to provide the reader with new tools which help in model selection <em>between</em> competing GLMs. Unlike linear regression, two GLMs can differ not just in their predictors but also in their distributional assumption and their choice of link function. To study these model selection techniques, we should learn a second link function for binary data, so that we can tell when it performs worse, or better, or equivalently to the logit link. To that end, I will first introduce the probit model, and then discuss GLM fit metrics and selection techniques.</p>
+<section id="the-probit-link" class="level2">
+<h2 class="anchored" data-anchor-id="the-probit-link">The probit link</h2>
+<p>Logistic regression presumed a world in which changes among our predictors create linear shifts to the log-odds of success, or multiplicative shifts to the odds of success. In some instances, we can show that the logistic model is not just a good fit to the data, but in fact the <em>correct</em> functional form for the generating process which created the data.</p>
+<p>However, many different real-world generating processes create binary data, and the inputs to these processes do not always relate linearly to the log-odds of success. Sometimes we can show that another link function would better explain how changes in our predictors affect the values of our response.</p>
+</section>
+<section id="motivation-using-latent-variables" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-using-latent-variables">Motivation using latent variables</h2>
+<p>As an example, consider the following <em>latent variables</em> model.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Suppose a random variable <span class="math inline">\(Z\)</span> which is conditionally normally distributed, with a mean determined by another variable <span class="math inline">\(X\)</span> and a variance of 1:<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p><span class="math display">\[z_i = \beta_0 + \beta_1 x_i + \varepsilon_i,\quad \varepsilon_i \sim \textrm{Normal}(0,1)\]</span></p>
+<p>Now define a new variable <span class="math inline">\(Y\)</span> which takes on two values, 1 or 0, depending on whether <span class="math inline">\(Z\)</span> is positive or negative, respectively:</p>
+<p><span class="math display">\[y_i = 1\!\!1\{z_i \gt 0\}\]</span></p>
+<p>Assume that, for some reason, we cannot directly observe the latent variable <span class="math inline">\(Z\)</span>, and only observe the variable <span class="math inline">\(Y\)</span>, which “flattens” the continuous response of <span class="math inline">\(Z\)</span> to a binary outcome according to some threshold value. Some examples of this type of relationship include:</p>
+<ul>
+<li><p><span class="math inline">\(Z\)</span> is a continuous measure of the viral load in my system following a disease exposure event; <span class="math inline">\(Y\)</span> observes whether or not I contract the disease</p></li>
+<li><p><span class="math inline">\(Z\)</span> is a continuous measure of how much I want a new TV with a certain set of features; <span class="math inline">\(Y\)</span> observes whether I will buy one for $800</p></li>
+<li><p><span class="math inline">\(Z\)</span> is a continuous measure of my satisfaction in my current job; <span class="math inline">\(Y\)</span> observes whether I begin to apply for other jobs</p></li>
+</ul>
+<p>We may conclude from the definitions of <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> that,</p>
+<p><span class="math display">\[\mu_i = P(y_i=1) = P(z_i \gt 0) = \Phi(\beta_0 + \beta_1 x_i)\]</span></p>
+<p>Where <span class="math inline">\(\Phi\)</span> is the cumulative distribution function of the standard normal distribution.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> The normal CDF has the same nice properties as the logistic function: it maps an unbounded domain to a closed range of [0, 1], and it displays an S-shaped curve which creates a sense of diminishing returns as the inputs get very small or very large:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">y=</span><span class="fu">seq</span>(<span class="fl">0.001</span>,.<span class="dv">999</span>,<span class="fl">0.001</span>),</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">x=</span><span class="fu">qnorm</span>(<span class="fu">seq</span>(<span class="fl">0.001</span>,.<span class="dv">999</span>,<span class="fl">0.001</span>)),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Probit mean function '</span>,<span class="fu">Phi</span>(z))),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Probability'</span>, <span class="at">xlab=</span><span class="st">'z-score'</span>,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="dv">0</span>,<span class="at">y0=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">y1=</span><span class="fl">0.5</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">y0=</span><span class="fl">0.5</span>,<span class="at">x0=</span><span class="sc">-</span><span class="dv">4</span>,<span class="at">x1=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="probitregression_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>S-shaped curve of the probit mean function</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Essentially, our predictors and our betas combine to predict a <em>z</em>-score, and <em>the cumulative probability of that </em>z<em>-score is our fitted probability for</em> <span class="math inline">\(Y=1\)</span>.</p>
+<p>Let’s briefly compare the capabilities and interpretation of a probit regression with the logistic regression described in the sections above:</p>
+<ul>
+<li><p><em>Classification.</em> Just like the logistic regression, we can establish a classification boundary along the threshold (or line, or hyperplane) at which <span class="math inline">\(\hat{\mu} = 0.5\)</span>. We know that <span class="math inline">\(\Phi^{-1}(0.5) = 0\)</span>, that is, 0 is the median of the standard normal distribution. For a simple regression with one predictor, as before, we have <span class="math inline">\(0 = \hat{\beta}_0 + \hat{\beta}_1 x_{P_{50}}\)</span> and so <span class="math inline">\(x_{P_{50}} = -\hat{\beta}_0 / \hat{\beta}_1\)</span>. No changes here!</p></li>
+<li><p><em>Interpretation.</em> In a probit regression, a one-unit shift in <span class="math inline">\(X\)</span> changes the <em>z</em>-score for the cumulative probability of success by <span class="math inline">\(\hat{\beta}_1\)</span>. We don’t have any easy way to describe how this affects probability. In a logistic regression, we could say that a one-unit shift in <span class="math inline">\(X\)</span> creates an <span class="math inline">\(e^{\hat{\beta}_1}\)</span> proportional increase in the odds of <span class="math inline">\(Y\)</span>, but there are no clear analogues for probit regression… the best we can say is that a one-unit increase in <span class="math inline">\(X\)</span> adds <span class="math inline">\(\hat{\beta}_1\)</span> to the <em>z</em>-score of <span class="math inline">\(P(Y=1)\)</span>.</p></li>
+<li><p><em>Hypothesis testing and confidence intervals for the parameters.</em> Similar to logistic regression, we can perform hypothesis tests for whether each true slope <span class="math inline">\(\beta_j\)</span> could actually be zero. Maximum likelihood estimation methods and the Central Limit Theorem continue to guarantee these solutions, just as with logistic regression.</p></li>
+<li><p><em>Model selection and model comparison using AIC.</em> Like logistic regression, probit regressions are typically fit by maximum likelihood methods, and we can continue to select and compare models using likelihood-base metrics including AIC.</p></li>
+</ul>
+<p>Allow me to editorialize: when we choose probit regression over logistic regression, we often lose some coefficient interpretability and gain nothing special in return. There are <em>relatively few occasions</em> where the relationships in our data are either <em>(a)</em> significantly better described by probit regression than by logistic regression, or <em>(b)</em> better conceptualized as a shifting <em>z</em>-score rather than a change in the odds ratio. However, these occasions do happen, and within some domains probit models are more popular than logistic models.</p>
+</section>
+<section id="probit-regression-for-classifying-iris-species" class="level2">
+<h2 class="anchored" data-anchor-id="probit-regression-for-classifying-iris-species">Probit regression for classifying iris species</h2>
+<p>As an example, consider again the iris flower data introduced earlier. That data described three species of iris flowers by their physical measurements. Let’s build a model to classify whether a given iris specimen came from one species (<em>Iris virginica</em>) or the other two, using petal length and petal width as predictors:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>z</em>-score</th>
+<th style="text-align: right;"><em>p</em>-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span> (Intercept)</td>
+<td style="text-align: right;">-26.19</td>
+<td style="text-align: right;">-3.58</td>
+<td style="text-align: right;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> (Slope on petal width)</td>
+<td style="text-align: right;">6.26</td>
+<td style="text-align: right;">2.97</td>
+<td style="text-align: right;">0.003</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_2\)</span> (Slope on petal length)</td>
+<td style="text-align: right;">3.29</td>
+<td style="text-align: right;">2.62</td>
+<td style="text-align: right;">0.009</td>
+</tr>
+</tbody>
+</table>
+<p>Remember that our linear predictor for each observation, <span class="math inline">\(\boldsymbol{x}_i \boldsymbol{\hat{\beta}}\)</span>, codes for a <em>z</em>-score from the standard normal distribution, and the cumulative probability <span class="math inline">\(\Phi(\boldsymbol{x}_i \boldsymbol{\hat{\beta}})\)</span> will be our fitted mean. So when we see that the intercept is -26.19, we learn that irises with small petal widths and petal lengths are extremely unlikely to be <em>Iris virginica</em> specimens. (The cumulative probability to the left of <span class="math inline">\(z = -26.19\)</span> is vanishingly small.) Even a moderately-sized petal with width 1.5 cm and length 4 cm would have a predicted z-score of <span class="math inline">\(-26.19 + 6.26(1.5) + 3.29(4) \approx -3.79\)</span>, which corresponds to a fitted probability of <span class="math inline">\(\Phi(-3.79) \approx 0.0001\)</span>.</p>
+<p>Examining the slopes on petal width and petal length, we can see that a one-centimeter increase in either variable changes the linear predictor by 6.26 and 3.29, respectively. Shifting the <em>z</em>-score by 6.26 might drastically change the classification probability, or might make no difference. Consider:</p>
+<ul>
+<li><p>If the linear predictor was previously -10, a one-centimeter increase in petal width would create a new linear predictor of -10 + 6.26 = -3.74. The old probability of being <em>Iris virginica</em> would have been <span class="math inline">\(\Phi(-10) \approx 10^{-23}\)</span>, and the new probability would be <span class="math inline">\(\Phi(-3.74) \lt 0.0001\)</span>, so we remain almost certain that the flower is from another species.</p></li>
+<li><p>If the linear predictor was previously -3.13, a one-centimeter increase in petal width would create a new linear predictor of -3.13 + 6.26 = 3.13. This would dramatically change our classification probability from <span class="math inline">\(\Phi(-3.13) \approx 0.001\)</span> to <span class="math inline">\(\Phi(3.13) \approx 0.999\)</span>!</p></li>
+</ul>
+<p>We can use our coefficients to define the two-dimensional <strong>classification boundary</strong>, a line which separates those iris flowers which the model would classify as <em>Iris virginica</em> from the rest. Recall that the 50-50 dividing line will have the property that <span class="math inline">\(\boldsymbol{x \hat{\beta}} = 0\)</span>, since <span class="math inline">\(\Phi(0) = 0.5\)</span>, or in other words, since the median of the standard normal distribution is 0.</p>
+<p><span class="math display">\[\begin{aligned} \boldsymbol{x \hat{\beta}} = 0 &amp;\longrightarrow \hat{\beta}_0 + \hat{\beta}_1 \textrm{Width} + \hat{\beta}_2 \textrm{Length} = 0 \\ &amp;\longrightarrow \textrm{Length} = -\frac{\hat{\beta}_0}{\hat{\beta}_2} - \frac{\hat{\beta}_1}{\hat{\beta}_2} \textrm{Width} \end{aligned}\]</span><br>
+That equality allows us to define the line along which our classification probabilities are all 0.5. Any iris specimen on the “longer or wider” side of this line will be classified as <em>Iris virginica</em>, while any iris specimen on the “shorter or narrower” side of this line will be classified as another species.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#probit regression example</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>iris.probit <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">glm</span>(<span class="fu">I</span>(Species<span class="sc">==</span><span class="st">'virginica'</span>)<span class="sc">~</span>Petal.Width<span class="sc">+</span>Petal.Length,<span class="at">data=</span>iris,<span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">'probit'</span>)))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iris<span class="sc">$</span>Petal.Width,iris<span class="sc">$</span>Petal.Length,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">times=</span><span class="fu">c</span>(<span class="dv">100</span>,<span class="dv">50</span>)),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Probit classifier for virginica irises'</span>,<span class="at">xlab=</span><span class="st">'Petal width'</span>,<span class="at">ylab=</span><span class="st">'Petal length'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="sc">-</span>iris.probit<span class="sc">$</span>coefficients[<span class="dv">1</span>]<span class="sc">/</span>iris.probit<span class="sc">$</span>coefficients[<span class="dv">3</span>],</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">b=</span><span class="sc">-</span>iris.probit<span class="sc">$</span>coefficients[<span class="dv">2</span>]<span class="sc">/</span>iris.probit<span class="sc">$</span>coefficients[<span class="dv">3</span>],<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'virginica'</span>,<span class="st">'other species'</span>,<span class="st">'Classifier'</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'#0000ff'</span>,<span class="st">'black'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="cn">NA</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="probitregression_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Classification boundary for probit regression</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Latent variable models presume that the variables we observe are transformations (often simplifications) of one or more unobserved variables with convenient distributions or properties. Even though we can’t directly observe the latent variables, guessing at their distributional form allows us to better understand the properties of the variables we do observe.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Since the constants <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are arbitrary at this point, we can use a variance of 1 and a threshold value of 0 without endangering the conclusions that follow.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>In other words, the left-tail probability for a <em>z</em>-score.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -968,15 +1173,15 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./constructingglms.html" class="pagination-link" aria-label="constructingglms.html">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">constructingglms.html</span></span>
+      <a href="./buildingnewglms.html" class="pagination-link" aria-label="Building new GLMs">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Building new GLMs</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./glmgoodnessoffit.html" class="pagination-link" aria-label="glmgoodnessoffit.html">
-        <span class="nav-page-text"><span class="chapter-title">glmgoodnessoffit.html</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./glmgoodnessoffit.html" class="pagination-link" aria-label="GLM goodness-of-fit">
+        <span class="nav-page-text"><span class="chapter-title">GLM goodness-of-fit</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
