@@ -1,0 +1,50 @@
+# GLM goodness-of-fit {#sec-glmgoodnessoffit}
+
+#deviance calcs for probit regression
+Mb <- iris.probit
+Ma <- update(iris.probit,.~.-Petal.Length)
+summary(Mb)
+summary(Ma)
+summary(Ma)$deviance-summary(Mb)$deviance
+1-pchisq(summary(Ma)$deviance-summary(Mb)$deviance,1)
+
+summary(Mb)$null.deviance-summary(Mb)$deviance
+1-pchisq(summary(Mb)$null.deviance-summary(Mb)$deviance,2)
+
+summary(Mb)$deviance
+1-pchisq(33,147)
+
+#confusion matrix
+table(iris$Species=='virginica',round(Ma$fitted.values))
+
+#roc curve
+roc.x <- sapply(seq(0.000,1,0.001),function(z) mean(Ma$fitted.values[iris$Species!='virginica']>=z))
+roc.y <- sapply(seq(0.000,1,0.001),function(z) mean(Ma$fitted.values[iris$Species=='virginica']>=z))
+mean(roc.y)
+plot(roc.x,roc.y,type='l',xlim=c(0,1),ylim=c(0,1),
+     xlab='False positive rate',ylab='True positive rate',
+     main='ROC curve for simple virginica classifier',
+     col='#800000',lwd=2)
+lines(x=c(0,1),y=c(0,1),lty=2,lwd=2,col='grey50')
+text(0.6,0.4,'AUC=0.9902',col='#800000',cex=1)
+
+#install.packages('ROCR')  
+#require(ROCR)
+#iris.preds <- prediction(1*c(Ma$fitted.values),1*c(iris$Species=='virginica'))
+#iris.auc <- performance(iris.preds,'auc')
+#iris.auc@y.values
+#comparing aic of logistic vs probit regression
+admit.probit <- glm(admit~SAT,family=binomial(link='probit'))
+c(AIC.logistic=AIC(admit.glm),AIC.probit=AIC(admit.probit),
+  AIC.ols=AIC(glm(admit~SAT,family=gaussian)))
+plot(x=seq(400,1600,5),y=predict(admit.glm,newdata=list(SAT=seq(400,1600,5)),type='response'),
+     type='l',xlab='SAT score',ylab='Probability of admission',
+     main='Competing models for college admission',col='#800000',lwd=2)
+lines(x=seq(400,1600,5),y=predict(admit.probit,newdata=list(SAT=seq(400,1600,5)),type='response'),
+       lwd=2,lty=3,)
+abline(reg=lm(admit~SAT),col='grey50',lwd=2)
+points(SAT,admit)
+legend(x='topleft',lwd=2,lty=c(1,3,1),col=c('#800000','black','grey50'),
+       legend=c(expression(paste('Probit ',(AIC %~~% 16.1))),
+                expression(paste('Logistic ',(AIC %~~% 16.3))),
+                expression(paste('Linear ',(AIC %~~% 18.1)))))

@@ -58,7 +58,6 @@ book:
         - buildingnewglms.qmd
     - part: "8. Assessing GLMs"
       chapters:
-        - constructingglms.qmd
         - probitregression.qmd
         - glmgoodnessoffit.qmd
         - classificationmetrics.qmd
