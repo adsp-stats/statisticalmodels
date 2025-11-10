@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>classificationmetrics – Statistical Analysis Using R: Online Notes</title>
+<title>Classification metrics – Statistical Analysis Using R: Online Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -84,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./probitregression.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./classificationmetrics.html"><span class="chapter-title">classificationmetrics.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./probitregression.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./classificationmetrics.html"><span class="chapter-title">Classification metrics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -401,7 +465,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./classificationmetrics.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">classificationmetrics.html</span></a>
+  <a href="./classificationmetrics.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Classification metrics</span></a>
   </div>
 </li>
       </ul>
@@ -511,17 +575,166 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-confusion-matrix-and-basic-classification-metrics" id="toc-the-confusion-matrix-and-basic-classification-metrics" class="nav-link active" data-scroll-target="#the-confusion-matrix-and-basic-classification-metrics">The confusion matrix and basic classification metrics</a></li>
+  <li><a href="#advanced-classification-metrics" id="toc-advanced-classification-metrics" class="nav-link" data-scroll-target="#advanced-classification-metrics">Advanced classification metrics</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./probitregression.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./classificationmetrics.html"><span class="chapter-title">classificationmetrics.html</span></a></li></ol></nav></header>
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./probitregression.html">8. Assessing GLMs</a></li><li class="breadcrumb-item"><a href="./classificationmetrics.html"><span class="chapter-title">Classification metrics</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-classificationmetrics" class="quarto-section-identifier"><span class="chapter-title">Classification metrics</span></span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<p>The previous section (<a href="glmgoodnessoffit.html" class="quarto-xref"><span>GLM goodness-of-fit</span></a>) dealt with techniques which determine whether predictors belong in the model, or whether the true parameters might be equal to one value or another. What they don’t determine is how well our model performs at <em>prediction or classification</em>. Let’s develop new metrics to help objectively measure how well our model explains the data.</p>
+<section id="the-confusion-matrix-and-basic-classification-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="the-confusion-matrix-and-basic-classification-metrics">The confusion matrix and basic classification metrics</h2>
+<p>Our response variable <span class="math inline">\(Y\)</span> takes on two values, 0 and 1. Our model predictions are estimated mean response values <span class="math inline">\(\hat{\mu}_i\)</span>, which are always between 0 and 1. If we select some classification boundary <span class="math inline">\(p^*\)</span> (typically 0.5), we can <em>classify</em> each observation in our sample as belonging to the “0” class or the “1” class as follows:</p>
+<p><span class="math display">\[\hat{y}_i = 1\!\!1\{\hat{\mu}_i&gt;p^*\}\]</span></p>
+<p>Our next step would be to measure the correspondence between <em>(a)</em> when our data are <em>classified</em> as 0 or 1 and <em>(b)</em> when our data <em>actually were</em> 0 or 1. The most common way to represent this relationship is through a 2x2 table called the <strong>confusion matrix</strong>. Let’s consider the simpler model from the previous section which classified <em>Iris virginica</em> specimens only by their petal width:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Ma <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">I</span>(Species<span class="sc">==</span><span class="st">'virginica'</span>) <span class="sc">~</span> Petal.Width,<span class="fu">binomial</span>(<span class="at">link=</span><span class="st">'probit'</span>),iris)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(iris<span class="sc">$</span>Species<span class="sc">==</span><span class="st">'virginica'</span>,<span class="fu">round</span>(Ma<span class="sc">$</span>fitted.values))[<span class="dv">2</span><span class="sc">:</span><span class="dv">1</span>,<span class="dv">2</span><span class="sc">:</span><span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 15%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: center;"><strong>Predicted</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: center;">virginica</td>
+<td style="text-align: center;">other</td>
+<td style="text-align: center;"><em>(total)</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>Actual</strong></td>
+<td style="text-align: right;">virginica</td>
+<td style="text-align: center;">46</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><em>50</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: right;">other</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">98</td>
+<td style="text-align: center;"><em>100</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: right;"><em>total</em></td>
+<td style="text-align: center;">48</td>
+<td style="text-align: center;">102</td>
+<td style="text-align: center;"><em>150</em></td>
+</tr>
+</tbody>
+</table>
+<p>We can create a confusion matrix similar to the one above for <em>any</em> binary classification model: a GLM, a linear probability model, even machine learning models such as support vector machines (SVMs) and random forests of decision trees. From this simple confusion matrix we may readily develop a large number of metrics.</p>
+<p>(First, a word of caution: in this example, we are trying to identify <em>Iris virginica</em> specimens, and so it makes sense to label a “positive” finding as a <em>virginica</em> prediction. In other classification models, the two classes will be difficult to distinguish, and care must be taken to explain which class is the “positive” finding and which the “negative.”)</p>
+<ul>
+<li><p><em>False positive rate.</em> False positives would be instances in which we predict that an iris specimen is a <em>virginica</em>, when in fact it is another species: we have 2 false positives in this model. The <strong>false positive rate</strong> is the proportion of all actual negatives that are wrongly labeled positive, and is analogous to the Type I error rate; in this example, <span class="math inline">\(\frac{2}{2+98} = \frac{2}{100} = 2.00\%\)</span></p></li>
+<li><p><em>False negative rate.</em> False negatives would be instances in which we predict that an iris specimen is something other than <em>virginica</em>, when in fact it is <em>virginica</em>: we have 4 false negatives in this model. The <strong>false negative rate</strong> is the proportion of all actual positives that are wrongly labeled negative, and is analogous to the Type II error rate; in this example, <span class="math inline">\(\frac{4}{4+46} = \frac{4}{50} = 8.00\%\)</span></p></li>
+<li><p><em>Precision.</em> Our predictions for <em>virginica</em> irises are precise when they contain few mistakes, that is, most of our predicted <em>virginicas</em> really are <em>virginicas</em>. Precision is the proportion of all predicted positives which are actual positives; in this example, <span class="math inline">\(\frac{46}{46+2} = \frac{46}{48} \approx 95.83\%\)</span></p></li>
+<li><p><em>Recall.</em> Our predictions are said to have good recall when none of the true <em>virginicas</em> are “forgotten”, meaning that they were thought to be another species. <strong>Recall</strong> is the proportion of all actual positives which are predicted positive, and is also called the true positive rate or the <strong>sensitivity</strong>, and is analogous to the power of the test; in this example, <span class="math inline">\(\frac{46}{46+4} = \frac{46}{50} = 92.00\%\)</span></p></li>
+<li><p><em>Specificity.</em> Our predictions for <em>virginica</em> irises are specific when they correctly rule out most of the other flowers. <strong>Specificity</strong> is the proportion of all actual negatives which are predicted negative, and is also called the true negative rate; in this example, <span class="math inline">\(\frac{98}{98+2} = \frac{98}{100} = 98.00\%\)</span></p></li>
+<li><p><em>Accuracy.</em> While the metrics so far have focused on positive or negative identifications, sometimes we simply wish to measure how often we are “right”, without regard to any specific class. <strong>Accuracy</strong> is the proportion of all predictions which match their actual values; in this example, <span class="math inline">\(\frac{46+98}{50+100} = \frac{144}{150} = 96.00\%\)</span></p></li>
+</ul>
+<p>Each of these metrics have their place; they become more or less important depending on the context of the classification problem. Consider these two contrasting scenarios:</p>
+<ol type="1">
+<li><p>When creating a distribution list for a print or web advertisement, we might focus on precision over recall: if the client only has enough budget to place their ad in front of 100,000 people, then we want that group of 100,000 to contain as many “high-value targets” as possible (high precision), without worrying about how many other high-value targets are being left out (low recall).</p></li>
+<li><p>When developing a screening diagnostic test for breast cancer, we might want to focus on recall over precision: we are willing to wrongly suspect cancer and advise those people to get a more intense examination (low precision) if it means that we almost never <em>miss</em> a case of cancer and wrongly tell that patient they are cancer-free (high recall).</p></li>
+</ol>
+<p>Of course, in some situations we want to prioritize both precision <em>and</em> recall, and would not accept a model which fully sacrificed one metric in order to focus on the other. For such occasions, we have yet another metric:</p>
+<ul>
+<li><em>F1 score.</em> Using harmonic means, we can jointly prioritize precision and recall while heavily penalizing models which optimize one metric at the cost of the other. <strong>F1 score</strong> is the harmonic mean of precision and recall: <span class="math inline">\(\textrm{F1}=\frac{2}{1⁄\textrm{precision} + 1⁄\textrm{recall}} = 2 \cdot \frac{\textrm{precision} \times \textrm{recall}}{\textrm{precision} + \textrm{recall}}\)</span>; in this example, <span class="math inline">\(\frac{2}{48⁄46 + 50⁄46} = 92/98 \approx 93.88\%\)</span></li>
+</ul>
+</section>
+<section id="advanced-classification-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="advanced-classification-metrics">Advanced classification metrics</h2>
+<p>Although the metrics described above are important and commonly used ways to describe classification performance, they are affected by <em>class imbalance</em>, which occurs when one of the two binary outcomes is much more common than the other. For example, let us suppose that I am a charlatan who is trying to sell a “test” for a genetic disorder affecting only 1% of the population. However, in reality I have no test at all, and simply tell everyone who pays for my “test” that they do not have the disease.</p>
+<p>Nobody would say that I had built a powerful or effective model for predicting this disease. But my false positive rate would be 0%, my specificity would be 100%, and because of the extreme class imbalance of this scenario, my accuracy would be 99%. I could truthfully say that my test was 99% accurate when it did nothing at all to evaluate the patient!</p>
+<p>Undersampling and oversampling techniques can be used to train better models and find better parameter estimates despite class imbalance, but these techniques are beyond the scope of this course. Instead, I will show a more advanced metric which can be used to more honestly assess models built in the presence of class imbalance:</p>
+<ul>
+<li><em>Balanced accuracy</em> computes an accuracy (a proportion of correct predictions) within each class and then takes the straight average of the component accuracies. Even though the accuracy of my disease test was 99%, my balanced accuracy would only be 50%, since I would be averaging the 100% accuracy among the true “healthy” class against the 0% accuracy among the true “diseased” class. <strong>Balanced accuracy</strong> is equal to the unweighted average of the true positive rate and the true negative rate: <span class="math inline">\(\textrm{bACC} = \frac{1}{2} (\textrm{true positive rate} + \textrm{true negative rate})\)</span>; in the example of the <em>Iris virginica</em> classifier, <span class="math inline">\(\textrm{bACC} = \frac{1}{2} (0.98 + 0.92) = 95.00\%\)</span><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+</ul>
+<p>All of the metrics presented so far have presumed that our threshold for classifying an observation as belonging to the target class is <span class="math inline">\(p^*=0.5\)</span>. However, our models will perform better or worse when we change the threshold at which we classify into the target class. The last classification metric I wish to present allows us to better understand how our models perform across the full range of possible threshold values. Naturally, we expect that if we restrict to cases where our model is almost certain (say, <span class="math inline">\(p^*=0.95\)</span>), this group of predictions has a high precision but a low recall, while if we look among all the cases where our model even <em>hints</em> at a possible match (say, <span class="math inline">\(p^*=0.05\)</span>), we will see great recall but low precision. However, really good models achieve both high true positive rates <em>and</em> low false positive rates:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>roc.x <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq</span>(<span class="fl">0.000</span>,<span class="dv">1</span>,<span class="fl">0.001</span>),<span class="cf">function</span>(z) <span class="fu">mean</span>(Ma<span class="sc">$</span>fitted.values[iris<span class="sc">$</span>Species<span class="sc">!=</span><span class="st">'virginica'</span>]<span class="sc">&gt;=</span>z))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>roc.y <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq</span>(<span class="fl">0.000</span>,<span class="dv">1</span>,<span class="fl">0.001</span>),<span class="cf">function</span>(z) <span class="fu">mean</span>(Ma<span class="sc">$</span>fitted.values[iris<span class="sc">$</span>Species<span class="sc">==</span><span class="st">'virginica'</span>]<span class="sc">&gt;=</span>z))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(roc.y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9035564</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc.x,roc.y,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'False positive rate'</span>,<span class="at">ylab=</span><span class="st">'True positive rate'</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'ROC curve for simple virginica classifier'</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">0.6</span>,<span class="fl">0.4</span>,<span class="st">'AUC=0.9902'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">cex=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="classificationmetrics_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>ROC curve showing extremely high performance</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>When we plot the true positive rate against the false positive rate we create a graph known as the <strong>receiver-operator characteristic</strong>, commonly called the <strong>ROC curve</strong>.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> The blue line in the figure above shows the ROC of our simple <em>virginica</em> classifier (using only petal width!), which is really quite successful. To achieve a true positive rate of 90% we only need accept a false positive rate of 1%, and to achieve a true positive rate of 100% we only need accept a false positive rate of 22%. The diagonal grey line in the figure above represents the performance of a random label assignment using no predictive modeling information — if our ROC curve fell along this line, then we would have a bad model, one that was no better than assigning labels by chance.</p>
+<p>One way we can summarize the total performance of this model across a variety of cutoff points is to measure the total <strong>area under the curve (AUC)</strong>. ROC curves like the one above, which extends far from the diagonal grey line, provide a lot of value relative to a random guess, no matter how sensitive you set your classification threshold. A perfect model that would achieve a 100% true positive rate with a 0% false positive rate would fill the entire square of the diagram, and the area under that curve would be 1. By measuring the area under the curve for any binary classification model, we can summarize its sensitivity and specificity with one single number, the AUC. In this case, our AUC is over 0.99, which is fairly rare in real-world classification problems.</p>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Compare to its accuracy of 96%… here the class imbalance is not very bad, and the accuracy within each class is similar, so the two metrics are not far apart.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>This name comes from the field of electrical engineering, where ROC curves were used to study the ability of a receiver to pick up a faint signal accurately.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -963,7 +1176,7 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./glmgoodnessoffit.html" class="pagination-link" aria-label="GLM goodness-of-fit">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">GLM goodness-of-fit</span></span>
