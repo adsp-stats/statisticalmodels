@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Poisson models – Statistical Analysis Using R: Online Notes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./overdispersedmodels.html" rel="next">
+<link href="./classificationmetrics.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./poissonmodels.html">9. Count Regressions</a></li><li class="breadcrumb-item"><a href="./poissonmodels.html"><span class="chapter-title">Poisson models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Analysis Using R: Online Notes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface: Inference</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Univariate Techniques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Univariate likelihood</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hypothesistest.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Hypothesis tests</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title"><em>Estimator bias and variance</em></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./confidenceintervals.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Exact confidence intervals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./identification.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Identifying distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./howtounivariate.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. Useful Approximations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./newton.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">The Newton-Raphson method</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gradientdescent.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Gradient descent</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clt.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">The Central Limit Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ttests.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">The Student’s <em>t</em> distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rulesofthumb.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Handy rules of thumb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./howtoapproximate.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. Linear Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./simpleregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Simple regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multiplemle.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Multiple regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./variancedecomposition.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Variance decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./howtoregress.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Regression Robustness</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./robustness.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression robustness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./heteroskedasticity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Heteroskedasticity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nonnormality.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Non-normal errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nonlinearity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Non-linearity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./howtorobustness.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">5. Feature Engineering</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./categoricalpredictors.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Categorical predictors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./revisitinganova.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Revisiting ANOVA</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./interactions.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Interaction effects</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./featureengineering.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Feature engineering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./howtofeature.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">6. Model Selection</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./overfitting.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Overfitting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./predictorimportance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Predictor importance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multiplecomparisons.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Multiple comparisons</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modelcomparison.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model comparisons</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./selectionalgorithms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Selection algorithms</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">7. Building GLMs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./generalizingregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalizing regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linearpredictors.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear predictors and link functions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logisticregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./buildingnewglms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Building new GLMs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">8. Assessing GLMs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./probitregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probit regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glmgoodnessoffit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">GLM goodness-of-fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classificationmetrics.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Classification metrics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">9. Count Regressions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./poissonmodels.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Poisson models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./overdispersedmodels.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Overdispersed models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./zeroinflatedmodels.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Adjusting the zero counts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Distributions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_bernoulli.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bernoulli distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_binomial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Binomial distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_chisquared.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chi-squared distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_exponential.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exponential distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_f.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><em>F</em> distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_geometric.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Geometric distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_negativebinomial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Negative binomial distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_normal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Normal distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_poisson.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Poisson distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_t.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><em>t</em> distribution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dist_uniform.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Uniform distribution</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./proofs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Proofs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./listofsymbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">List of Symbols</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#poisson-distributional-assumption" id="toc-poisson-distributional-assumption" class="nav-link active" data-scroll-target="#poisson-distributional-assumption">Poisson distributional assumption</a></li>
+  <li><a href="#the-canonical-log-link" id="toc-the-canonical-log-link" class="nav-link" data-scroll-target="#the-canonical-log-link">The canonical log link</a></li>
+  <li><a href="#the-identity-link" id="toc-the-identity-link" class="nav-link" data-scroll-target="#the-identity-link">The identity link</a></li>
+  <li><a href="#model-offset-terms" id="toc-model-offset-terms" class="nav-link" data-scroll-target="#model-offset-terms">Model offset terms</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./poissonmodels.html">9. Count Regressions</a></li><li class="breadcrumb-item"><a href="./poissonmodels.html"><span class="chapter-title">Poisson models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-poissonmodels" class="quarto-section-identifier"><span class="chapter-title">Poisson models</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>So far, our discussion of GLMs has focused on binary response variables which only take on values of 1 and 0. We began with these examples because they were relatively simple to model and because they expose and amend many of the shortcomings of linear regression. Let’s apply this new model-fitting method to a different type of response variable: <em>count data</em>. Count data assumes a non-negative integer number of outcomes, which typically count a number of events:</p>
+<ul>
+<li><p>The number of calls dropped by a cell tower, as observed over many one hour-long observation windows</p></li>
+<li><p>The number of spontaneous genetic mutations in a particular stretch of DNA, as observed among many newborn children</p></li>
+<li><p>The number of Prussian cavalry officers killed by a kick from their own horse, as observed in each of the many years which the Prussian army kept such records</p></li>
+</ul>
+<p>That last example is in fact drawn from real life; the statistician Ladislaus Bortkiewicz studied these same records in 1898 and noticed that the totals closely matched a mathematical formula which had been studied earlier by the mathematicians Abraham de Moivre (in 1711) and Siméon Denis Poisson (in 1837). Bortkiewicz’s work led to the recognition of the <em>Poisson distribution</em>, which serves as an excellent entry point for studying count regressions.</p>
+<section id="poisson-distributional-assumption" class="level2">
+<h2 class="anchored" data-anchor-id="poisson-distributional-assumption">Poisson distributional assumption</h2>
+<p>Imagine an experienced freshwater fisher who lives by a large lake and loves to catch lake trout. From prior experience, the fisher knows that trout are often found in deeper waters rather than shallower waters, and now wishes to study this trend with some data. During one summer month, the fisher travels out to different spots on the lake and fishes at different depths each day, for thirty days:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Depth (m)</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">1.75</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">4.50</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">5.75</td>
+<td style="text-align: right;">6.25</td>
+<td style="text-align: right;">7.00</td>
+<td style="text-align: right;">7.25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Depth (m)</td>
+<td style="text-align: right;">7.25</td>
+<td style="text-align: right;">7.50</td>
+<td style="text-align: right;">7.75</td>
+<td style="text-align: right;">8.50</td>
+<td style="text-align: right;">9.25</td>
+<td style="text-align: right;">10.00</td>
+<td style="text-align: right;">10.75</td>
+<td style="text-align: right;">10.75</td>
+<td style="text-align: right;">10.75</td>
+<td style="text-align: right;">11.50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Depth (m)</td>
+<td style="text-align: right;">12.25</td>
+<td style="text-align: right;">14.25</td>
+<td style="text-align: right;">14.50</td>
+<td style="text-align: right;">14.75</td>
+<td style="text-align: right;">15.75</td>
+<td style="text-align: right;">15.75</td>
+<td style="text-align: right;">17.00</td>
+<td style="text-align: right;">17.25</td>
+<td style="text-align: right;">17.50</td>
+<td style="text-align: right;">17.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">23</td>
+</tr>
+</tbody>
+</table>
+<p>Plotting these records, the fisher notices a direct but nonlinear trend:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1210</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">floor</span>(<span class="fu">c</span>(<span class="fu">runif</span>(<span class="dv">10</span>,<span class="dv">0</span>,<span class="dv">40</span>),<span class="fu">runif</span>(<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">60</span>),<span class="fu">runif</span>(<span class="dv">10</span>,<span class="dv">40</span>,<span class="dv">80</span>)))<span class="sc">/</span><span class="dv">4</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>trout <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">30</span>,<span class="fu">exp</span>(<span class="sc">-</span><span class="dv">1</span><span class="fl">+0.25</span><span class="sc">*</span>depth))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(depth,trout,<span class="at">main=</span><span class="st">'Number of lake trout caught each day'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Line depth (m)'</span>,<span class="at">ylab=</span><span class="st">'Trout caught'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="poissonmodels_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of Poisson count data</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>How should we model this data? We face some difficult constraints: nonlinearity, heteroskedasticity (note how range of count values opens up as depth increases), and non-normality (counts can only be integer-valued and non-negative, which creates extremely non-normal error distributions, especially for shallow depths.)</p>
+<p>Let’s assume that the counts come from a Poisson distribution. We can feel comfortable with this starting point because, at least on the surface, fishing resembles a Poisson process. There are a large (essentially infinite) number of possible events (fish in the lake), and a low probability of catching any specific one of them. You can’t catch two fish at once, and the number of fish caught might be roughly proportional to the time spent fishing. Fish are probably not caught independently from each other, but Poisson still seems like a fine starting place.</p>
+<p>As detailed in the appendices, the <a href="./dist_poisson.html">Poisson distribution</a> PMF takes the form:</p>
+<p><span class="math display">\[P(Y=y) = \lambda^y e^{-λ} / y! \]</span></p>
+<p>Where <span class="math inline">\(\lambda\)</span>, the rate or intensity of the Poisson process, is both the mean and the variance of the distribution. Since <span class="math inline">\(\mu = \lambda\)</span>, if we use the Poisson for the distributional assumption of a GLM model, then we must choose some link function <span class="math inline">\(g\)</span> such that <span class="math inline">\(g(\mu) = \mathbf{X}\boldsymbol{\beta}\)</span>. Then for each observation <span class="math inline">\(i\)</span> we would have <span class="math inline">\(\lambda_i = \mu_i = g^{-1}(\boldsymbol{x}_i\boldsymbol{\beta})\)</span>, and our GLM would have the form,</p>
+<p><span class="math display">\[P(Y_i=y_i) = \lambda_i^{y_i} e^{-\lambda_i} ⁄ y_i!\]</span></p>
+<p>Put another way, in a Poisson regression, each observation <span class="math inline">\(y_i\)</span> is drawn from a Poisson distribution with rate <span class="math inline">\(\lambda_i\)</span>, which is also the mean and the variance, and this rate is a (possibly nonlinear) function of the linear predictor <span class="math inline">\(\boldsymbol{x}_i\boldsymbol{\beta}\)</span>.</p>
+</section>
+<section id="the-canonical-log-link" class="level2">
+<h2 class="anchored" data-anchor-id="the-canonical-log-link">The canonical log link</h2>
+<p>The canonical link for the Poisson GLM is the <em>log link</em>, which claims that <span class="math inline">\(\log \mu = \log⁡ \lambda = \mathbf{X}\boldsymbol{\beta}\)</span> and therefore <span class="math inline">\(\mu = \lambda = e^{\mathbf{X}\boldsymbol{\beta}}\)</span>. One of the advantages of this log link is that no matter how large, small, or negative our linear predictor <span class="math inline">\(\mathbf{X}\boldsymbol{\beta}\)</span>, the mean function <span class="math inline">\(e^{\mathbf{X}\boldsymbol{\beta}}\)</span> will always be positive, which is a requirement for <span class="math inline">\(\lambda\)</span> in the Poisson distribution.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>Nothing requires your predictors and your Poisson process rates to relate to each other in this way. Just as with the binary GLMs in previous sections, some problems will be a solid theoretical fit for this link, other problems will happen to be modeled well by this link, and still other problems will be poorly modeled by this link.</p>
+<p>Let’s fit this model to the trout fishing data above and see where it leads us:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>trout.log <span class="ot">&lt;-</span> <span class="fu">glm</span>(trout<span class="sc">~</span>depth,<span class="at">family=</span>poisson)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(trout.log)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<caption>Log-link Poisson regression for trout counts</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>p</em>-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span> (Intercept)</td>
+<td style="text-align: right;">-0.808</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> (Line depth)</td>
+<td style="text-align: right;">0.237</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\;\)</span></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Null deviance</td>
+<td style="text-align: right;">283.426</td>
+<td style="text-align: right;"><em>(29 df)</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Model deviance</td>
+<td style="text-align: right;">29.039</td>
+<td style="text-align: right;"><em>(28 df)</em></td>
+</tr>
+</tbody>
+</table>
+<p>By comparing the null deviance to the model deviance, we know this model fits the trout data significantly better than a null model in which one fixed Poisson rate <span class="math inline">\(\lambda\)</span> generated all 30 fishing counts.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> (Consider that the sample mean was 8.43 trout while the sample variance was 85.84… a bad look for a distribution where the two are assumed equal.)</p>
+<p>By examining the model deviance by itself, we know this model does not fit the data significantly worse than the saturated model, which assigns every observation its own individual Poisson rate (<em>i.e.</em> its own mean).<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> In other words, we could terribly overfit the model by saying that the expectation for each day’s fishing trip was exactly how many fish were actually caught… and yet we have almost the same degree of fit with just a single slope on fishing depth.</p>
+<p>What about the coefficients? What does each parameter estimate <span class="math inline">\(\hat{\beta}_k\)</span> represent?</p>
+<p><span class="math inline">\(\hat{\beta}_0\)</span>, the intercept, is the predicted log of the Poisson rates whenever all the predictors are set to 0. In this situation, <span class="math inline">\(e^{\hat{\beta}_0}\)</span> is the predicted mean and the predicted Poisson rate. For our fishing data, that suggests that fishing at a depth of 0 m (letting your bait float on top of the water) yields an expected daily catch of only <span class="math inline">\(e^{-0.808} \approx 0.446\)</span> trout. Using the Poisson distribution we can further calculate a 64% chance of catching no trout, a 29% chance of one trout, a 6% chance of two trout, and only a 1% chance of three or more trout. The intercept does not always describe an interesting or realistic scenario, but here it did.</p>
+<p><span class="math inline">\(\hat{\beta}_1\)</span>, the slope on the first predictor describes a nonlinear trend, similar to the coefficients in logistic or probit regression. Consider incrementing <span class="math inline">\(X_1\)</span> by one: <span class="math inline">\(x_{1,\textrm{new}} = x_{1,\textrm{old}} + 1\)</span>. Then we would have:</p>
+<p><span class="math display">\[\begin{aligned} \hat{y}_\textrm{new} = \hat{\mu}_\textrm{new} &amp;= e^{\hat{\beta}_0 + \hat{\beta}_1 x_{1,\textrm{new}}} = e^{\hat{\beta}_0 + \hat{\beta}_1 (x_{1,\textrm{old}} + 1)} \\ &amp;= e^{\hat{\beta}_0 + \hat{\beta}_1 x_{1,\textrm{old}} + \hat{\beta}_1} = e^{\hat{\beta}_0 + \hat{\beta}_1 x_{1,\textrm{old}}} \cdot e^{\hat{\beta}_1} \\ &amp;= \hat{\mu}_\textrm{old} \cdot e^{\hat{\beta}_1} \end{aligned}\]</span></p>
+<p>So, a one-unit change in <span class="math inline">\(X_1\)</span> multiplies the mean (and the variance, and the Poisson rate) by a factor of <span class="math inline">\(e^{\hat{\beta}_1}\)</span>. If <span class="math inline">\(\hat{\beta}_1\)</span> is positive then increasing <span class="math inline">\(X_1\)</span> will tend to increase <span class="math inline">\(Y\)</span>. If <span class="math inline">\(\hat{\beta}_1\)</span> is negative then increasing <span class="math inline">\(X_1\)</span> will tend to decrease <span class="math inline">\(Y\)</span>. For our fishing data, we see that <span class="math inline">\(e^{\hat{\beta}_1} \approx 1.267\)</span>, meaning that for each meter deeper we fish, the expected daily catch increases by 26.7%.</p>
+<p>Any further coefficients <span class="math inline">\(\hat{\beta}_j\)</span> paired with predictors <span class="math inline">\(X_j\)</span> behave just as <span class="math inline">\(\hat{\beta}_1\)</span> did above.</p>
+<p>With these betas we can also directly estimate the probabilities of individual count outcomes. Recall that for a linear regression, the predicted mean <span class="math inline">\(\hat{\mu}_i\)</span> was also our best guess of the actual value of an observation <span class="math inline">\(\hat{y}_i\)</span> and that <span class="math inline">\(\hat{\mu}_i = \hat{y}_i = \boldsymbol{x}_i \hat{\boldsymbol{\beta}}\)</span>. A Poisson regression differs because the values of <span class="math inline">\(Y\)</span> are integers: in most situations, <span class="math inline">\(y_i\)</span> could <em>never</em> be <span class="math inline">\(\mu_i\)</span>. Still, since we know that <span class="math inline">\(\hat{\mu}_i = \hat{\lambda}_i\)</span>, we can use the Poisson PMF to compute the probability that <span class="math inline">\(\hat{y}_i=0\)</span>, that <span class="math inline">\(\hat{y}_i=1\)</span>, that <span class="math inline">\(\hat{y}_i=2\)</span>, and so on.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(depth,trout,<span class="at">main=</span><span class="st">'Predictions of Poisson log link GLM'</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Line depth (m)'</span>,<span class="at">ylab=</span><span class="st">'Trout caught'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">19</span>,<span class="fl">0.1</span>),<span class="fu">exp</span>(<span class="fu">predict</span>(trout.log,<span class="at">newdata=</span><span class="fu">list</span>(<span class="at">depth=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">19</span>,<span class="fl">0.1</span>)))),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">19</span>,<span class="fl">0.1</span>),<span class="fu">qpois</span>(<span class="fl">0.1</span>,<span class="fu">exp</span>(<span class="fu">predict</span>(trout.log,<span class="at">newdata=</span><span class="fu">list</span>(<span class="at">depth=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">19</span>,<span class="fl">0.1</span>))))),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">type=</span><span class="st">'s'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">19</span>,<span class="fl">0.1</span>),<span class="fu">qpois</span>(<span class="fl">0.9</span>,<span class="fu">exp</span>(<span class="fu">predict</span>(trout.log,<span class="at">newdata=</span><span class="fu">list</span>(<span class="at">depth=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">19</span>,<span class="fl">0.1</span>))))),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">type=</span><span class="st">'s'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">lwd=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="cn">NA</span>,<span class="cn">NA</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Estimated mean'</span>,<span class="st">'Estimated 80% of outcomes'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="poissonmodels_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Fitted mean and common response values for a Poisson regression</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above re-plots the trout catches alongside a curved line representing the fitted mean trout catch (also the fitted Poisson intensity) at each depth. The figure also shows bounds corresponding to the 10th and 90th percentiles from the Poisson distribution with these same fitted intensities. This window <em>isn’t</em> a confidence interval. It simply assumes that the fitted means are exactly correct (they won’t be), and shows the range of counts made likely by those fitted means. The heteroskedasticity of the data isn’t very clear from this example, but the vertical distances inside the boundary lines grow as depth increases. For example, when the depth is 5 meters, the fitted mean is 1.45 trout and with that mean we would expect to catch between 0 and 3 trout. But when the depth is 15 meters, the fitted mean is 15.49 trout and with that mean we would expect to catch between 11 and 21 trout.</p>
+<p>Before discussing the utility of Poisson regressions, let’s study one more link function.</p>
+</section>
+<section id="the-identity-link" class="level2">
+<h2 class="anchored" data-anchor-id="the-identity-link">The identity link</h2>
+<p>When we choose a log link for a Poisson regression, we suggest a strong non-linear relationship between the covariates and the mean of the response variable. However, many real-world count processes demonstrate an approximately <em>linear</em> relationship between the predictor size and the Poisson intensity. In these cases, we would be better served with a simple <em>identity link</em>: <span class="math inline">\(\mathbf{X}\boldsymbol{\beta} = \mu\)</span>. Similar to least-squares linear regression, our expectation of the response variable is simply a linear combination of our predictors.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1726</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>experience <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">4</span><span class="sc">+</span><span class="fu">rexp</span>(<span class="dv">30</span>,<span class="fl">0.1</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>motornoise <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">60</span>,<span class="dv">75</span>,<span class="dv">90</span>),<span class="at">each=</span><span class="dv">10</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>trout2 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">30</span>,<span class="dv">6</span><span class="fl">+0.5</span><span class="sc">*</span>experience<span class="fl">-0.05</span><span class="sc">*</span>motornoise)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(experience,trout2,<span class="at">main=</span><span class="st">'Trout caught by fisher experience level'</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Fisher experience (yrs)'</span>,<span class="at">ylab=</span><span class="st">'Trout caught'</span>,<span class="at">pch=</span><span class="dv">19</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>)[(motornoise<span class="dv">-45</span>)<span class="sc">/</span><span class="dv">15</span>])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">title=</span><span class="st">'Engine noise level'</span>,<span class="at">pch=</span><span class="dv">19</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'grey50'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'60 dB'</span>,<span class="st">'75 dB'</span>,<span class="st">'90 dB'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="poissonmodels_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Data suitable for an identity-link Poisson regression</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Suppose that our lake fisher starts a fishing guide business, taking boats full of experienced fishers to all the best spots in the lake. All of the tourists have fished at least a little, but the more experienced fishers often catch more fish due to their equipment, skills, and knowledge base. Another factor to consider is the motor noise: depending on the tour size, the fishing guide takes one of three boats onto the lake, and the larger boats have louder motors which might scare fish away. However, trout often swim in deeper waters farther from the motor noise, so the guide does not know if this will be an issue.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Motor noise (dB)</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Experience (yrs)</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Motor noise (dB)</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Experience (yrs)</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Motor noise (dB)</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Experience (yrs)</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+<p>The plot of the data does not strongly suggest a log-link: the middle of the response distribution seems to vary linearly with experience, and the effect of motor noise is visually uncertain. The predictors do not obviously require a log-link either: we do not think that fishers with 50 years experience can catch an amount of trout powers of ten greater than fishers with “only” 20 years experience. Contrast this to the depth data in the previous section: if trout really do prefer the deep waters, then they may be drastically less likely to be found just a few meters outside their comfort zone, and a non-linear relationship would seem justified.</p>
+<p>The functional form of this data is simple and familiar:</p>
+<p><span class="math display">\[\hat{\mu}_i = \hat{\beta}_0 + \hat{\beta}_1 \,\textrm{Experience}_i + \hat{\beta}_2 \,\textrm{Noise}_i\]</span></p>
+<p>By using an identity link, we are allowing a linear combination of our predictors to directly set the center of our predicted Poisson values, just like OLS regression where a linear combination of our predictors sets the center of our expected Normal distribution. Interpreting our coefficients (the estimated betas) is also similar:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>trout.identity <span class="ot">&lt;-</span> <span class="fu">glm</span>(trout2<span class="sc">~</span>experience<span class="sc">+</span>motornoise,<span class="at">family=</span><span class="fu">poisson</span>(<span class="at">link=</span><span class="st">'identity'</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(trout.identity)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<caption>Identity-link Poisson regression for trout counts</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>p</em>-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span> (Intercept)</td>
+<td style="text-align: right;">7.042</td>
+<td style="text-align: right;">0.042</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> (Fisher experience)</td>
+<td style="text-align: right;">0.617</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_2\)</span> (Engine noise)</td>
+<td style="text-align: right;">-0.073</td>
+<td style="text-align: right;">0.083</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\,\)</span></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Null deviance</td>
+<td style="text-align: right;">87.695</td>
+<td style="text-align: right;"><em>(29 df)</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Model deviance</td>
+<td style="text-align: right;">27.015</td>
+<td style="text-align: right;"><em>(27 df)</em></td>
+</tr>
+</tbody>
+</table>
+<p>We see from these results that a fisher with no experience, on a boat making no noise, would be expected to catch around seven trout. For each year of prior experience, their average catch size increases by about 0.6, and for every 10 dB of noise made by the boat’s motor, the catch size might be expected to decrease by 0.7 — however, this result is only marginally significant and so it would be a personal or contextual decision to include motor noise in the “final” model.</p>
+<p>Knowing the mean of our expected counts does not provide much certainty. Even if we happened to have estimated the functional form and the betas correctly (which we have not), the actual catch amounts will be drawn from a Poisson distribution, where the variance is the same as the mean. So for larger predicted catch values we will see a wider range of catches: this does not mean we are modeling it poorly!</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(experience,trout2,<span class="at">main=</span><span class="st">'Predictions of Poisson identity link GLM'</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Fisher experience (yrs)'</span>,<span class="at">ylab=</span><span class="st">'Trout caught'</span>,<span class="at">pch=</span><span class="dv">19</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>newdata <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">experience=</span><span class="fu">seq</span>(<span class="dv">4</span>,<span class="dv">27</span>,<span class="fl">0.1</span>),<span class="at">motornoise=</span><span class="fu">rep</span>(<span class="dv">75</span>,<span class="dv">231</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">4</span>,<span class="dv">27</span>,<span class="fl">0.1</span>),<span class="fu">predict</span>(trout.identity,<span class="at">newdata=</span>newdata),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">4</span>,<span class="dv">27</span>,<span class="fl">0.1</span>),<span class="fu">qpois</span>(<span class="fl">0.1</span>,<span class="fu">predict</span>(trout.identity,<span class="at">newdata=</span>newdata)),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">type=</span><span class="st">'s'</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">4</span>,<span class="dv">27</span>,<span class="fl">0.1</span>),<span class="fu">qpois</span>(<span class="fl">0.9</span>,<span class="fu">predict</span>(trout.identity,<span class="at">newdata=</span>newdata)),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="st">'grey50'</span>,<span class="at">type=</span><span class="st">'s'</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'grey50'</span>,<span class="st">'grey50'</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">lwd=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="cn">NA</span>,<span class="cn">NA</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Estimated mean'</span>,<span class="st">'Estimated 80% of outcomes'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="poissonmodels_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Predicted means and ranges for an identity-link Poisson regression</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above shows the mean response and the middle 80% of predicted counts for every level of fisher experience, and a 75 dB motor noise assumption.</p>
+<p>When should we choose a log link and when should we choose an identity link? Ideally, the nature of our problem will suggest an appropriate link function:</p>
+<ul>
+<li><p>If we were predicting events of observable volcanic activity among different magma chambers and calderas, we might choose a log link. The Ideal Gas Law relates pressure, volume, amount of material, and temperature using the following formula: <span class="math inline">\(PV=nRT\)</span> (with <span class="math inline">\(R\)</span> being a constant). Changes in any one of these variables creates proportional changes in the others, not additive changes, and so the log link might be well-suited to the data.</p></li>
+<li><p>If we were predicting cases of leukemia from a person’s exposure to different sources of ionizing radiation, we might choose an identity link. Current health models, while debated and contested, suggest that leukemia risk varies roughly linearly with the aggregate exposure to all sources of radiation.</p></li>
+<li><p>If we were predicting daily crashes on a long stretch of highway, traffic density may or may not be a linear predictor for our response mean. For single-car accidents (say, tire blowouts, or failing to take a curve correctly), it is probably true that the number of crashes scales linearly with the number of cars that travel through the highway. But for multi-car accidents (say, a collision when switching lanes, or when merging onto the highway from an access road), it’s possible that they happen only very rarely below a certain traffic density and grow very quickly above that threshold. We may want to try two or more links and compare them using AIC.</p></li>
+</ul>
+</section>
+<section id="model-offset-terms" class="level2">
+<h2 class="anchored" data-anchor-id="model-offset-terms">Model offset terms</h2>
+<p>Before we consider extensions to the Poisson model, I want to cover one particular proportional effect seen in many count regressions, a <strong>model offset term</strong> which enters the log link model as a predictor with a known beta of exactly 1.</p>
+<p>We don’t often know the “true” beta for a predictor, so what is this mysterious offset term? Consider again the idea of a Poisson <em>process</em>: an event-generating process observed over a specific window or interval. The number of observed events is usually Poisson distributed and the time between events is usually exponentially distributed. One of the assumptions of any Poisson process is that the expected number of observed events is directly proportional to the size of the window or interval:</p>
+<ul>
+<li><p>If we were counting annual instances of wildfires within large forests, we would expect a forest twice as large to produce twice as many fires.</p></li>
+<li><p>If we were counting the number of buses that arrive at a bus stop, we would expect to count twice as many buses if we observed for twice as long a period of time.</p></li>
+<li><p>If we were counting annual chicken pox cases at different elementary schools, we would expect schools with twice as many students to have twice as many cases.</p></li>
+</ul>
+<p>The window or interval in each of these cases might be measured in units of time, or area, or people, or some other quantity, but they all can be measured and if we change this interval then the number of expected Poisson process events should scale proportionally.</p>
+<p>Sometimes when we observe counts from a Poisson process, each observation comes from Poisson processes with different interval sizes. It would be an “apples-to-oranges” comparison if we used these different observations without any adjustment. Any difference in their counts would be wrongly attributed to differences in their predictor values when really the difference was being driven by the window size.</p>
+<p>Let’s suppose that our fishing guide returns to the question of an ideal depth at which to fish for lake trout. They take 20 more trips out onto the lake, fishing at different depths and for different times each trip:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Depth (m)</td>
+<td style="text-align: right;">10.50</td>
+<td style="text-align: right;">10.50</td>
+<td style="text-align: right;">10.75</td>
+<td style="text-align: right;">11.75</td>
+<td style="text-align: right;">12.00</td>
+<td style="text-align: right;">12.25</td>
+<td style="text-align: right;">12.75</td>
+<td style="text-align: right;">13.00</td>
+<td style="text-align: right;">13.50</td>
+<td style="text-align: right;">14.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trip time (hrs)</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">2.75</td>
+<td style="text-align: right;">2.75</td>
+<td style="text-align: right;">2.75</td>
+<td style="text-align: right;">2.75</td>
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">3.75</td>
+<td style="text-align: right;">4.25</td>
+<td style="text-align: right;">4.25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Depth (m)</td>
+<td style="text-align: right;">14.75</td>
+<td style="text-align: right;">16.00</td>
+<td style="text-align: right;">18.00</td>
+<td style="text-align: right;">18.00</td>
+<td style="text-align: right;">18.25</td>
+<td style="text-align: right;">18.25</td>
+<td style="text-align: right;">18.50</td>
+<td style="text-align: right;">18.50</td>
+<td style="text-align: right;">19.00</td>
+<td style="text-align: right;">19.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trip time (hrs)</td>
+<td style="text-align: right;">4.25</td>
+<td style="text-align: right;">4.50</td>
+<td style="text-align: right;">4.75</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">5.75</td>
+<td style="text-align: right;">6.00</td>
+<td style="text-align: right;">6.25</td>
+<td style="text-align: right;">6.50</td>
+<td style="text-align: right;">7.25</td>
+<td style="text-align: right;">7.25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Caught</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">28</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that the fishing guide spends longer at the deeper fishing sites. This makes sense: they’re likely to stay longer when the fish are biting (in the deeper waters) and they’re likely to move on when nothing’s happening (in the shallow waters). So not only do we have Poisson intervals of different lengths, but also multicollinearity with our other predictor, line depth. Predictably, this would cause problems if we entered both into a log link regression, with the two predictors explaining away each other’s effects:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1209</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(depth2 <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">floor</span>(<span class="fu">runif</span>(<span class="dv">20</span>,<span class="dv">40</span>,<span class="dv">80</span>))<span class="sc">/</span><span class="dv">4</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(hours <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">floor</span>(<span class="fu">runif</span>(<span class="dv">20</span>,<span class="dv">10</span>,<span class="dv">30</span>))<span class="sc">/</span><span class="dv">4</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>(trout3 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">20</span>,(hours<span class="dv">-1</span>)<span class="sc">/</span><span class="dv">8</span><span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span><span class="dv">1</span><span class="fl">+0.25</span><span class="sc">*</span>depth2)))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>trout.nooff <span class="ot">&lt;-</span> <span class="fu">glm</span>(trout3<span class="sc">~</span>depth2<span class="sc">+</span>hours,<span class="at">family=</span>poisson)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(trout.nooff)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(trout.nooff<span class="sc">$</span>coefficients)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<caption>Log-link Poisson regression without offset</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>p</em>-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span> (Intercept)</td>
+<td style="text-align: right;">-3.763</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> (Line depth)</td>
+<td style="text-align: right;">0.356</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_2\)</span> (Trip time)</td>
+<td style="text-align: right;">0.070</td>
+<td style="text-align: right;">0.562</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\,\)</span></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Null deviance</td>
+<td style="text-align: right;">264.935</td>
+<td style="text-align: right;"><em>(19 df)</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Model deviance</td>
+<td style="text-align: right;">19.162</td>
+<td style="text-align: right;"><em>(17 df)</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: right;">97.622</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>The model above isn’t a <em>bad</em> model — the model deviance shows that it fits the data reasonably well. But the model is fundamentally misspecified. Trip time isn’t even found to be significant, which is clearly wrong, and the exponentiated coefficient suggests that every extra hour on the lake increases trout catch totals by 7.2%, which does not seem reasonable (additive shifts in time spent fishing should not yield proportional shifts in caught fish).</p>
+<p>Let’s assume our doughty guide revises their initial analysis. As they think about how each fishing trip unfolds, they estimate that the first half-hour and last half-hour of most trips are not “quality fishing time”, but prep time and transit away from shore and out into the deeper lake waters. They add an offset to the linear predictor of <span class="math inline">\(\log (\textrm{time} - 1)\)</span>. Since they are using a log link, it’s necessary to log-transform the time offset so that it directly modifies the Poisson intensity, lambda:</p>
+<p><span class="math display">\[\begin{aligned} \hat{\lambda}_i = \hat{\mu}_i &amp;= e^{\mathbf{X}\boldsymbol{\beta} + \log (\textrm{time} - 1)} \\ &amp;= e^{\mathbf{X}\boldsymbol{\beta}} \cdot e^{\log (\textrm{time} - 1)} \\ &amp;= e^{\mathbf{X}\boldsymbol{\beta}} \cdot (\textrm{time} - 1) \end{aligned}\]</span></p>
+<p>The use of an offset term has now changed our interpretation of the betas in the model. Instead of modeling the total <em>count</em> of the response variable, we are now modeling the <em>rate</em> of response counts for a single unit of the offset variable. In this example, we are now estimating the number of trout caught <em>per hour</em> at different line depths:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>trout.off <span class="ot">&lt;-</span> <span class="fu">glm</span>(trout3<span class="sc">~</span><span class="fu">offset</span>(<span class="fu">log</span>(hours<span class="dv">-1</span>))<span class="sc">+</span>depth2,<span class="at">family=</span>poisson)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(trout.off)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(trout.off<span class="sc">$</span>coefficients)  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;"><em>p</em>-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span> (Intercept)</td>
+<td style="text-align: right;">-3.112</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> (Line depth)</td>
+<td style="text-align: right;">0.255</td>
+<td style="text-align: right;">&lt;0.0001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\,\)</span></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Null deviance</td>
+<td style="text-align: right;">108.139</td>
+<td style="text-align: right;"><em>(19 df)</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Model deviance</td>
+<td style="text-align: right;">18.135</td>
+<td style="text-align: right;"><em>(18 df)</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: right;">94.596</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>Notice how the coefficient for line depth has changed from 0.356 to 0.255. I actually simulated this data (and the depth data seen previously) using a true beta of 0.25, so adding an offset has helped us recover the true relationship much better than we could without the offset. Exponentiating the coefficient for line depth, we find that increasing line depth by 1 meter increases the trout/hour catch rate by 29.1%, which closely matches our earlier estimate with a previous dataset of 26.7%.</p>
+<p>Compare the deviances in the two regression summaries printed above. The null deviance without an offset was approximately 265; with an offset, 108. By manually adjusting the counts so that they now become “apples-to-apples” rates, we have removed a large source of variation from the data, and the remaining space for modeling improvements is now smaller. We can’t perform a deviance test between the model with an offset and the model without an offset because of this difference in starting points. However, we can still compare the two models using their AICs, since there’s no change to the response variable of fish caught. By this measure, we further confirm that the model with an offset (AIC=94.6) is a better fit to the data than the model without an offset (AIC=97.6).</p>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Remember that the Poisson distribution measures non-negative integer counts, so the mean <span class="math inline">\(\lambda\)</span> can never be negative. Moreover, the PDF includes the term <span class="math inline">\(y!\)</span> which is not defined for the negative values of <span class="math inline">\(y\)</span> implied by a negative mean.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The <em>p</em>-value of this hypothesis test would be how often a chi-squared distribution with <span class="math inline">\(29-28=1\)</span> degrees of freedom would generate a value of at least <span class="math inline">\(283.426-29.039 \approx 254.387\)</span>, which is essentially… never.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>The <em>p</em>-value of this hypothesis test would be how often a chi-squared distribution with 28 degrees of freedom would generate a value of at least 29.039, which is roughly 41% of the time.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+        for (let i=0; i<annoteTargets.length; i++) {
+          const annoteTarget = annoteTargets[i];
+          const targetCell = annoteTarget.getAttribute("data-target-cell");
+          const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+          const contentFn = () => {
+            const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            if (content) {
+              const tipContent = content.cloneNode(true);
+              tipContent.classList.add("code-annotation-tip-content");
+              return tipContent.outerHTML;
+            }
+          }
+          const config = {
+            allowHTML: true,
+            content: contentFn,
+            onShow: (instance) => {
+              selectCodeLines(instance.reference);
+              instance.reference.classList.add('code-annotation-active');
+              window.tippy.hideAll();
+            },
+            onHide: (instance) => {
+              unselectCodeLines();
+              instance.reference.classList.remove('code-annotation-active');
+            },
+            maxWidth: 300,
+            delay: [50, 0],
+            duration: [200, 0],
+            offset: [5, 10],
+            arrow: true,
+            appendTo: function(el) {
+              return el.parentElement.parentElement.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'quarto',
+            placement: 'right',
+            popperOptions: {
+              modifiers: [
+              {
+                name: 'flip',
+                options: {
+                  flipVariations: false, // true by default
+                  allowedAutoPlacements: ['right'],
+                  fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false,
+                  altAxis: false
+                }
+              }
+              ]        
+            }      
+          };
+          window.tippy(annoteTarget, config); 
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-body">
+  <div class="nav-page nav-page-previous">
+      <a href="./classificationmetrics.html" class="pagination-link" aria-label="Classification metrics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Classification metrics</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./overdispersedmodels.html" class="pagination-link" aria-label="Overdispersed models">
+        <span class="nav-page-text"><span class="chapter-title">Overdispersed models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
