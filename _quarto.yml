@@ -61,6 +61,11 @@ book:
         - probitregression.qmd
         - glmgoodnessoffit.qmd
         - classificationmetrics.qmd
+    - part: "9. Count Regressions"
+      chapters:
+        - poissonmodels.qmd
+        - overdispersedmodels.qmd
+        - zeroinflatedmodels.qmd
   appendices:
     - part: "Distributions"
       chapters: 
