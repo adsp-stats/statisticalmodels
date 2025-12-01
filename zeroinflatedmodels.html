@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./dist_bernoulli.html" rel="next">
+<link href="./multinomialregression.html" rel="next">
 <link href="./overdispersedmodels.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -499,21 +499,47 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
- <span class="menu-text">Appendices</span></a>
+ <span class="menu-text">10. Polytomous Models</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item sidebar-item-section">
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multinomialregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Multinomial regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ordinalregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Ordinal regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./howtopolytomous.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
- <span class="menu-text">Distributions</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Distributions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./dist_bernoulli.html" class="sidebar-item-text sidebar-link">
@@ -721,7 +747,7 @@ Note
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <table class="caption-top table">
-<caption><span class="math inline">\(M_+:\)</span> Truncated Poisson model w/ log link”</caption>
+<caption><span class="math inline">\(M_+:\)</span> Truncated Poisson model w/ log link</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Parameter</th>
@@ -925,7 +951,7 @@ Note
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>A one-degree change of temperature at 15 m decreases the log-odds according to the beta on temperature, <span class="math inline">\(-2.69 \times 1 \approx -2.69\)</span>, but also <em>increases</em> the log-odds according to the interaction term, <span class="math inline">\(0.15 \times 1 \times 15 \times 2.25\)</span>. The two effects are aggregated and then exponentiated.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>A one-degree change of temperature at 15 m decreases the log-odds according to the beta on temperature, <span class="math inline">\(-2.69 \times 1 \approx -2.69\)</span>, but also <em>increases</em> the log-odds according to the interaction term, <span class="math inline">\(0.15 \times 1 \times 15 = 2.25\)</span>. The two effects are aggregated and then exponentiated.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Since the coefficient on depth is about -20x larger than the coefficient on the interaction term (depth x temp), the temperature needs to be about 20 C for the combined effects to change signs.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Note that the reported coefficients for the zero process assume that a “mandatory zero” is a <em>success, i.e.</em> that positive betas increase the chance of observing 0 (as documented by the R function <code>pscl::zeroinfl</code>). This behavior may run counter to readers’ intuition or other software implementations.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
@@ -1378,8 +1404,8 @@ Note
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./dist_bernoulli.html" class="pagination-link" aria-label="Bernoulli distribution">
-        <span class="nav-page-text">Bernoulli distribution</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./multinomialregression.html" class="pagination-link" aria-label="Multinomial regression">
+        <span class="nav-page-text"><span class="chapter-title">Multinomial regression</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
