@@ -1,0 +1,244 @@
+# Ordinal regression {#sec-ordinalregression}
+
+Ordinal response variables occur rarely in the "natural world" but with some frequency in the world of private industry and social scientific research:
+
+ * Customer satisfaction surveys often use a scoring system from 1 to 10.  Although these scores are numbers, they are not *interval data.* For example, it's not true that the difference between a "4" and an "8" is twice as large as the difference between a "2" and a "4".
+ 
+ * Consumer preference surveys often use a five-point *Likert scale* with categories "Strongly Disagree", "Disagree", "Neutral or no opinion", "Agree", and "Strongly Agree".
+ 
+ * Political ideology is sometimes measured on a spectrum from radical conservativism (the 'far right') to radical liberalism (the 'far left').^[Although this is true of many different countries, the specific parties or positions which mark the extremes of one country's political spectrum might fall in the middle for a different country!]
+ 
+ * The rank at which commissioned military officers leave service might be organized from O-1 (2^nd^ Lieutenant or Ensign) to O-10 (General or Admiral).
+
+The models we have studied so far are a poor fit to ordinal data. Models designed for interval data (*e.g.* count regressions) attempt to impose too much structure on the data. Models designed for categorical data (*e.g.* multinomial regressions) flatten the data and lose too much of its actual structure.^[For example, we *could* model military officer ranks as a categorical variable with 10 levels, but we would not be using the knowledge that an O-4 major is meaingfully "between" an O-3 captain and an O-5 lieutenant colonel.]
+
+## Illustration: managing pain with a local anaesthetic
+
+Medical professionals use local anaesthetics such as lidocaine to numb specific areas of the body while keeping the patient conscious and otherwise able to move. For example, lidocaine is used in both dental surgery (to numb the gums and tooth nerves) as well as during birth (as an epidural).
+
+Correctly dosing the patient is important: too much anaesthetic could result in loss of consciousness, respiratory failure, or even death; too little anaesthetic will cause the patient to feel mild discomfort or even severe pain during the procedure. Dosing is often expressed in proportion to the patient's body weight, *e.g.* a dose of 5 mg/kg would mean that the patient was given a total of 5 mg of lidocaine for every 1 kg of body weight (so, 300 mg for a 60 kg patient).
+
+We will simulate 1000 medical procedures which use different doses of lidocaine, from 1 mg/kg to 7 mg/kg.^[Although these doses are realistic, they should not be confused with real observations or used for medical decisionmaking!] Our simulated patients will be asked to subjectively rate their pain on a four-point ordinal scale, "None", "Mild", "Moderate", or "Severe". We might imagine that severe pain is more common with low doses of lidocaine and less common with high doses of lidocaine, *i.e.* an inverse relationship between $X$ (dose rate) and $Y$ (pain felt).
+
+We will also record the simulated patient's hair color. Recent research has confirmed an anecdotal trend observed in many medical practices: individuals with red hair are often less responsive to anaesthetics, and therefore feel more pain for the same dose (or equivalently, require a higher dose to numb the same amount of pain). We may represent hair color with a three-level categorical predictor: "Dark" (black/brown), "Blond", and "Red".
+
+Below is a sample of our data.  I have added both string and numeric representations of the response variable, to help match the notation introduced below.
+
+|Pain *(str)* |Pain *(num)* |Dose (mg/kg) |Hair color |
+|:------------|:-----------:|------------:|:----------|
+|Mild         |2            |4.0          |dark       |
+|None         |1            |2.5          |dark       |
+|Moderate     |3            |3.0          |blond      |
+|None         |1            |4.0          |red        |
+|None         |1            |3.0          |dark       |
+|None         |1            |3.0          |blond      |
+
+## Modeling cumulative probabilities
+
+Although we could model the pain responses as multinomial outcomes, let us try to model them as ordinal outcomes.
+
+It may seem simplest to define our response as a vector of probabilities which sum to 1. We could write $P(\textrm{None}) = \pi_1$, $P(\textrm{Mild}) = \pi_2$, $P(\textrm{Moderate}) = \pi_3$, and $P(\textrm{Severe}) = \pi_4$. Using this terminology we could model a single patient's experience as follows:^[This patient seems to be in for a bumpy ride...]
+
+$$\hat{y_i} = \left[ \begin{array}{c} \hat{\pi}_1 \\ \hat{\pi}_2 \\ \hat{\pi}_3 \\ \hat{\pi}_4 \end{array} \right] = \left[ \begin{array}{c} 0.1 \\ 0.2 \\ 0.4 \\ 0.3 \end{array} \right]$$
+
+However, while this system is easy to understand, it is actually surprisingly cumbersome to model. Instead, statisticians find it more convenient to model the *cumulative probabilities* of each level, starting from the first (lowest) level and working their way up. We shall need to use a new Greek symbol, gamma ($\gamma$):
+
+::: {.callout-note}
+Let $Y$ be an ordinal variable with $J$ different levels, and for the sake of notation define $Y=j$ to mean "$Y$ assumes the ordinal level $j$", rather than the traditional meaning of "$Y$ equals the real number $j$. Then we may express the individual probabilities like so:
+
+$$\pi_j = P(Y=j)$$
+
+and, ordering the levels from least to greatest, we may express the cumulative probabilities like so:
+
+$$\gamma_j = P(Y \le j) = \pi_1 + \ldots + \pi_j$$
+
+From which we observe that $\gamma_J = \pi_1 + \ldots + \pi_J = 1$.
+:::
+
+In which case, revisiting our unlucky patient, we would re-express their predicted outcomes as:
+
+$$\hat{y_i} = \left[ \begin{array}{c} \hat{\gamma}_1 \\ \hat{\gamma}_2 \\ \hat{\gamma}_3 \\ \hat{\gamma}_4 \end{array} \right] = \left[ \begin{array}{c} 0.1 \\ 0.3 \\ 0.7 \\ 1.0 \end{array} \right]$$
+
+Just as before, in @sec-multinomialregression, we need not model all $J$ outcomes; since the cumulative probability of the highest outcome $j=J$ is always 1, we only need to create a model for $\gamma_1, \ldots, \gamma_{J-1}$.
+
+## The generalized ordinal logistic regression
+
+Let's try a very general class of model to fit these cumulative probabilities. Each cumulative probability $\gamma_j$ can be modeled with a logistic regression. $J - 1$ different response variables $Y_1, \ldots, Y_{J-1}$ can be fit, where
+
+$$Y_j = \left\{ \begin{array}{ll} 1 & \textrm{if} \; Y \le j \\ 0 & \textrm{if} \; Y \gt j \end{array} \right\}$$
+
+From here we can fit each of these binomial responses to a set of predictors using the familiar logistic regression. First we start with our linear predictor:
+
+$$\hat{\boldsymbol{\eta}}_j = \mathbf{X} \hat{\boldsymbol{\beta}}_j$$
+
+Then we establish a logit link between the fitted cumulative probability and our linear predictor:
+
+$$\log \frac{\hat{\gamma}_j}{1 - \hat{\gamma}_j} = \hat{\boldsymbol{\eta}}_j$$
+
+Once we fit the model *via* maximum likelihood estimation, we can invert the link function to solve for the cumulative probabilities for each level:
+
+$$\hat{\gamma}_j = \frac{e^{\hat{\boldsymbol{\eta}}_j}}{1 + e^{\hat{\boldsymbol{\eta}}_j}}$$
+
+And finally we can back out the probabilities for each level by "de-cumulating" the gammas:
+
+$$P(Y = j) = \hat{\pi}_j = \left\{ \begin{array}{ll} \hat{\gamma}_1 & \textrm{if} \; j = 1 \\ \hat{\gamma}_j - \hat{\gamma}_{j-1} & \textrm{if} \; 2 \le j \le J \end{array} \right\}$$
+
+Let's apply this **generalized ordinal logistic regression** model to the simulated pain data. For now we will *not* include hair color, but simply model the ordinal response of pain as a function of the continuous predictor dose.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Generalized ordinal logistic regression (response scale)"
+
+set.seed(1621)
+library(MASS)
+library(VGAM)
+n <- 1000
+
+dose <- sample(seq(1.5,6,0.5), size=n, replace=TRUE)
+hair <- sample(c("dark","blond","red"), size=n, replace=TRUE, prob=c(0.60,0.25,0.15))
+hair <- factor(hair, levels=c("dark","blond","red"))
+is_blond <- as.numeric(hair=="blond")
+is_red <- as.numeric(hair=="red")
+
+theta <- c(-1.6, -0.5, 0.3)
+beta_dose <- -0.5
+beta_blond <- -0.15
+beta_red <- 0.6
+
+eta <- beta_dose * as.numeric(dose) + beta_blond * is_blond + beta_red * is_red
+g1 <- plogis(theta[1] - eta)
+g2 <- plogis(theta[2] - eta)
+g3 <- plogis(theta[3] - eta)
+
+p1 <- g1; p2 <- g2 - g1; p3 <- g3 - g2; p4 <- 1 - g3
+
+u <- runif(n)
+pain_num <- ifelse(u <= (g1-0.01*dose), 1,
+            ifelse(u <= g2, 2,
+            ifelse(u <= (g3+0.01*dose), 3, 4)))
+pain_cat<- factor(pain_num, levels=1:4, labels=c("None","Mild","Moderate","Severe"), ordered=TRUE)
+
+pain <- data.frame(pain_cat,pain_num,dose,hair)
+
+pain.olr <- vglm(pain_cat ~ dose, data=pain, family='cumulative')
+
+pocolors <- c('#0000ff','#0000ff50','#00000080','#000000')
+xseq <- data.frame(dose=seq(1,6,0.01))
+plot(x=c(1,6),y=c(0,1),type='n',
+     main='Predictions of ordinal pain response',
+     ylab='Cumulative probability',xlab='Lidocaine dose (mg/kg)')
+lines(x=xseq$dose,y=predictvglm(pain.olr,newdata=xseq,type='response')[,1],
+      col=pocolors[1],lwd=2)
+lines(x=xseq$dose,y=rowSums(predictvglm(pain.olr,newdata=xseq,type='response')[,1:2]),
+      col=pocolors[2],lwd=2)
+lines(x=xseq$dose,y=rowSums(predictvglm(pain.olr,newdata=xseq,type='response')[,1:3]),
+      col=pocolors[3],lwd=2)
+abline(h=1,lwd=2)
+text(x=1,c(0.2,0.4,0.6,0.8),levels(pain_cat),adj=0,col=pocolors,cex=0.7)
+```
+
+As expected, higher doses of lidocaine are associated with higher probabilities of no pain and lower probabilities of mild, moderate,or especially severe pain.
+
+The *non-linear* curves in the graph show how different doses create different probabilities of each pain response. However, we are still using a GLM framework, which means that on the scale of the link function we are still creating *linear* models. Let's examine this same model on the scale of the log-odds of each cumulative probability:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Generalized ordinal logistic regression (link scale)"
+plot(x=c(1,6),y=c(-2,4),type='n',
+     main='Predictions of ordinal pain response',
+     ylab='Cumulative log-odds',xlab='Lidocaine dose (mg/kg)')
+lines(x=xseq$dose,y=predictvglm(pain.olr,newdata=xseq,type='link')[,1],
+      col=pocolors[1],lwd=2)
+lines(x=xseq$dose,y=predictvglm(pain.olr,newdata=xseq,type='link')[,2],
+      col=pocolors[2],lwd=2)
+lines(x=xseq$dose,y=predictvglm(pain.olr,newdata=xseq,type='link')[,3],
+      col=pocolors[3],lwd=2)
+text(x=1,c(-1.5,-0.5,0.5,1.5),levels(pain_cat),adj=0,col=pocolors,cex=0.7)
+```
+
+And now let us review the coefficients which give us these linear predictors:
+
+$$\begin{aligned} \textrm{logit} \left( P(Y \le 1) \right) = \log \frac{\hat{\gamma}_1}{1 - \hat{\gamma}_1} &\approx -1.52 + 0.45 \cdot \textrm{dose} \\ \textrm{logit} \left( P(Y \le 2) \right) = \log \frac{\hat{\gamma}_2}{1 - \hat{\gamma}_2} &\approx -0.82 + 0.58 \cdot \textrm{dose} \\ \textrm{logit} \left( P(Y \le 3) \right) = \log \frac{\hat{\gamma}_3}{1 - \hat{\gamma}_3} &\approx -0.01 + 0.65 \cdot \textrm{dose} \end{aligned}$$
+
+Here we can start to see a few drawbacks to the generalized ordinal regression. Consider:
+
+ * This general model is "expensive", in terms of its model parameters. Every level of our ordinalresponse receives its own regression: each predictor's effect on cumulative probability is different at each level of $Y$. If we had five predictors and eight levels to $Y$, we would be fitting 42 parameters (5 slopes plus an intercept = 6 betas for each of 8 - 1 = 7 levels).
+ 
+ * We have to hope the regression slopes remain "well-behaved" or else they may give nonsense predictions. Since the slopes of the linear predictors are not equal to each other, they are not parallel and may well intersect each other. This in turn would lead to impossibilities such as $P(Y = 1) \gt P(Y \le 2)$. In the graph above, the boundaries are sensible for any realistic dose amount, but this was simply good luck on our part, not an innate model property.
+ 
+ * The model doesn't really set our imagination on fire... it has some subtle differences from the multinomial model, but it seems like a lot of cumbersome math to end up in a very similar place!
+ 
+Well, I have good news: by adding one bold assumption to this generalized model, we can address all these difficulties!
+
+## The proportional-odds ordinal logistic regression (POLR)
+
+What we need now is a "less is more" approach. From the figure above, you may notice that the linear predictors which separate the various cumulative log-odds are *almost* parallel. What if we assumed they *were* parallel? In that case, we could simplify our model:
+
+$$ \textrm{OLD:} \quad \textrm{logit}(\hat{\gamma}_j) = \mathbf{X} \hat{\boldsymbol{\beta}}_j $$
+
+$$ \textrm{NEW:} \quad \textrm{logit}(\hat{\gamma}_j) = \hat{\theta}_j - \mathbf{X} \hat{\boldsymbol{\beta}} $$
+
+Here we use only *one* set of slopes for every level of $Y$, which creates parallel linear predictors on the link scale. The *only* parameter which varies between levels is the intercept. In order to split out the level-varying intercepts from the fixed vector of slopes $\hat{\boldsymbol{\beta}}$, we relabel each intercept as $\hat{\theta}_j$ (theta). In other words, $\theta$ is the new $\beta_0$.^[Usually we *add* the slopes and $X$s to the intercept term, but you see here that we *subtract* $\mathbf{X} \hat{\boldsymbol{\beta}}$ from $\hat{\theta}_j$. We can choose either sign arbitrarily and without changing the math of the model, and we choose this expression so as to neatly phrase the latent variable interpretation below.]
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Proportional-odds logistic regression (link scale)"
+
+pain.polr <- polr(pain_cat ~ dose, data=pain, method="logistic")
+
+plot(x=c(1,6),y=c(-2,4),type='n',
+     main='Predictions of ordinal pain response',
+     ylab='Cumulative log-odds',xlab='Lidocaine dose (mg/kg)')
+lines(x=xseq$dose,y=pain.polr$zeta[1]-xseq$dose*pain.polr$coefficients,
+      col=pocolors[1],lwd=2)
+lines(x=xseq$dose,y=pain.polr$zeta[2]-xseq$dose*pain.polr$coefficients,
+      col=pocolors[2],lwd=2)
+lines(x=xseq$dose,y=pain.polr$zeta[3]-xseq$dose*pain.polr$coefficients,
+      col=pocolors[3],lwd=2)
+text(x=1,c(-1.5,-0.5,0.5,1.5),levels(pain_cat),adj=0,col=pocolors,cex=0.7)
+```
+
+The figure above shows this model in action, modeling the same pain data as before. As each level has a parallel dosage slope, there are only four parameters to estimate:
+
+|Parameter       |Estimate|Meaning                  |
+|:---------------|-------:|:------------------------|
+|$\hat{\theta}_1$|-1.72   |None/Mild intercept      |
+|$\hat{\theta}_2$|-0.56   |Mild/Moderate intercept  |
+|$\hat{\theta}_3$| 0.45   |Moderate/Severe intercept|
+|$\hat{\beta}_1$ |-0.49   |Slope on lidocaine dose  |
+
+$$\begin{aligned} \textrm{logit} \left( P(Y \le 1) \right) = \log \frac{\hat{\gamma}_1}{1 - \hat{\gamma}_1} &\approx -1.72 - (-0.49) \cdot \textrm{dose} \\ \textrm{logit} \left( P(Y \le 2) \right) = \log \frac{\hat{\gamma}_2}{1 - \hat{\gamma}_2} &\approx -0.56 - (-0.49) \cdot \textrm{dose} \\ \textrm{logit} \left( P(Y \le 3) \right) = \log \frac{\hat{\gamma}_3}{1 - \hat{\gamma}_3} &\approx \;\;\;0.45 - (-0.49) \cdot \textrm{dose} \end{aligned}$$                                                                 
+
+This reduced model is often quite nearly as good a fit as the generalized model described above. Furthermore, when we choose the logit link, we gain a nice mathematical result called the **proportional odds assumption**. For any response level $j$, and any two values of the predictor $x_0$ and $x_1$, notice that:
+
+$$\frac{\textrm{odds}(Y \le j \,|\, \boldsymbol{X} = \boldsymbol{x}_1)}{\textrm{odds}(Y \le j \,|\, \boldsymbol{X} = \boldsymbol{x}_0)} = \frac{e^{\theta_j - \boldsymbol{x}_1\boldsymbol{\beta}}}{e^{\theta_j - \boldsymbol{x}_0\boldsymbol{\beta}}} = e^{-\boldsymbol{\beta}(\boldsymbol{x}_1 - \boldsymbol{x}_0)}$$
+
+As a corollary, notice that if any single predictor $X$ is coded as a 1/0 indicator variable, we can further simplify:
+
+$$\frac{\textrm{odds}(Y \le j \,|\, X = 1)}{\textrm{odds}(Y \le j \,|\, X = 0)} = \frac{e^{\theta_j - \beta_X}}{e^{\theta_j}} = e^{-\beta}$$
+
+The beauty and the surprise of these results is that they did not depend *at all* on the response level $j$. Instead, these odds ratios are true across every level of $Y$. A one-unit change in a predictor will have nonlinear effects on the fitted probabilities, but in general the cumulative odds for *every* level will shift *proportionally* by the same factor of $e^{\beta}$.
+
+This property emerges from a combination of *(i)* using the logit link, and *(ii)* restricting the model to use only a single set of slopes. We may keep the constraint assumption *(ii)* while changing the link function *(i)*, in which case we cannot call it the "proportional odds model" because we will no longer be modeling odds.^[Though other properties may emerge... if we use the complementary log-log link function, we reach a very similar result referred to as the "proportional hazard model".]
+
+## Latent variables interpretation
+
+The proportional odds model described above is useful on its own, without any theoretical justification. Data science will always have a home for models that *work* --- *i.e.* that effectively model real data --- whether or not they are known to be "true" or "right" for the data.^["All models are wrong..."]
+
+However, we can describe a latent variable interpretation which would motivate these models and even help us to understand which link function to choose.^[Note: This section owes a particular debt not only to McCullagh and Nelder's *Generalized Linear Models* 2nd edition, but also to some notes of Professor McCullagh available at https://www.stat.uchicago.edu/~pmcc/reports/prop_odds.pdf]
+
+Imagine a latent variable $Z$ with cumulative distribution function $F_Z(z) = P(Z \le z)$. This latent variable contains rich information about how the predictors affect the ordinal response, but we can not directly observe it.  Assume that
+
+$$Z = \mathbf{X}\boldsymbol{\beta} + \varepsilon$$
+
+Where $\mathbf{X}\boldsymbol{\beta}$ is the information contained in the predictors and $\varepsilon$ is a random error term with its own probability distribution. This form should be very familiar to us, since if $\varepsilon$ has the Normal distribution, then we have "re-invented" linear regression!
+
+Now imagine that we do not see $Z$ directly, but instead we observe the $j$ different ordinal levels of $Y$ for different intervals of $Z$:
+
+$$Y = \left\{ \begin{array}{lr} 1 & if\; Z \lt \theta_1 \\ 2 & if \;\theta_1 \le Z \lt \theta_2 \\ \vdots & \vdots \\ J - 1 & if\; \theta_{J-2} \le Z \lt \theta_{J-1} \\ J & if\; \theta_{J-1} \le Z  \end{array} \right\}$$
+
+More coming soon!
+
+## Different link functions
+
+More coming soon!

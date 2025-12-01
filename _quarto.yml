@@ -66,6 +66,11 @@ book:
         - poissonmodels.qmd
         - overdispersedmodels.qmd
         - zeroinflatedmodels.qmd
+    - part: "10. Polytomous Models"
+      chapters:
+        - multinomialregression.qmd
+        - ordinalregression.qmd
+        - howtopolytomous.qmd
   appendices:
     - part: "Distributions"
       chapters: 

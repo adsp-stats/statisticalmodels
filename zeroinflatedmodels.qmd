@@ -69,7 +69,7 @@ summary(trout.hurdle)
 | $\,$                      |          |           |
 | Total model AIC           | 133.39   |           |
 
-: $M_+:$ Truncated Poisson model w/ log link"
+: $M_+:$ Truncated Poisson model w/ log link
 
 :::
 
@@ -77,7 +77,7 @@ The two components of this model are interpreted separately from each other, usi
 
  * The zero model determines whether any fish will be caught, and line depth, water temperature, and their interaction term are all significant at the 10% level.
  
- * If the coefficients can be trusted, increased temperature leads to lower chances of catching any fish (as expected). At 15m deep, a one-degree Celsius increase in water temperature lowers the odds of catching fish by 47%.^[A one-degree change of temperature at 15 m decreases the log-odds according to the beta on temperature, $-2.69 \times 1 \approx -2.69$, but also *increases* the log-odds according to the interaction term, $0.15 \times 1 \times 15 \times 2.25$. The two effects are aggregated and then exponentiated.]
+ * If the coefficients can be trusted, increased temperature leads to lower chances of catching any fish (as expected). At 15m deep, a one-degree Celsius increase in water temperature lowers the odds of catching fish by 47%.^[A one-degree change of temperature at 15 m decreases the log-odds according to the beta on temperature, $-2.69 \times 1 \approx -2.69$, but also *increases* the log-odds according to the interaction term, $0.15 \times 1 \times 15 = 2.25$. The two effects are aggregated and then exponentiated.]
  
  * If the coefficients can be trusted, increased depth has a negligible or even negative effect on catching any trout, except if the water is warmer than roughly 20 Celsius, in which case fish are more likely to be found in deeper waters.^[Since the coefficient on depth is about -20x larger than the coefficient on the interaction term (depth x temp), the temperature needs to be about 20 C for the combined effects to change signs.]
  
