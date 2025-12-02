@@ -227,17 +227,55 @@ The proportional odds model described above is useful on its own, without any th
 
 However, we can describe a latent variable interpretation which would motivate these models and even help us to understand which link function to choose.^[Note: This section owes a particular debt not only to McCullagh and Nelder's *Generalized Linear Models* 2nd edition, but also to some notes of Professor McCullagh available at https://www.stat.uchicago.edu/~pmcc/reports/prop_odds.pdf]
 
-Imagine a latent variable $Z$ with cumulative distribution function $F_Z(z) = P(Z \le z)$. This latent variable contains rich information about how the predictors affect the ordinal response, but we can not directly observe it.  Assume that
+Imagine a latent variable $Z$ which contains rich information about how the predictors affect the ordinal response $Y$. Define,
 
 $$Z = \mathbf{X}\boldsymbol{\beta} + \varepsilon$$
 
-Where $\mathbf{X}\boldsymbol{\beta}$ is the information contained in the predictors and $\varepsilon$ is a random error term with its own probability distribution. This form should be very familiar to us, since if $\varepsilon$ has the Normal distribution, then we have "re-invented" linear regression!
+Where $\mathbf{X}\boldsymbol{\beta}$ is the information contained in the predictors and $\varepsilon$ is a random error term with cumulative distribution function $F_\varepsilon$. This form should be very familiar to us, since if $\varepsilon$ has the Normal distribution, then we have "re-invented" linear regression!
 
-Now imagine that we do not see $Z$ directly, but instead we observe the $j$ different ordinal levels of $Y$ for different intervals of $Z$:
+Now imagine that we cannot observe $Z$ directly, but instead, based on its hidden values, we observe the $j$ different ordinal levels of $Y$:
 
-$$Y = \left\{ \begin{array}{lr} 1 & if\; Z \lt \theta_1 \\ 2 & if \;\theta_1 \le Z \lt \theta_2 \\ \vdots & \vdots \\ J - 1 & if\; \theta_{J-2} \le Z \lt \theta_{J-1} \\ J & if\; \theta_{J-1} \le Z  \end{array} \right\}$$
+$$Y = \left\{ \begin{array}{lcr} 1 & \textrm{if} & Z \le \theta_1 \\ 2 & \textrm{if} & \theta_1 \lt Z \le \theta_2 \\ \vdots & \vdots & \vdots \\ J & \textrm{if} & \theta_{J-1} \lt Z  \end{array} \right\}$$
 
-More coming soon!
+So $Z$ is the continuous hidden variable, and $Y$ is the observed, flattened "stair-step" which becomes our ordinal response. The values $\theta_j$ are the cutoff points that determine how $Z$ maps to $Y$. Assuming all this to be true, we can write:
+
+$$\begin{aligned} P(Y \le j) = \gamma_j &= P(Z \le \theta_j)  \\ &= P(\varepsilon \le \theta_j - \mathbf{X}\boldsymbol{\beta}) \\ &= F_\varepsilon(\theta_j - \mathbf{X}\boldsymbol{\beta}) \end{aligned}$$
+Which in turn implies,
+
+$$F^{-1}_\varepsilon(\gamma_j) = \theta_j - \mathbf{X}\boldsymbol{\beta}$$
+
+(Notice how the latent variable $Z = \mathbf{X}\boldsymbol{\beta} + \varepsilon$ creates the unusual negative sign in our ordinal linear predictor.) Comparing this with our first description of proportional odds logistic regression, we see that:
+
+ * If the latent error term $\varepsilon$ has the *logistic distribution*, then $F^{-1}_\varepsilon$ is the *logit link* and we have recreated the proportional odds model.
+ 
+ * If the latent error term $\varepsilon$ has the *Normal distribution*, then $F^{-1}_\varepsilon$ is the *probit link* which is also used in ordinal regression.
+ 
+ * If the latent error term $\varepsilon$ has the *extreme value distribution*, then $F^{-1}_\varepsilon$ is the *complementary log-log link*.^[Or the negative log-log link, if the extreme values are minima and not maxima.]
+ 
+We can even visualize the latent variable $Z$ in such a way as to show the ordinal intercepts $\theta_j$ serving as cutoff points for the ordinal levels of $Y$. In the graph below, we choose the logistic distribution for $F_\varepsilon$, though it looks very similar to the Normal distribution.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Latent variables interpretation of proportional odds logistic regression"
+
+plot(x=c(2,7),y=c(-7,3),type='n',main='Latent variable distributions for five doses',
+     xlab='Lidocaine dose (mg/kg)',ylab='Latent variable  Z')
+cutoffs <- rbind(qlogis(0.02,(2:6)*pain.polr$coefficients),
+                 matrix(c(pain.polr$zeta),nrow=3,ncol=5),
+                 qlogis(0.98,(2:6)*pain.polr$coefficients))
+pocolors <- c('#0000ff','#0000ff50','#00000080','#000000')
+abline(h=pain.polr$zeta,col=pocolors[1:3])
+for (x in 1:5){
+  for (y in 1:4){
+    poseq <- seq(cutoffs[y,x],cutoffs[y+1,x],length.out=100)
+    lines(x=rep(x+1,100),y=poseq,lwd=2,col=pocolors[y])
+    lines(x=x+1+2*dlogis(poseq,(x+1)*pain.polr$coefficients),
+          y=poseq,lwd=2,col=pocolors[y])
+    if (x==1) text(x=7,y=y-3,levels(pain_cat)[y],adj=1,col=pocolors[y],cex=0.7)}}
+mtext(text=expression(theta[1]),side=4,at=c(7,pain.polr$zeta[1]),las=2,line=0.5)
+mtext(text=expression(theta[2]),side=4,at=c(7,pain.polr$zeta[2]),las=2,line=0.5)
+mtext(text=expression(theta[3]),side=4,at=c(7,pain.polr$zeta[3]),las=2,line=0.5)
+```
 
 ## Different link functions
 
