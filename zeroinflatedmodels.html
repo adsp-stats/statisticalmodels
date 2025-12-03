@@ -728,12 +728,12 @@ Note
 <td style="text-align: right;">0.08</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> Temp</td>
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span> Depth</td>
 <td style="text-align: right;">-2.69</td>
 <td style="text-align: right;">0.09</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(\beta_2\)</span> Depth</td>
+<td style="text-align: left;"><span class="math inline">\(\beta_2\)</span> Temp</td>
 <td style="text-align: right;">-2.90</td>
 <td style="text-align: right;">0.06</td>
 </tr>
@@ -799,7 +799,7 @@ Note
 <p>The two components of this model are interpreted separately from each other, using the same knowledge base we have gained from past GLM topics:</p>
 <ul>
 <li><p>The zero model determines whether any fish will be caught, and line depth, water temperature, and their interaction term are all significant at the 10% level.</p></li>
-<li><p>If the coefficients can be trusted, increased temperature leads to lower chances of catching any fish (as expected). At 15m deep, a one-degree Celsius increase in water temperature lowers the odds of catching fish by 47%.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p></li>
+<li><p>If the coefficients can be trusted, increased temperature leads to lower chances of catching any fish (as expected). At 15m deep, a one-degree Celsius increase in water temperature lowers the odds of catching fish by 48%.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p></li>
 <li><p>If the coefficients can be trusted, increased depth has a negligible or even negative effect on catching any trout, except if the water is warmer than roughly 20 Celsius, in which case fish are more likely to be found in deeper waters.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
 <li><p>The count model determines how many fish will be caught (assuming there are any nearby to catch). Fish seem to bite more often when it is <em>more</em> noisy (unexpected!), when it is colder, and when fishing lure “C” is not being used.</p></li>
 <li><p>The strongest effects on catch amount (conditioned on a positive count) are temperature and bait. Using bait C reduces total catches by about 45%, while a 5 degree increase in temperature reduces total catches by about 42%.</p></li>
@@ -951,7 +951,7 @@ Note
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>A one-degree change of temperature at 15 m decreases the log-odds according to the beta on temperature, <span class="math inline">\(-2.69 \times 1 \approx -2.69\)</span>, but also <em>increases</em> the log-odds according to the interaction term, <span class="math inline">\(0.15 \times 1 \times 15 = 2.25\)</span>. The two effects are aggregated and then exponentiated.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>A one-degree change of temperature at 15 m decreases the log-odds according to the beta on temperature, <span class="math inline">\(-2.90 \times 1 \approx -2.90\)</span>, but also <em>increases</em> the log-odds according to the interaction term, <span class="math inline">\(0.15 \times 1 \times 15 \approx 2.25\)</span>. The two effects are aggregated and then exponentiated: <span class="math inline">\(e^{-2.90 + 2.25} \approx -48\%\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Since the coefficient on depth is about -20x larger than the coefficient on the interaction term (depth x temp), the temperature needs to be about 20 C for the combined effects to change signs.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Note that the reported coefficients for the zero process assume that a “mandatory zero” is a <em>success, i.e.</em> that positive betas increase the chance of observing 0 (as documented by the R function <code>pscl::zeroinfl</code>). This behavior may run counter to readers’ intuition or other software implementations.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
