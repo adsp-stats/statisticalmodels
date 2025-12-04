@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -72,6 +107,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -563,11 +627,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#multinomial-logistic-regression" id="toc-multinomial-logistic-regression" class="nav-link active" data-scroll-target="#multinomial-logistic-regression">Multinomial logistic regression</a>
+  <ul class="collapse">
+  <li><a href="#example-eye-color-association-with-sex-and-hair-color" id="toc-example-eye-color-association-with-sex-and-hair-color" class="nav-link" data-scroll-target="#example-eye-color-association-with-sex-and-hair-color">Example: Eye color association with sex and hair color</a></li>
+  </ul></li>
+  <li><a href="#ordinal-regression" id="toc-ordinal-regression" class="nav-link" data-scroll-target="#ordinal-regression">Ordinal regression</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content">
+<main class="content column-body" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./multinomialregression.html">10. Polytomous Models</a></li><li class="breadcrumb-item"><a href="./howtopolytomous.html"><span class="chapter-title">Coding it up in R</span></a></li></ol></nav>
 <div class="quarto-title">
@@ -576,7 +650,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-title-meta column-page-right">
+<div class="quarto-title-meta column-body">
 
     
   
@@ -588,9 +662,229 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>The <code>stats::glm</code> function is a useful workhorse, but it has its limits. All of our polytomous models will require specialty functions from other packages. In the notes below I will use one set of functions, but in your own work you may come to prefer alternatives from other packages, especially if they inherit methods that work well with your preferred data or graphics frameworks (such as tidyverse or data.table).</p>
+<section id="multinomial-logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="multinomial-logistic-regression">Multinomial logistic regression</h2>
+<p>I prefer <code>nnet::multinom</code> for these models, though you can also use the <code>VGAM</code> package which has its own function <code>VGAM::multinomial</code>. The <code>nnet</code> models have more compatibility with other modeling functions while the <code>VGAM</code> package is not as fully and professionally developed, in my opinion.</p>
+<p>When shaping the data for your multinomial regression, note that:</p>
+<ul>
+<li><p>The response variable can be a factor (preferred) or a vector of numeric or character data (which will then be converted to a factor). This means R will automatically typecast integers (like 1, 2, …, 5) into categories.</p></li>
+<li><p>Although rarely used, you can instead express the response as a matrix, where each column is a separate level and the entries are counts of how many observations were recorded at each level for the corresponding set of predictors.</p></li>
+<li><p>The first level of the response variable will be used as the reference level by <code>multinom</code>, so you may wish to re-order the factor levels if you prefer to see a different set of level comparisons.</p></li>
+<li><p>Any predictor that would work with a <code>lm</code> or <code>glm</code> object will work fine here.</p></li>
+</ul>
+<section id="example-eye-color-association-with-sex-and-hair-color" class="level3">
+<h3 class="anchored" data-anchor-id="example-eye-color-association-with-sex-and-hair-color">Example: Eye color association with sex and hair color</h3>
+<p>The dataset <code>HairEyeColor</code> comes pre-loaded in R and describes the hair color (Black, Brown, Red, Blond), eye color (Brown, Blue, Hazel, Green), and sex (Male, Female) of 592 statistics students.</p>
+<p>When both the predictors and the response variable are categorical, we can study the data through two perspectives. One is a multinomial logistic regression approach, which we will detail below. The other is a log-linear <em>contingency table</em> analysis, which studies associations between all the variables without defining a response or predictors.</p>
+<p>Let’s look at the data:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>HairEyeColor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, , Sex = Male
+
+       Eye
+Hair    Brown Blue Hazel Green
+  Black    32   11    10     3
+  Brown    53   50    25    15
+  Red      10   10     7     7
+  Blond     3   30     5     8
+
+, , Sex = Female
+
+       Eye
+Hair    Brown Blue Hazel Green
+  Black    36    9     5     2
+  Brown    66   34    29    14
+  Red      16    7     7     7
+  Blond     4   64     5     8</code></pre>
+</div>
+</div>
+<p>This three-dimensional contingency table is not well-suited for regression analysis. We will restructure it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>eyedata <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(HairEyeColor)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>eyedata <span class="ot">&lt;-</span> eyedata[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(eyedata)[<span class="dv">1</span>],<span class="at">times=</span><span class="fu">rep</span>(eyedata<span class="sc">$</span>Freq)),<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(eyedata) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(eyedata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 592   3</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(eyedata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Hair   Eye  Sex
+1 Black Brown Male
+2 Black Brown Male
+3 Black Brown Male
+4 Black Brown Male
+5 Black Brown Male
+6 Black Brown Male</code></pre>
+</div>
+</div>
+<p>Now, using the <code>nnet::multinom</code> function, we’ll run a regression trying to explain eye color as a function of hair color and sex.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('nnet')</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnet)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>eye.model.full <span class="ot">&lt;-</span> <span class="fu">multinom</span>(Eye <span class="sc">~</span> Hair <span class="sc">+</span> Sex, eyedata, <span class="at">trace=</span><span class="cn">FALSE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(eye.model.full)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+multinom(formula = Eye ~ Hair + Sex, data = eyedata, trace = FALSE)
+
+Coefficients:
+      (Intercept) HairBrown   HairRed HairBlond  SexFemale
+Blue    -1.026823 0.8928067 0.8280827  3.912243 -0.4235428
+Hazel   -1.356680 0.7346320 0.9148161  1.937427 -0.3243064
+Green   -2.385416 1.2183330 2.0248981  3.542942 -0.4920914
+
+Std. Errors:
+      (Intercept) HairBrown   HairRed HairBlond SexFemale
+Blue    0.2726421 0.2928267 0.4042358 0.4715526 0.2176325
+Hazel   0.3077725 0.3298390 0.4385076 0.5726864 0.2519170
+Green   0.4798299 0.5085431 0.5716056 0.6529648 0.2966168
+
+Residual Deviance: 1348.655 
+AIC: 1378.655 </code></pre>
+</div>
+</div>
+<p>These results describe three separate regressions for predicting: <em>(1)</em> Blue vs.&nbsp;Brown eyes, <em>(2)</em> Hazel vs.&nbsp;Brown eyes, and <em>(3)</em> Green vs.&nbsp;Brown eyes. We see that all of the parameters estimates are at least twice their standard errors (which points toward significance), <em>except</em> the betas for student sex. Perhaps sex is not strongly linked with eye color and should not be in the model. We can run a reduced model to find out:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>eye.model.red <span class="ot">&lt;-</span> <span class="fu">multinom</span>(Eye <span class="sc">~</span> Hair, eyedata, <span class="at">trace=</span><span class="cn">FALSE</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(eye.model.red)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+multinom(formula = Eye ~ Hair, data = eyedata, trace = FALSE)
+
+Coefficients:
+      (Intercept) HairBrown   HairRed HairBlond
+Blue    -1.223788 0.8754781 0.7989871  3.821239
+Hazel   -1.511469 0.7213341 0.8924691  1.868165
+Green   -2.610352 1.1984689 1.9913441  3.437060
+
+Std. Errors:
+      (Intercept) HairBrown   HairRed HairBlond
+Blue    0.2543726 0.2915707 0.4024785 0.4671279
+Hazel   0.2852577 0.3290799 0.4373362 0.5694209
+Green   0.4634205 0.5075888 0.5697808 0.6481705
+
+Residual Deviance: 1353.657 
+AIC: 1377.657 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dev.diff <span class="ot">&lt;-</span> eye.model.red<span class="sc">$</span>deviance<span class="sc">-</span>eye.model.full<span class="sc">$</span>deviance</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>edf.diff <span class="ot">&lt;-</span> <span class="fu">abs</span>(eye.model.red<span class="sc">$</span>edf<span class="sc">-</span>eye.model.full<span class="sc">$</span>edf)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">chisq=</span>dev.diff, <span class="at">df=</span>edf.diff, <span class="at">pvalue=</span><span class="dv">1</span><span class="sc">-</span><span class="fu">pchisq</span>(dev.diff,edf.diff))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    chisq        df    pvalue 
+5.0024730 3.0000000 0.1716162 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">AIC.full=</span><span class="fu">AIC</span>(eye.model.full),<span class="at">AIC.red=</span><span class="fu">AIC</span>(eye.model.red))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>AIC.full  AIC.red 
+1378.655 1377.657 </code></pre>
+</div>
+</div>
+<p>A chi-squared deviance test suggests that the three additional parameters for sex do <em>not</em> add significantly more explanatory power. A comparison of the two model AICs would confirm this finding. We will proceed with the smaller model.</p>
+<p>We can retrieve our predictions either as a set of classifications (the level of our response with the greatest predicted probability), or as a matrix of fitted probabilities. Here we see that since green and hazel eyes are relatively rare, they are never the predicted class. However, probabilistically, our predictions are extremely close to the true totals:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">predict</span>(eye.model.red))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] Brown Brown Brown Brown Brown Brown
+Levels: Brown Blue Hazel Green</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">predict</span>(eye.model.red,<span class="at">type=</span><span class="st">'prob'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Brown     Blue     Hazel      Green
+1 0.6296404 0.185186 0.1388896 0.04628404
+2 0.6296404 0.185186 0.1388896 0.04628404
+3 0.6296404 0.185186 0.1388896 0.04628404
+4 0.6296404 0.185186 0.1388896 0.04628404
+5 0.6296404 0.185186 0.1388896 0.04628404
+6 0.6296404 0.185186 0.1388896 0.04628404</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(eyedata<span class="sc">$</span>Eye,<span class="fu">predict</span>(eye.model.red))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       
+        Brown Blue Hazel Green
+  Brown   213    7     0     0
+  Blue    121   94     0     0
+  Hazel    83   10     0     0
+  Green    48   16     0     0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="fu">table</span>(eyedata<span class="sc">$</span>Eye),<span class="fu">colSums</span>(<span class="fu">predict</span>(eye.model.red,<span class="at">type=</span><span class="st">'prob'</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Brown     Blue    Hazel    Green
+[1,] 220.0000 215.0000 93.00000 64.00000
+[2,] 220.0006 215.0022 93.00036 63.99684</code></pre>
+</div>
+</div>
+<p>Our coefficients can be exponentiated to calculate the percentage shift in the odds of each response level (blue, hazel, or green eyes) vs.&nbsp;the reference level (brown). Here, the predictors are also categorical, and so each level of the predictor represents a shift from the reference level (black hair).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coefficients</span>(eye.model.red)) <span class="sc">-</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept) HairBrown  HairRed HairBlond
+Blue   -0.7058861  1.400022 1.223288 44.660727
+Hazel  -0.7794144  1.057176 1.441150  5.476403
+Green  -0.9264913  2.315037 6.325373 30.095409</code></pre>
+</div>
+</div>
+<p>We can say, for example, that having brown hair (instead of black) increases the odds of blue eyes (instead of brown) by 140%, while having red hair (instead of black) increases the odds of hazel eyes (instead of brown) by 144%.</p>
+<p>To compute the regressions between two non-reference levels, we can either pull out the information from the model details, or re-level our variables and re-run the regression. Let’s try to retrieve the regression predicting for blue eyes instead of green.</p>
+<p>If we extract the information ‘manually’, we should difference the coefficients between the “blue vs.&nbsp;brown” regression and the “green vs.&nbsp;brown” regression. The standard errors are a little harder to compute, and require us to access the estimated variance-covariance matrix for our betas. Recall that:</p>
+<p><span class="math display">\[\mathbb{V}[X - Y] = \mathbb{V}[X] + \mathbb{V}[Y] - 2 \cdot \textrm{Cov}(X,Y)\]</span></p>
+<p>And so,</p>
+<p><span class="math display">\[\textrm{s.e.}(\hat{\beta}_\textrm{blue} - \hat{\beta}_\textrm{green}) = \sqrt{\mathbb{V}[\hat{\beta}_\textrm{blue}] + \mathbb{V}[\hat{\beta}_\textrm{green}] - 2 \cdot \textrm{Cov}(\hat{\beta}_\textrm{blue},\hat{\beta}_\textrm{green})}\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coefficients</span>(eye.model.red)[<span class="dv">1</span>,]<span class="sc">-</span><span class="fu">coefficients</span>(eye.model.red)[<span class="dv">3</span>,]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)   HairBrown     HairRed   HairBlond 
+  1.3865634  -0.3229908  -1.1923570   0.3841784 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(eye.model.red))[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]<span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">diag</span>(<span class="fu">vcov</span>(eye.model.red))[<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>]<span class="sc">-</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>     <span class="dv">2</span><span class="sc">*</span><span class="fu">diag</span>(<span class="fu">vcov</span>(eye.model.red)[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Blue:(Intercept)   Blue:HairBrown     Blue:HairRed   Blue:HairBlond 
+       0.5000527        0.5444648        0.6166864        0.5685001 </code></pre>
+</div>
+</div>
+<p>We can also retrieve very similar coefficients and standard errors simply by re-leveling the response variable (compare to the first lines of the parameter estimates and standard errors).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>eyedata<span class="sc">$</span>Eye2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(eyedata<span class="sc">$</span>Eye,<span class="at">levels=</span><span class="fu">c</span>(<span class="st">'Green'</span>,<span class="st">'Blue'</span>,<span class="st">'Brown'</span>,<span class="st">'Hazel'</span>))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">multinom</span>(Eye2 <span class="sc">~</span> Hair, eyedata, <span class="at">trace=</span><span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+multinom(formula = Eye2 ~ Hair, data = eyedata, trace = FALSE)
+
+Coefficients:
+      (Intercept)  HairBrown   HairRed  HairBlond
+Blue     1.386313 -0.3227964 -1.192151  0.3843789
+Brown    2.610072 -1.1982536 -1.991025 -3.4367264
+Hazel    1.098638 -0.4769560 -1.098635 -1.5686448
+
+Std. Errors:
+      (Intercept) HairBrown   HairRed HairBlond
+Blue    0.5000012 0.5444157 0.6166471 0.5684531
+Brown   0.4633656 0.5075368 0.5697350 0.6481199
+Hazel   0.5163984 0.5653922 0.6399413 0.6551077
+
+Residual Deviance: 1353.657 
+AIC: 1377.657 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="ordinal-regression" class="level2">
+<h2 class="anchored" data-anchor-id="ordinal-regression">Ordinal regression</h2>
 <p>More coming soon!</p>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Because <code>nnet</code> fits these models using a neural net, which involves algorithmic convergence from a random initialization, the two sets of results may differ very slightly.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1032,7 +1326,7 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-page-right">
+<nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
       <a href="./ordinalregression.html" class="pagination-link" aria-label="Ordinal regression">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Ordinal regression</span></span>
