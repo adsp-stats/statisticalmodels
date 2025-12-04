@@ -1,3 +1,111 @@
 # Coding it up in R
 
+The `stats::glm` function is a useful workhorse, but it has its limits. All of our polytomous models will require specialty functions from other packages. In the notes below I will use one set of functions, but in your own work you may come to prefer alternatives from other packages, especially if they inherit methods that work well with your preferred data or graphics frameworks (such as tidyverse or data.table).
+
+## Multinomial logistic regression
+
+I prefer `nnet::multinom` for these models, though you can also use the `VGAM` package which has its own function `VGAM::multinomial`. The `nnet` models have more compatibility with other modeling functions while the `VGAM` package is not as fully and professionally developed, in my opinion.
+
+When shaping the data for your multinomial regression, note that:
+ 
+ * The response variable can be a factor (preferred) or a vector of numeric or character data (which will then be converted to a factor). This means R will automatically typecast integers (like 1, 2, ..., 5) into categories.
+   
+ * Although rarely used, you can instead express the response as a matrix, where each column is a separate level and the entries are counts of how many observations were recorded at each level for the corresponding set of predictors.
+
+ * The first level of the response variable will be used as the reference level by `multinom`, so you may wish to re-order the factor levels if you prefer to see a different set of level comparisons.
+ 
+ * Any predictor that would work with a `lm` or `glm` object will work fine here.
+ 
+### Example: Eye color association with sex and hair color
+
+The dataset `HairEyeColor` comes pre-loaded in R and describes the hair color (Black, Brown, Red, Blond), eye color (Brown, Blue, Hazel, Green), and sex (Male, Female) of 592 statistics students.
+
+When both the predictors and the response variable are categorical, we can study the data through two perspectives. One is a multinomial logistic regression approach, which we will detail below. The other is a log-linear *contingency table* analysis, which studies associations between all the variables without defining a response or predictors.
+
+Let's look at the data:
+
+```{r}
+HairEyeColor
+```
+
+This three-dimensional contingency table is not well-suited for regression analysis.  We will restructure it:
+
+```{r}
+eyedata <- as.data.frame(HairEyeColor)
+eyedata <- eyedata[rep(1:dim(eyedata)[1],times=rep(eyedata$Freq)),1:3]
+rownames(eyedata) <- NULL
+dim(eyedata)
+head(eyedata)
+```
+
+Now, using the `nnet::multinom` function, we'll run a regression trying to explain eye color as a function of hair color and sex.
+
+```{r}
+#install.packages('nnet')
+library(nnet)
+eye.model.full <- multinom(Eye ~ Hair + Sex, eyedata, trace=FALSE)
+summary(eye.model.full)
+```
+
+These results describe three separate regressions for predicting: *(1)* Blue vs. Brown eyes, *(2)* Hazel vs. Brown eyes, and *(3)* Green vs. Brown eyes. We see that all of the parameters estimates are at least twice their standard errors (which points toward significance), *except* the betas for student sex. Perhaps sex is not strongly linked with eye color and should not be in the model. We can run a reduced model to find out:
+
+```{r}
+eye.model.red <- multinom(Eye ~ Hair, eyedata, trace=FALSE)
+summary(eye.model.red)
+
+dev.diff <- eye.model.red$deviance-eye.model.full$deviance
+edf.diff <- abs(eye.model.red$edf-eye.model.full$edf)
+
+c(chisq=dev.diff, df=edf.diff, pvalue=1-pchisq(dev.diff,edf.diff))
+c(AIC.full=AIC(eye.model.full),AIC.red=AIC(eye.model.red))
+```
+
+A chi-squared deviance test suggests that the three additional parameters for sex do *not* add significantly more explanatory power. A comparison of the two model AICs would confirm this finding. We will proceed with the smaller model.
+
+We can retrieve our predictions either as a set of classifications (the level of our response with the greatest predicted probability), or as a matrix of fitted probabilities. Here we see that since green and hazel eyes are relatively rare, they are never the predicted class. However, probabilistically, our predictions are extremely close to the true totals:
+
+```{r}
+head(predict(eye.model.red))
+head(predict(eye.model.red,type='prob'))
+
+table(eyedata$Eye,predict(eye.model.red))
+rbind(table(eyedata$Eye),colSums(predict(eye.model.red,type='prob')))
+```
+
+Our coefficients can be exponentiated to calculate the percentage shift in the odds of each response level (blue, hazel, or green eyes) vs. the reference level (brown). Here, the predictors are also categorical, and so each level of the predictor represents a shift from the reference level (black hair).
+
+```{r}
+exp(coefficients(eye.model.red)) - 1
+```
+
+We can say, for example, that having brown hair (instead of black) increases the odds of blue eyes (instead of brown) by 140%, while having red hair (instead of black) increases the odds of hazel eyes (instead of brown) by 144%.
+
+To compute the regressions between two non-reference levels, we can either pull out the information from the model details, or re-level our variables and re-run the regression. Let's try to retrieve the regression predicting for blue eyes instead of green.
+
+If we extract the information 'manually', we should difference the coefficients between the "blue vs. brown" regression and the "green vs. brown" regression. The standard errors are a little harder to compute, and require us to access the estimated variance-covariance matrix for our betas. Recall that:
+
+$$\mathbb{V}[X - Y] = \mathbb{V}[X] + \mathbb{V}[Y] - 2 \cdot \textrm{Cov}(X,Y)$$ 
+
+And so,
+
+$$\textrm{s.e.}(\hat{\beta}_\textrm{blue} - \hat{\beta}_\textrm{green}) = \sqrt{\mathbb{V}[\hat{\beta}_\textrm{blue}] + \mathbb{V}[\hat{\beta}_\textrm{green}] - 2 \cdot \textrm{Cov}(\hat{\beta}_\textrm{blue},\hat{\beta}_\textrm{green})}$$
+
+```{r}
+coefficients(eye.model.red)[1,]-coefficients(eye.model.red)[3,]
+sqrt(diag(vcov(eye.model.red))[1:4]+
+     diag(vcov(eye.model.red))[9:12]-
+     2*diag(vcov(eye.model.red)[1:4,9:12]))
+```
+
+We can also retrieve very similar coefficients and standard errors simply by re-leveling the response variable (compare to the first lines of the parameter estimates and standard errors).^[Because `nnet` fits these models using a neural net, which involves algorithmic convergence from a random initialization, the two sets of results may differ very slightly.]
+
+```{r}
+eyedata$Eye2 <- factor(eyedata$Eye,levels=c('Green','Blue','Brown','Hazel'))
+summary(multinom(Eye2 ~ Hair, eyedata, trace=FALSE))
+```
+
+## Ordinal regression
+
 More coming soon!
+   
+   
