@@ -168,7 +168,7 @@ alt.ses
 |:---------------------|---------------------:|-------------------:|-------------------:|
 |                      |Estimate *(Std Err)*  |Estimate *(Std Err)*|Estimate *(Std Err)*|
 |Dressage v. Basketball|-381.47   	*(15.07)* |**-2.31**	*(0.50)* |1.47	*(3.42)*      |
-|Gymnasts v. Basketball|611.23    	*(0.19)*	|**-2.32**	*(0.37)* |**8.65**	*(2.91)*  |
+|Gymnasts v. Basketball|611.23    	*(0.19)*	|**-2.32**	*(0.37)* |**-8.65**	*(2.91)*  |
 |Gymnasts v. Dressage  |229.76    	*(15.07)*	|-0.01	*(0.62)*		 |**-10.12**	*(4.61)*|
 
 We see now that height differentiates dressage riders and gymnasts from basketball players, and that age differentiates dressage riders and basketball players from gymnasts. In fact, much like how we found the classification threshold line between two classes using a binomial logistic regression, we can use all six of these sets of coefficients to draw the pairwise boundaries between levels of sport. Setting each log-odds to zero (where the probability of one level vs. the other is 50-50), we can solve for height as a function of age, leading to a set of pairwise classification boundaries.  
