@@ -6,7 +6,6 @@ book:
   chapters:
     - index.qmd
     - preface.qmd
-    - sets.qmd
     - part: "1. Univariate Techniques"
       chapters:
         - likelihood.qmd
