@@ -774,12 +774,12 @@ Note
 <p>If we assume that the observations from both groups all shared this same pooled variance, then we may compute the test statistic for the difference in means as:</p>
 <p><span class="math display">\[t = \frac{\bar{x}_1-\bar{x}_2}{\sqrt{s_p^2/n_1 +s_p^2/n_2}}, \quad t \sim T_{n_1+n_2-2}\]</span> Which suggests the following two-sided confidence interval for the true difference in means:</p>
 <p><span class="math display">\[ \textrm{CI}_{\mu_1-\mu_2,1-\alpha} = (\bar{x}_1 - \bar{x}_2) \pm t^*_{\alpha/2,n_1+n_2-2}\sqrt{s_p^2/n_1 +s_p^2/n_2}\]</span></p>
-<p>(Formulas for one-sided confidence intervals, and <em>z</em> tests for when the pooled variance is known ahead of time, can both be constructed by analogy to the prior subsections above.)</p>
+<p>(Formulae for one-sided confidence intervals, and <em>z</em> tests for when the pooled variance is known ahead of time, can both be constructed by analogy to the prior subsections above.)</p>
 </section>
 <section id="two-sample-t-test-variances-assumed-to-be-unequal" class="level3">
 <h3 class="anchored" data-anchor-id="two-sample-t-test-variances-assumed-to-be-unequal">Two sample <em>t</em>-test, variances assumed to be unequal</h3>
 <p>The last remaining case we will treat here is when we are comparing two means but do not believe we can assume the variances of the two groups are the same.</p>
-<p>As with all of the formuale in this section, the following test statistic is an <em>approximation</em> — here, of a very tricky distributional question called the <em>Behrens-Fisher problem</em>, which was only recently solved after 90 years of study. The approximation I will show is called the <em>Welch test</em>, and its first step involves computing a fractional “degree of freedom” parameter <span class="math inline">\(\nu\)</span> (nu), which we estimate as follows:</p>
+<p>As with all of the formulae in this section, the following test statistic is an <em>approximation</em> — here, of a very tricky distributional question called the <em>Behrens-Fisher problem</em>, which was only recently solved after 90 years of study. The approximation I will show is called the <em>Welch test</em>, and its first step involves computing a fractional “degree of freedom” parameter <span class="math inline">\(\nu\)</span> (nu), which we estimate as follows:</p>
 <p><span class="math display">\[\nu = \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2} {\frac{s_1^4}{n_1^2(n_1 - 1)} + \frac{s_2^4}{n_2^2(n_2 - 1)}}\]</span></p>
 <p>With the degrees of freedom specified, we can now define the test statistic:</p>
 <p><span class="math display">\[t = \frac{\bar{x}_1-\bar{x}_2}{\sqrt{s_1^2/n_1 +s_2^2/n_2}}, \quad t \sim T_{\nu}\]</span></p>
