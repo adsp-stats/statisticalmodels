@@ -124,13 +124,13 @@ Which suggests the following two-sided confidence interval for the true differen
 
 $$ \textrm{CI}_{\mu_1-\mu_2,1-\alpha} = (\bar{x}_1 - \bar{x}_2) \pm t^*_{\alpha/2,n_1+n_2-2}\sqrt{s_p^2/n_1 +s_p^2/n_2}$$
 
-(Formulas for one-sided confidence intervals, and *z* tests for when the pooled variance is known ahead of time, can both be constructed by analogy to the prior subsections above.)
+(Formulae for one-sided confidence intervals, and *z* tests for when the pooled variance is known ahead of time, can both be constructed by analogy to the prior subsections above.)
 
 ### Two sample *t*-test, variances assumed to be unequal
 
 The last remaining case we will treat here is when we are comparing two means but do not believe we can assume the variances of the two groups are the same.
 
-As with all of the formuale in this section, the following test statistic is an *approximation* --- here, of a very tricky distributional question called the *Behrens-Fisher problem*, which was only recently solved after 90 years of study. The approximation I will show is called the *Welch test*, and its first step involves computing a fractional "degree of freedom" parameter $\nu$ (nu), which we estimate as follows:
+As with all of the formulae in this section, the following test statistic is an *approximation* --- here, of a very tricky distributional question called the *Behrens-Fisher problem*, which was only recently solved after 90 years of study. The approximation I will show is called the *Welch test*, and its first step involves computing a fractional "degree of freedom" parameter $\nu$ (nu), which we estimate as follows:
 
 $$\nu = \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2} {\frac{s_1^4}{n_1^2(n_1 - 1)} + \frac{s_2^4}{n_2^2(n_2 - 1)}}$$
 

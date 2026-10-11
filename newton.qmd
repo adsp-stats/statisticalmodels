@@ -62,7 +62,7 @@ Whether we use an exact algebraic solution for the derivative or approximate it 
 
 4. Choose an initial guess for the root (*i.e.* the best parameter value.)
 
-5. Choose a tolerance which will help you know when to stop iterating the algorithm. This tolerance is sometimes expressed as an maximum change in $x$, or other times as a maximum increment in $f(x)$ (*i.e.* the first derivative of the log-likelihood).
+5. Choose a tolerance which will help you know when to stop iterating the algorithm. This tolerance is sometimes expressed as a maximum change in $x$, or other times as a maximum increment in $f(x)$ (*i.e.* the first derivative of the log-likelihood).
 
 6. Iterate until the new values of $x$ and $f(x)$ are within tolerance, or stop the algorithm if your search does not converge upon a root.
 
