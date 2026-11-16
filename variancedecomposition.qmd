@@ -133,6 +133,3 @@ While it is true that we usually prefer larger R^2^ to smaller R^2^, we must con
  * As we add more and more predictors to our model, R^2^ will generally increase (mathematically, it cannot decrease, though if we add completely uninformative predictors, it can stay the same). These additional predictors may not capture real connections between the predictors and the response variable, but instead might simply highlight a chance correlation in the random noise of our data.
 
  * In some domains or fields, higher R^2^ values are much easier to obtain. In the physical sciences, researchers often hypothesize that hard physical laws connect the predictors to the response variable, and R^2^ values of 0.99 are very common. By contrast, in the social sciences, researchers studying human behavior might be proud to publish even with an R^2^ of only 0.10. Humans are so complex and idiosyncratic that explaining even 10% of their variation along many metrics represents an important understanding.
-
-## Visualizer
-

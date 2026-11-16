@@ -100,7 +100,7 @@ Previously, we used Least Squares to find point estimates for the beta parameter
 :::{.callout-note}
 Assume a relationship between a response variable $Y$ and $k$ predictor variables $X_1,\ldots,X_k$ which meet the assumptions of ordinary least squares (OLS) regression, and use all the usual notation so far for its parameters, distributional form, and samples
 
- 1. Each estimated intercept or slope \hat{\beta}_j is Normally distributed around its true value $\beta_j$, with a standard error of $\mathrm{s.\!e.}(\hat{\beta}_j)= \hat{\sigma}\sqrt{(\mathbf{X}^T \mathbf{X})^{-1}_{j,j}}$
+ 1. Each estimated intercept or slope $\hat{\beta}_j$ is Normally distributed around its true value $\beta_j$, with a standard error of $\mathrm{s.\!e.}(\hat{\beta}_j)= \hat{\sigma}\sqrt{(\mathbf{X}^T \mathbf{X})^{-1}_{j,j}}$
 
  2. A hypothesis test for whether the true parameter $\beta_j$ might equal some candidate value $b_j$ can be performed as follows:
 

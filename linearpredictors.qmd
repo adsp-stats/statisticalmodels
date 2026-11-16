@@ -21,7 +21,7 @@ Define the **link function** as an assumed functional form for the relationship 
 
 $$g(\mu_i) = \eta_i = \boldsymbol{x}_i \boldsymbol{\beta}$$
 
-Define the **mean function** as the inverse of the link function, which expresses the mean of every observation for y_i as a function of the linear predictor: 
+Define the **mean function** as the inverse of the link function, which expresses the mean of every observation for $y_i$ as a function of the linear predictor: 
 
 $$g^{-1}(\eta_i) = \mu_i $$
 :::

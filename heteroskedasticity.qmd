@@ -50,7 +50,7 @@ plot(hetE,main='Volatility of a Fictitious Cryptocurrency Over Time',
      xlab='Days since ICO',ylab='% Change in Value')
 ```
 
- * *Conditional heteroskedasticity.*  Sometimes, the predictors themselves not only predict Y but also predict the size of the error variance σ^2.  One common case would be datasets in which the errors are proportional, that is multiplicative and not additive.  For example, the value of a diamond is usually based not just on the size of the stone, but on metrics such as the color, the brilliancy of the cut, and the lack of visible flaws.  A small 0.5 carat diamond might be worth $400 ± $100 depending on the other factors, while a larger 2.0 carat diamond might be worth $2000 ± $500.  The qualitative factors adjust the base value on a proportional basis, creating larger errors for larger stones.  
+ * *Conditional heteroskedasticity.*  Sometimes, the predictors themselves not only predict Y but also predict the size of the error variance $\sigma^2$.  One common case would be datasets in which the errors are proportional, that is multiplicative and not additive.  For example, the value of a diamond is usually based not just on the size of the stone, but on metrics such as the color, the brilliancy of the cut, and the lack of visible flaws.  A small 0.5 carat diamond might be worth $400 ± $100 depending on the other factors, while a larger 2.0 carat diamond might be worth $2000 ± $500.  The qualitative factors adjust the base value on a proportional basis, creating larger errors for larger stones.  
   
 ```{r}
 #| code-fold: true
